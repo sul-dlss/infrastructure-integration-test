@@ -1,2 +1,4 @@
 capybara-*.html
 geckodriver*
+
+spec/examples.txt

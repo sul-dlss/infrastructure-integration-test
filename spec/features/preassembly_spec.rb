@@ -71,7 +71,13 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
     expect(yaml[:status]).to eq 'success'
 
     visit "https://argo-stage.stanford.edu/view/druid:#{yaml[:pid]}"
-    sleep 30
-    save_and_open_page
+
+    # Wait for the accessioningWF to finish:
+    Timeout.timeout(100) do
+      loop do
+        page.evaluate_script("window.location.reload()")
+        break if page.has_text?("v#{version + 1} Accessioned")
+      end
+    end
   end
 end
