@@ -5,12 +5,14 @@
 This script depends on having firefox downloaded
 
 1. `bundle install`
-1. `curl https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-macos.tar.gz`
-1. `tar -zxvf geckodriver-v0.26.0-macos.tar.gz`
-1. `export PATH=$PATH:$(pwd)`
+1. download geckodriver `curl https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-macos.tar.gz`
+1. Uncompress it `tar -zxvf geckodriver-v0.26.0-macos.tar.gz`
+1. Put geckodriver on the path `export PATH=$PATH:$(pwd)`
 
 
 ## Run
+
+You must be on VPN in order to run this script.
 
 `bundle exec rspec`
 

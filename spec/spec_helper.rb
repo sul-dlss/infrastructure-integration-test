@@ -2,6 +2,7 @@
 
 require 'capybara/rspec'
 require 'selenium-webdriver'
+require 'byebug'
 
 root = Pathname.new(File.expand_path('../', __dir__))
 Dir[root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
