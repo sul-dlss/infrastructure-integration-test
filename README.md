@@ -1,5 +1,7 @@
 # DOR integration test
 
+This script drives a browser to do some integration testing of the SDR as a system.
+
 ## Installation
 
 This script depends on having firefox downloaded
