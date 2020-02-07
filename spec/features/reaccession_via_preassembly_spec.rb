@@ -4,37 +4,20 @@ require 'random_word'
 require 'timeout'
 
 RSpec.describe 'Reaccession from preassembly', type: :feature do
+  # This druid is pre-loaded in /dor/staging/jcoyne-test
+  let(:druid) { 'druid:bq653yd1233' }
+  let(:start_url) { "https://argo-stage.stanford.edu/view/#{druid}" }
+
+  before do
+    authenticate!(start_url: start_url,
+                  expected_text: 'Datastreams')
+  end
+
   after do
     clear_downloads
   end
 
-  # This druid is pre-loaded in /dor/staging/jcoyne-test
-  let(:druid) { 'druid:bq653yd1233' }
-
-  scenario 'create a preassembly job' do
-    print "SUNet ID: "
-    username = gets
-    username.strip!
-    print "Password: "
-    password = $stdin.noecho(&:gets)
-    password.strip!
-    puts
-
-    visit "https://argo-stage.stanford.edu/view/#{druid}"
-    fill_in 'SUNet ID', with: username
-    fill_in 'Password', with: password
-    sleep 1
-    click_button 'Login'
-
-    within_frame('duo_iframe') {
-      click_button 'Send Me a Push'
-    }
-
-    using_wait_time 100 do
-      # Once we see this we know the log in succeeded.
-      expect(page).to have_content 'Datastreams'
-    end
-
+  scenario do
     # Get the original version from the page
     elem = find('dd.blacklight-status_ssi', text: "Accessioned")
     md = /^v(\d+) Accessioned/.match(elem.text)

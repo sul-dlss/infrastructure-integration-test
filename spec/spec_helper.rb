@@ -27,11 +27,12 @@ end
 #   end
 # end
 
-Capybara.current_driver = :my_firefox_driver
+Capybara.default_driver = :my_firefox_driver
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.include DownloadHelpers
+  config.include AuthenticationHelpers
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
