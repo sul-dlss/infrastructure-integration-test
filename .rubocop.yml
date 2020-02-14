@@ -1,1 +1,14 @@
+# Turn on RSpec cops
+require: rubocop-rspec
+
 inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.5
+  DisplayCopNames: true
+  Include:
+    - './Rakefile'
+    - '**/*.rb'
+
+Metrics/LineLength:
+  Max: 120

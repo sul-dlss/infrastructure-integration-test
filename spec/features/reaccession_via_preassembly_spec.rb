@@ -35,7 +35,8 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
 
     click_button 'Submit'
 
-    expect(page).to have_content 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+    exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+    expect(page).to have_content exp_str
 
     first('td  > a').click # Click to the job details page
 
