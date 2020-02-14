@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sul-dlss/infrastructure-integration-test.svg?branch=master)](https://travis-ci.org/sul-dlss/infrastructure-integration-test)
+
 # DOR integration test
 
 This script drives a browser to do some integration testing of the SDR as a system.
