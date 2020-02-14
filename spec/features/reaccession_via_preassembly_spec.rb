@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'io/console'
 require 'random_word'
 require 'timeout'
@@ -19,7 +20,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
 
   scenario do
     # Get the original version from the page
-    elem = find('dd.blacklight-status_ssi', text: "Accessioned")
+    elem = find('dd.blacklight-status_ssi', text: 'Accessioned')
     md = /^v(\d+) Accessioned/.match(elem.text)
     version = md[1].to_i
 
@@ -41,7 +42,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
     # Wait for the background job to finish:
     Timeout.timeout(100) do
       loop do
-        page.evaluate_script("window.location.reload()")
+        page.evaluate_script('window.location.reload()')
         break if page.has_link?('Download')
       end
     end
@@ -58,7 +59,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
     # Wait for the accessioningWF to finish:
     Timeout.timeout(100) do
       loop do
-        page.evaluate_script("window.location.reload()")
+        page.evaluate_script('window.location.reload()')
         break if page.has_text?("v#{version + 1} Accessioned")
       end
     end

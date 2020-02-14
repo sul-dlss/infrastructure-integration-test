@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'io/console'
 require 'random_word'
 
@@ -51,8 +52,8 @@ RSpec.describe 'Use Argo to create a collection', type: :feature do
     # Wait for workflows to finish
     Timeout.timeout(100) do
       loop do
-        page.evaluate_script("window.location.reload()")
-        break if page.has_text?("v1 Accessioned")
+        page.evaluate_script('window.location.reload()')
+        break if page.has_text?('v1 Accessioned')
       end
     end
   end
