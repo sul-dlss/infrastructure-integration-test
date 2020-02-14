@@ -11,7 +11,7 @@ Capybara.run_server = false
 
 browser_options = ::Selenium::WebDriver::Firefox::Options.new
 browser_options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
-  profile["browser.download.dir"] = DownloadHelpers::PATH.to_s
+  profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
   # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
   profile['browser.download.folderList'] = 2
   profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml'
