@@ -6,7 +6,7 @@ require 'timeout'
 
 RSpec.describe 'Reaccession from preassembly', type: :feature do
   # This druid is pre-loaded in /dor/staging/jcoyne-test
-  let(:druid) { 'druid:bq653yd1233' }
+  let(:druid) { 'druid:vy293gd2473' }
   let(:start_url) { "https://argo-stage.stanford.edu/view/#{druid}" }
 
   before do
@@ -30,7 +30,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
 
     fill_in 'Project name', with: "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}"
     select 'Pre Assembly Run', from: 'Job type'
-    fill_in 'Bundle dir', with: '/dor/staging/jcoyne-test'
+    fill_in 'Bundle dir', with: '/dor/staging/integration-tests'
     select 'Filename', from: 'Content metadata creation'
 
     click_button 'Submit'
