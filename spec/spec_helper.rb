@@ -28,6 +28,7 @@ end
 # end
 
 Capybara.default_driver = :my_firefox_driver
+Capybara.default_max_wait_time = 30
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
