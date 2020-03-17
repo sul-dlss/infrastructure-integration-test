@@ -13,15 +13,10 @@ This script depends on having firefox downloaded
 1. Uncompress it `tar -zxvf geckodriver-v0.26.0-macos.tar.gz`
 1. Put geckodriver on the path `export PATH=$PATH:$(pwd)`
 
-## Get credentials
-
-Create credentials on SDR-API stage following these instructions:
-https://github.com/sul-dlss/sdr-api#create-a-user
-
 ## Run
 
 You must be on VPN in order to run this script.
 
-`SDR_EMAIL=jcoyne85@stanford.edu SDR_PASSWORD='sekret!' bundle exec rspec`
+`bundle exec rspec`
 
 You will be prompted to put in your credentials and then to approve a duo push.
