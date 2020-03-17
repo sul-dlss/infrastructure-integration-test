@@ -17,6 +17,6 @@ This script depends on having firefox downloaded
 
 You must be on VPN in order to run this script.
 
-`bundle exec rspec`
+`TECHMD_HMAC={hash-value} bundle exec rspec`
 
 You will be prompted to put in your credentials and then to approve a duo push.

@@ -5,6 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'byebug'
 gem 'capybara'
+gem 'jwt'
 gem 'rake'
 gem 'random-word'
 gem 'rspec'
