@@ -12,16 +12,11 @@ RSpec.describe 'SDR deposit', type: :feature do
     authenticate!(start_url: start_url, expected_text: 'Welcome to Argo!')
   end
 
-  # This allows a login using credentials from the environment.
-  class LoginFromEnv
-    def self.run
-      { email: ENV.fetch('SDR_EMAIL'), password: ENV.fetch('SDR_PASSWORD') }
-    end
-  end
-
   it 'deposits objects' do
-    SdrClient::Login.run(url: api_url,
-                         login_service: LoginFromEnv)
+    visit "#{start_url}/settings/tokens"
+    click_button 'Generate new token'
+
+    SdrClient::Credentials.write(find_field('Token').value)
 
     result = SdrClient::Deposit.run(apo: apo,
                                     source_id: source_id,
