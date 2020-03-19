@@ -5,6 +5,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'byebug'
 gem 'capybara'
+gem 'faraday' # etds require POST request from registrar
+gem 'pry-byebug'
 gem 'rake'
 gem 'random-word'
 gem 'rspec'

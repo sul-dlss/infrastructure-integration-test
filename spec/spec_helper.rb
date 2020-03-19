@@ -3,6 +3,7 @@
 require 'capybara/rspec'
 require 'selenium-webdriver'
 require 'byebug'
+require 'pry-byebug'
 require 'sdr-client'
 
 root = Pathname.new(File.expand_path('../', __dir__))
