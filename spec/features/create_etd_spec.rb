@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Create a new ETD', type: :feature do
+RSpec.describe 'Create a new ETD', type: :feature, js: true do
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { "D%09d" % Kernel.rand(1..999999999) }
@@ -43,14 +43,16 @@ RSpec.describe 'Create a new ETD', type: :feature do
     XML
   end
 
+  # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
   scenario do
-    # registrar creates ETD in hydra_etd app by posting xml
+    # registrar creates ETD in hydra_etd application by posting xml
     resp_body = simulate_registrar_post(xml_from_registrar)
     prefixed_druid = resp_body.split.first
-    puts "DRUID CREATED: #{prefixed_druid}"
     expect(prefixed_druid).to start_with('druid:')
+    puts "druid is #{prefixed_druid}"
 
     etd_submit_url = "https://#{etd_base_url}/submit/#{prefixed_druid}"
+    puts "etd submit url: #{etd_submit_url}" # helpful for debugging
     authenticate!(start_url: etd_submit_url,
                   expected_text: "Dissertation ID : #{dissertation_id}")
     visit etd_submit_url
@@ -68,7 +70,6 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page.find('#pbAbstractProvided')['style']).to eq '' # abstract not yet provided
     within '#submissionSteps' do
       step_list = all('div.step')
-
       within step_list[1] do
         find('div#textareaAbstract').click
         abstract_text = 'this is the abstract text'
@@ -76,35 +77,79 @@ RSpec.describe 'Create a new ETD', type: :feature do
         click_button 'Save'
       end
     end
-    # a checked box in the progress section is a background image
+    # a checked box in the progress section is a background image and has class .progressItemChecked
     expect(page.find('#pbAbstractProvided')['style']).to match(/background-image/)
 
+    # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
+    #   and when uploading files, we have to attach the file to the right one of these elements
+    #   I think this may be an artifact of the js framework it usees, prototype
+    file_upload_elements = all('input[type=file]', visible: false)
+
     # upload dissertation PDF
+    filename = 'etd_dissertation.pdf'
+    expect(page.find('#pbDissertationUploaded')['style']).to eq '' # dissertation PDF not yet provided
+    expect(page).not_to have_content(filename)
+    dissertation_pdf_upload_input = file_upload_elements.first
+    dissertation_pdf_upload_input.attach_file("spec/fixtures/#{filename}")
+    sleep(3) # wait for upload
+    expect(page).to have_content(filename)
+    # a checked box in the progress section is a background image
+    expect(page.find('#pbDissertationUploaded')['style']).to match(/background-image/)
+
+    # upload supplemental file
+    find('input#cbSupplementalFiles').check
+    filename = 'etd_supplemental.txt'
+    expect(page).not_to have_content(filename)
+    # supplemental files uploaded progress checkbox not visible by default
+    expect(page.find('#pbSupplementalFilesUploaded', visible: false)).not_to be_visible
+    supplemental_upload_input = file_upload_elements[1]
+    supplemental_upload_input.attach_file("spec/fixtures/#{filename}")
+    sleep(3) # wait for upload
+    expect(page).to have_content(filename)
+    # a checked box in the progress section is a background image
+    expect(page.find('#pbSupplementalFilesUploaded')['style']).to match(/background-image/)
+
+    # indicate copyrighted material
+    expect(page.find('#pbPermissionsProvided')['style']).to eq '' # rights not yet selected
+    page.select 'does include', from: 'selectPermissionsOptions'
+
+    # provide copyright permissions letters/files
+    # permission files uploaded progress checkbox not visible by default
+    expect(page.find('#pbPermissionFilesUploaded', visible: false)).not_to be_visible
+    filename = 'etd_permissions.pdf'
+    expect(page).not_to have_content(filename)
+    # permission files uploaded progress checkbox not visible by default
+    # expect(page.find('#pbPermissionFilesUploaded', visible: false)).not_to be_visible
+    permissions_upload_input = file_upload_elements[11]
+    permissions_upload_input.attach_file("spec/fixtures/#{filename}")
+    sleep(3) # wait for upload
+    expect(page).to have_content(filename)
+    # a checked box in the progress section is a background image
+    expect(page.find('#pbPermissionsProvided')['style']).to match(/background-image/)
+    expect(page.find('#pbPermissionFilesUploaded')).to be_instance_of Capybara::Node::Element
 
 
-    # provide supplemental file
+#     # apply license(s)
+#     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
+# binding.pry
+#     page.find_link('View Stanford University publication license').click_link
+#     page.find('input#cbLicenseStanford').check
+#     page.find('div.lb_close > div.link_close > a').click_link
+#     sleep(10)
 
-
-    # indicate copyright
-    # provide permission file
-
-    # apply license(s)
-
-
+    # expect(page.find('#pbRightsSelected')['style']).to match(/background-image/)
 
     # "submit etd to registrar" ??
 
     # fake registrar approval
+    # expect(page.find('#submitToRegistrarDiv')['style']).to match(/background-image/)
 
     # trigger etdSubmitWF:submit-marc robot processing
 
     # step 6:  these are documented in data creation wiki - post more shitty xml
-
-    # verify things look right on etd side -- checkmarks are there
-
     # some etd wf steps are run by cron -- not sure what to do with this.   (checking symphony)
 
-    # then click over to argo and make sure accessioningWF is running
+    # then click over to argo and make sure accessioningWF is running (and maybe completes?)
 
   end
 
