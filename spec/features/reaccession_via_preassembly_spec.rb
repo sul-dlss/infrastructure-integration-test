@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require 'random_word'
-require 'timeout'
-
 RSpec.describe 'Reaccession from preassembly', type: :feature do
   # This druid is pre-loaded in /dor/staging/jcoyne-test
   let(:druid) { 'druid:vy293gd2473' }

@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require 'random_word'
-
 RSpec.describe 'Use Argo to create an administrative policy object', type: :feature do
   let(:apo_title) { RandomWord.phrases.next }
   let(:start_url) { 'https://argo-stage.stanford.edu/' }
