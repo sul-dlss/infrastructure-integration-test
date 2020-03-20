@@ -26,7 +26,7 @@ RSpec.describe 'SDR deposit', type: :feature do
                                     files: ['Gemfile', 'Gemfile.lock'])
     object_druid = result[:druid]
 
-    visit "#{start_url}/view/#{object_druid}"
+    visit "#{start_url}view/#{object_druid}?beta=true"
 
     # Wait for indexing and workflows to finish
     Timeout.timeout(100) do
@@ -37,5 +37,10 @@ RSpec.describe 'SDR deposit', type: :feature do
     end
 
     expect(page).to have_content 'The means to prosperity'
+
+    # Tests existence of technical metadata
+    expect(page).to have_content 'Technical metadata'
+    file_listing = find_all('#document-techmd-section > ul > li')
+    expect(file_listing.size).to be(2)
   end
 end
