@@ -16,7 +16,7 @@ module AuthenticationHelpers
       password.strip
     end
 
-    # View the list of already accessioned APOs
+    # View the specified starting URL
     visit start_url
 
     # We're at the Stanford login page

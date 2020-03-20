@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'capybara/rspec'
-require 'selenium-webdriver'
 require 'byebug'
+require 'capybara/rspec'
+require 'io/console'
 require 'pry-byebug'
+require 'random_word'
 require 'sdr-client'
+require 'selenium-webdriver'
 
 root = Pathname.new(File.expand_path('../', __dir__))
 Dir[root.join('spec', 'support', '**', '*.rb')].each { |f| require f }

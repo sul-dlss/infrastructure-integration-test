@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require 'random_word'
-
 RSpec.describe 'Use Argo to create an object without any files', type: :feature do
   let(:random_word) { RandomWord.phrases.next }
   let(:object_label) { "Object Label for #{random_word}" }

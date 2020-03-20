@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+gem 'activesupport'
 gem 'byebug'
 gem 'capybara'
 gem 'faraday' # etds require POST request from registrar
