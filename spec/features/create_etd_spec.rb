@@ -43,6 +43,9 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     XML
   end
 
+  # may need to increase this: file uploads and submission to registrar
+  # Capybara.default_max_wait_time = 5
+
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
   scenario do
     # registrar creates ETD in hydra_etd application by posting xml
@@ -68,16 +71,17 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
 
     # provide abstract
     expect(page.find('#pbAbstractProvided')['style']).to eq '' # abstract not yet provided
+    abstract_text = 'this is the abstract text'
     within '#submissionSteps' do
       step_list = all('div.step')
       within step_list[1] do
         find('div#textareaAbstract').click
-        abstract_text = 'this is the abstract text'
         fill_in 'textareaAbstract_edit', with: abstract_text
         click_button 'Save'
       end
     end
     # a checked box in the progress section is a background image and has class .progressItemChecked
+    expect(page).to have_content(abstract_text)
     expect(page.find('#pbAbstractProvided')['style']).to match(/background-image/)
 
     # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
@@ -104,7 +108,6 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     expect(page.find('#pbSupplementalFilesUploaded', visible: false)).not_to be_visible
     supplemental_upload_input = file_upload_elements[1]
     supplemental_upload_input.attach_file("spec/fixtures/#{filename}")
-    sleep(3) # wait for upload
     expect(page).to have_content(filename)
     # a checked box in the progress section is a background image
     expect(page.find('#pbSupplementalFilesUploaded')['style']).to match(/background-image/)
@@ -120,35 +123,34 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     expect(page).not_to have_content(filename)
     permissions_upload_input = file_upload_elements[11]
     permissions_upload_input.attach_file("spec/fixtures/#{filename}")
-    sleep(3) # wait for upload
     expect(page).to have_content(filename)
     # a checked box in the progress section is a background image
     expect(page.find('#pbPermissionsProvided')['style']).to match(/background-image/)
     expect(page.find('#pbPermissionFilesUploaded')).to be_instance_of Capybara::Node::Element
 
-    # apply license(s)
+    # apply licenses
     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
-    stanford_license_link = page.find_link('View Stanford University publication license')
-    stanford_license_link.click
+    click_link('View Stanford University publication license')
     page.find('input#cbLicenseStanford').check
-    close_lightbox_link = page.find_link('Close this window')
-    close_lightbox_link.click
-
-    cc_license_link = page.find_link('View Creative Commons licenses')
-    cc_license_link.click
+    click_link('Close this window')
+    click_link('View Creative Commons licenses')
     page.select 'CC Attribution license', from: 'selectCCLicenseOptions'
-    close_lightbox_link = page.find_link('Close this window')
-    close_lightbox_link.click
+    click_link('Close this window')
 
     # set embargo
-    postpone_release_link = page.find_link('Postpone release')
-    postpone_release_link.click
+    click_link('Postpone release')
     page.select '6 months', from: 'selectReleaseDelayOptions'
-    close_lightbox_link = page.find_link('Close this window')
-    close_lightbox_link.click
+    click_link('Close this window')
+
     expect(page.find('#pbRightsSelected')['style']).to match(/background-image/)
 
-    # "submit etd to registrar" ??
+    # "submit etd to registrar"
+    accept_alert do
+      page.find('#submitToRegistrar').click # javascript
+    end
+    # page.find waits for this element to appear
+    expect(page.find('#submissionSuccessful')).to have_content('Submission successful')
+    expect(page.find('#submitToRegistrarDiv > p.progressItemChecked')).to have_content('Submitted')
 
     # fake registrar approval
     # expect(page.find('#submitToRegistrarDiv')['style']).to match(/background-image/)
