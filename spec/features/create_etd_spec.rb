@@ -118,8 +118,6 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     expect(page.find('#pbPermissionFilesUploaded', visible: false)).not_to be_visible
     filename = 'etd_permissions.pdf'
     expect(page).not_to have_content(filename)
-    # permission files uploaded progress checkbox not visible by default
-    # expect(page.find('#pbPermissionFilesUploaded', visible: false)).not_to be_visible
     permissions_upload_input = file_upload_elements[11]
     permissions_upload_input.attach_file("spec/fixtures/#{filename}")
     sleep(3) # wait for upload
@@ -128,16 +126,27 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     expect(page.find('#pbPermissionsProvided')['style']).to match(/background-image/)
     expect(page.find('#pbPermissionFilesUploaded')).to be_instance_of Capybara::Node::Element
 
+    # apply license(s)
+    expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
+    stanford_license_link = page.find_link('View Stanford University publication license')
+    stanford_license_link.click
+    page.find('input#cbLicenseStanford').check
+    close_lightbox_link = page.find_link('Close this window')
+    close_lightbox_link.click
 
-#     # apply license(s)
-#     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
-# binding.pry
-#     page.find_link('View Stanford University publication license').click_link
-#     page.find('input#cbLicenseStanford').check
-#     page.find('div.lb_close > div.link_close > a').click_link
-#     sleep(10)
+    cc_license_link = page.find_link('View Creative Commons licenses')
+    cc_license_link.click
+    page.select 'CC Attribution license', from: 'selectCCLicenseOptions'
+    close_lightbox_link = page.find_link('Close this window')
+    close_lightbox_link.click
 
-    # expect(page.find('#pbRightsSelected')['style']).to match(/background-image/)
+    # set embargo
+    postpone_release_link = page.find_link('Postpone release')
+    postpone_release_link.click
+    page.select '6 months', from: 'selectReleaseDelayOptions'
+    close_lightbox_link = page.find_link('Close this window')
+    close_lightbox_link.click
+    expect(page.find('#pbRightsSelected')['style']).to match(/background-image/)
 
     # "submit etd to registrar" ??
 
