@@ -13,11 +13,11 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
       <type>Dissertation</type>
       <vpname>Patricia J. Gumport</vpname>
       <readerapproval>Not Submitted</readerapproval>
-      <readercomment/>
-      <readeractiondttm/>
+      <readercomment> </readercomment>
+      <readeractiondttm> </readeractiondttm>
       <regapproval>Not Submitted</regapproval>
-      <regactiondttm/>
-      <regcomment/>
+      <regactiondttm> </regactiondttm>
+      <regcomment> </regcomment>
       <documentaccess>Yes</documentaccess>
       <schoolname>School of Medicine</schoolname>
       <degreeconfyr>2020</degreeconfyr>
@@ -26,7 +26,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
         <name>Edwards, Doris</name>
         <type>int</type>
         <univid>05358772</univid>
-        <readerrole>Doct Dissert Co-Adv (AC)</readerrole>
+        <readerrole>Doct Dissert Advisor (AC)</readerrole>
         <finalreader>Yes</finalreader>
       </reader>
       <reader type="int">
@@ -37,8 +37,8 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
         <finalreader>No</finalreader>
       </reader>
       <univid>05543256</univid>
-      <sunetid>lforest</sunetid>
-      <name>Forest, Lester</name>
+      <sunetid>dkelley</sunetid>
+      <name>Kelley, DeForest</name>
       <career code="MED">Medicine</career>
       <program code="MED">Medical</program>
       <plan code="ANT">Neurology</plan>
@@ -56,6 +56,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     resp_body = simulate_registrar_post(xml_from_registrar)
     prefixed_druid = resp_body.split.first
     expect(prefixed_druid).to start_with('druid:')
+    puts "dissertation id is #{dissertation_id}"
     puts "druid is #{prefixed_druid}"
 
     etd_submit_url = "https://#{etd_base_url}/submit/#{prefixed_druid}"
@@ -67,7 +68,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     # verify citation details
     expect(page.find('#pbCitationDetails')['style']).to eq '' # citation details not yet verified
     expect(page).to have_content(dissertation_id)
-    expect(page).to have_content("Forest, Lester")
+    expect(page).to have_content("Kelley, DeForest")
     expect(page).to have_content("Integration Testing of ETD Processing")
     check('confirmCitationDetails')
     # a checked box in the progress section is a background image
@@ -157,13 +158,33 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     expect(page.find('#submitToRegistrarDiv > p.progressItemChecked')).to have_content('Submitted')
 
     # fake reader approval
+    reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
+    expect(reader_progress_list_el).to have_content('Verified by Final Reader - Not done')
+    reader_approved = xml_from_registrar.dup.sub(/<readerapproval>Not Submitted<\/readerapproval>/,
+                                             '<readerapproval>Approved</readerapproval>')
+    now = Time.now.strftime('%m/%d/%Y %T')
+    reader_approved.sub!(/<readeractiondttm> <\/readeractiondttm>/, "<readeractiondttm>#{now}</readeractiondttm>")
+    reader_approved.sub!(/<readercomment> <\/readercomment>/, '<readercomment>Spock approves</readercomment>')
+    resp_body = simulate_registrar_post(reader_approved)
+    expect(resp_body).to eq "#{prefixed_druid} updated"
+    page.refresh  # needed to show updated progress box
+    reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
+    expect(reader_progress_list_el).to have_content('Verified by Final Reader - Done')
 
     # fake registrar approval
-    # expect(page.find('#submitToRegistrarDiv')['style']).to match(/background-image/)
+    registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
+    expect(registrar_progress_list_el).to have_content('Approved by Registrar - Not done')
+    registrar_approved = xml_from_registrar.dup.sub(/<regapproval>Not Submitted<\/regapproval>/,
+                                             '<regapproval>Approved</regapproval>')
+    now = Time.now.strftime('%m/%d/%Y %T')
+    registrar_approved.sub!(/<regactiondttm> <\/regactiondttm>/, "<regactiondttm>#{now}</regactiondttm>")
+    resp_body = simulate_registrar_post(registrar_approved)
+    expect(resp_body).to eq "#{prefixed_druid} updated"
+    page.refresh  # needed to show updated progress box
+    registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
+    expect(registrar_progress_list_el).to have_content('Approved by Registrar - Done')
 
     # trigger etdSubmitWF:submit-marc robot processing
-
-    # step 6:  these are documented in data creation wiki - post more shitty xml
     # some etd wf steps are run by cron -- not sure what to do with this.   (checking symphony)
 
     # then click over to argo and make sure accessioningWF is running (and maybe completes?)
@@ -173,8 +194,6 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
 
 end
 
-
-# this simulates an ETD submission by the registrar
 def simulate_registrar_post(xml)
   user =  'admindlss'
   password = 'p0stpl3as3'
@@ -188,6 +207,6 @@ def simulate_registrar_post(xml)
 
   return resp.body if resp.success?
 
-  errmsg = "Unable to create ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
+  errmsg = "Error POSTing ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
   raise(RuntimeError, errmsg)
 end
