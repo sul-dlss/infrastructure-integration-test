@@ -23,13 +23,18 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
       <degreeconfyr>2020</degreeconfyr>
       <reader>
         <sunetid>dedwards</sunetid>
-        <prefix/>
         <name>Edwards, Doris</name>
-        <suffix/>
         <type>int</type>
         <univid>05358772</univid>
         <readerrole>Doct Dissert Co-Adv (AC)</readerrole>
         <finalreader>Yes</finalreader>
+      </reader>
+      <reader type="int">
+        <univid>05221995</univid>
+        <sunetid>rkatila</sunetid>
+        <name>Katila, Riitta</name>
+        <readerrole>Doct Dissert Reader (AC)</readerrole>
+        <finalreader>No</finalreader>
       </reader>
       <univid>05543256</univid>
       <sunetid>lforest</sunetid>
@@ -38,7 +43,6 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
       <program code="MED">Medical</program>
       <plan code="ANT">Neurology</plan>
       <degree>PHD</degree>
-      <subplan code="" />
     </DISSERTATION>
     XML
   end
@@ -151,6 +155,8 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     # page.find waits for this element to appear
     expect(page.find('#submissionSuccessful')).to have_content('Submission successful')
     expect(page.find('#submitToRegistrarDiv > p.progressItemChecked')).to have_content('Submitted')
+
+    # fake reader approval
 
     # fake registrar approval
     # expect(page.find('#submitToRegistrarDiv')['style']).to match(/background-image/)
