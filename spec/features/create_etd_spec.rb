@@ -4,12 +4,13 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { "D%09d" % Kernel.rand(1..999999999) }
+  let(:dissertation_title) { 'Integration Testing of ETD Processing' }
   let(:xml_from_registrar) do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
     <<-XML
     <DISSERTATION>
       <dissertationid>#{dissertation_id}</dissertationid>
-      <title>Integration Testing of ETD Processing</title>
+      <title>#{dissertation_title}</title>
       <type>Dissertation</type>
       <vpname>Patricia J. Gumport</vpname>
       <readerapproval>Not Submitted</readerapproval>
@@ -69,7 +70,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     expect(page.find('#pbCitationDetails')['style']).to eq '' # citation details not yet verified
     expect(page).to have_content(dissertation_id)
     expect(page).to have_content("Kelley, DeForest")
-    expect(page).to have_content("Integration Testing of ETD Processing")
+    expect(page).to have_content(dissertation_title)
     check('confirmCitationDetails')
     # a checked box in the progress section is a background image
     expect(page.find('#pbCitationDetails')['style']).to match(/background-image/)
@@ -184,14 +185,36 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
     expect(registrar_progress_list_el).to have_content('Approved by Registrar - Done')
 
-    # trigger etdSubmitWF:submit-marc robot processing
-    # some etd wf steps are run by cron -- not sure what to do with this.   (checking symphony)
+    expect(page.find('#submissionApproved')).to have_content('Submission approved')
 
-    # then click over to argo and make sure accessioningWF is running (and maybe completes?)
+    # check Argo for object
+    visit "https://argo-stage.stanford.edu/view/#{prefixed_druid}"
+    expect(page).to have_content dissertation_title
+    apo_element = first('dd.blacklight-is_governed_by_ssim > a')
+    expect(apo_element[:href]).to have_text('druid:bx911tp9024') # this is hardcoded in hydra_etd app
+    status_element = first('dd.blacklight-status_ssi')
+    expect(status_element).to have_text('v1 Registered')
+    # sleep(5) # waiting for fedora/Solr to get embargo info so it shows up in Argo
+    # page.refresh
+    # expect(page).to have_content('This item is embargoed until')
+    click_link('etdSubmitWF')
+    modal_element = page.find('#blacklight-modal')
+    # expect first 4 steps to have completed
+    expect(modal_element).to have_content(/register-object completed/)
+    expect(modal_element).to have_content(/submit completed/)
+    expect(modal_element).to have_content(/reader-approval completed/)
+    expect(modal_element).to have_content(/registrar-approval completed/)
+    expect(modal_element).to have_content(/submit-marc waiting/)
 
+    # TODO: the next etd wf steps are run by cron talking to symphony:  submit-marc, check-marc, catalog-status
+    #  NOTE: these three steps will be migrating to hydra_etd app in the nearish future,
+    #    which should make them testable within hydra_etd specs.  Also, the etdSubmitWF will likely go away
+    #    and hydra_etd will be able to go through common-accessioning.
+
+    # TODO: click over to argo and make sure accessioningWF is running
+
+    # TODO: make sure accessioning completes cleanly (at least up to preservation robots steps)
   end
-
-
 end
 
 def simulate_registrar_post(xml)
