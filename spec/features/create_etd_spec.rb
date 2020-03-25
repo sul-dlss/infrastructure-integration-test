@@ -61,6 +61,10 @@ RSpec.describe 'Create a new ETD', type: :feature do
                                                                     '<regapproval>Approved</regapproval>')
     registrar_approved.sub!(/<regactiondttm> <\/regactiondttm>/, "<regactiondttm>#{now}</regactiondttm>")
   end
+  let(:abstract_text) { 'this is the abstract text' }
+  let(:dissertation_filename) { 'etd_dissertation.pdf' }
+  let(:supplemental_filename) { 'etd_supplemental.txt' }
+  let(:permissions_filename) { 'etd_permissions.pdf' }
 
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
   it do
@@ -79,18 +83,17 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
     # verify citation details
     expect(page).to have_selector('#pbCitationDetails', text: 'Citation details verified - Not done')
-    expect(find('#pbCitationDetails')['style']).to eq '' # citation details not yet verified
+    expect(page).not_to have_a_complete_step('#pbCitationDetails')
     expect(page).to have_content(dissertation_id)
     expect(page).to have_content(dissertation_author)
     expect(page).to have_content(dissertation_title)
     check('confirmCitationDetails')
-    # this checked box in the progress section now has a background image check mark without page reload
-    expect(find('#pbCitationDetails')['style']).to match(/background-image/)
+
+    expect(page).to have_a_complete_step('#pbCitationDetails')
 
     # provide abstract
     expect(page).to have_selector('#pbAbstractProvided', text: 'Abstract provided - Not done')
-    expect(find('#pbAbstractProvided')['style']).to eq '' # abstract not yet provided
-    abstract_text = 'this is the abstract text'
+    expect(page).not_to have_a_complete_step('#pbAbstractProvided')
     within '#submissionSteps' do
       step_list = all('div.step')
       within step_list[1] do
@@ -100,8 +103,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
       end
     end
     expect(page).to have_content(abstract_text)
-    # this checked box in the progress section now has a background image check mark without page reload
-    expect(find('#pbAbstractProvided')['style']).to match(/background-image/)
+    expect(page).to have_a_complete_step('#pbAbstractProvided')
 
     # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
     #   and when uploading files, we have to attach the file to the right one of these elements
@@ -109,27 +111,23 @@ RSpec.describe 'Create a new ETD', type: :feature do
     file_upload_elements = all('input[type=file]', visible: false)
 
     # upload dissertation PDF
-    filename = 'etd_dissertation.pdf'
-    expect(page).not_to have_content(filename)
+    expect(page).not_to have_content(dissertation_filename)
     expect(page).to have_selector('#pbDissertationUploaded', text: 'Dissertation uploaded - Not done')
-    expect(find('#pbDissertationUploaded')['style']).to eq '' # dissertation PDF not yet provided
+    expect(page).not_to have_a_complete_step('#pbDissertationUploaded')
     dissertation_pdf_upload_input = file_upload_elements.first
-    dissertation_pdf_upload_input.attach_file("spec/fixtures/#{filename}")
-    expect(page).to have_content(filename)
-    # this checked box in the progress section now has a background image check mark without page reload
-    expect(find('#pbDissertationUploaded')['style']).to match(/background-image/)
+    dissertation_pdf_upload_input.attach_file("spec/fixtures/#{dissertation_filename}")
+    expect(page).to have_content(dissertation_filename)
+    expect(page).to have_a_complete_step('#pbDissertationUploaded')
 
     # upload supplemental file
-    filename = 'etd_supplemental.txt'
-    expect(page).not_to have_content(filename)
+    expect(page).not_to have_content(supplemental_filename)
     expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :hidden)
-    find('input#cbSupplementalFiles').check
+    check('My dissertation includes supplemental files.')
     supplemental_upload_input = file_upload_elements[1]
-    supplemental_upload_input.attach_file("spec/fixtures/#{filename}")
-    expect(page).to have_content(filename)
+    supplemental_upload_input.attach_file("spec/fixtures/#{supplemental_filename}")
+    expect(page).to have_content(supplemental_filename)
     expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: true)
-    # this checked box in the progress section now has a background image check mark without page reload
-    expect(find('#pbSupplementalFilesUploaded')['style']).to match(/background-image/)
+    expect(page).to have_a_complete_step('#pbSupplementalFilesUploaded')
 
     # indicate copyrighted material
     expect(page).to have_selector('#pbPermissionsProvided', text: 'Copyrighted material checked - Not done')
@@ -137,38 +135,35 @@ RSpec.describe 'Create a new ETD', type: :feature do
     select 'does include', from: 'selectPermissionsOptions'
 
     # provide copyright permissions letters/files
-    filename = 'etd_permissions.pdf'
-    expect(page).not_to have_content(filename)
+    expect(page).not_to have_content(permissions_filename)
     expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :hidden)
     permissions_upload_input = file_upload_elements[11]
-    permissions_upload_input.attach_file("spec/fixtures/#{filename}")
-    expect(page).to have_content(filename)
+    permissions_upload_input.attach_file("spec/fixtures/#{permissions_filename}")
+    expect(page).to have_content(permissions_filename)
     expect(page).to have_selector('#pbPermissionFilesUploaded', visible: true)
-    # these checked boxes in the progress section now have a background image check mark without page reload
-    expect(find('#pbPermissionFilesUploaded')['style']).to match(/background-image/)
-    expect(find('#pbPermissionsProvided')['style']).to match(/background-image/)
+
+    expect(page).to have_a_complete_step('#pbPermissionFilesUploaded')
+    expect(page).to have_a_complete_step('#pbPermissionsProvided')
 
     # apply licenses
     expect(page).to have_selector('#pbRightsSelected', text: 'License terms applied - Not done')
-    expect(find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
-    click_link('View Stanford University publication license')
-    find('input#cbLicenseStanford').check
-    click_link('Close this window')
-    click_link('View Creative Commons licenses')
+    expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
+    click_link 'View Stanford University publication license'
+    check 'I have read and agree to the terms of the Stanford University license.'
+    click_link 'Close this window'
+    click_link 'View Creative Commons licenses'
     select 'CC Attribution license', from: 'selectCCLicenseOptions'
-    click_link('Close this window')
+    click_link 'Close this window'
 
     # set embargo
-    click_link('Postpone release')
+    click_link 'Postpone release'
     select '6 months', from: 'selectReleaseDelayOptions'
-    click_link('Close this window')
+    click_link 'Close this window'
 
-    # this checked box in the progress section now has a background image without page reload
-    expect(find('#pbRightsSelected')['style']).to match(/background-image/)
+    expect(page).to have_a_complete_step('#pbRightsSelected')
 
-    # "submit etd to registrar"
     accept_alert do
-      find('#submitToRegistrar').click # this uses onclick attrib for javascript
+      click_button 'Submit to Registrar'
     end
     expect(page).to have_selector('#submissionSuccessful', text: 'Submission successful')
     expect(page).to have_selector('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
