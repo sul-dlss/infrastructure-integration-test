@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Create a new ETD', type: :feature, js: true do
+RSpec.describe 'Create a new ETD', type: :feature do
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
-  let(:dissertation_id) { "D%09d" % Kernel.rand(1..999999999) }
+  let(:dissertation_id) { format('D%09d', Kernel.rand(1..999_999_999)) }
   let(:dissertation_title) { 'Integration Testing of ETD Processing' }
   let(:xml_from_registrar) do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
@@ -52,7 +52,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
   # Capybara.default_max_wait_time = 5
 
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
-  scenario do
+  it do
     # registrar creates ETD in hydra_etd application by posting xml
     resp_body = simulate_registrar_post(xml_from_registrar)
     prefixed_druid = resp_body.split.first
@@ -69,7 +69,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     # verify citation details
     expect(page.find('#pbCitationDetails')['style']).to eq '' # citation details not yet verified
     expect(page).to have_content(dissertation_id)
-    expect(page).to have_content("Kelley, DeForest")
+    expect(page).to have_content('Kelley, DeForest')
     expect(page).to have_content(dissertation_title)
     check('confirmCitationDetails')
     # a checked box in the progress section is a background image
@@ -162,13 +162,13 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
     expect(reader_progress_list_el).to have_content('Verified by Final Reader - Not done')
     reader_approved = xml_from_registrar.dup.sub(/<readerapproval>Not Submitted<\/readerapproval>/,
-                                             '<readerapproval>Approved</readerapproval>')
+                                                 '<readerapproval>Approved</readerapproval>')
     now = Time.now.strftime('%m/%d/%Y %T')
     reader_approved.sub!(/<readeractiondttm> <\/readeractiondttm>/, "<readeractiondttm>#{now}</readeractiondttm>")
     reader_approved.sub!(/<readercomment> <\/readercomment>/, '<readercomment>Spock approves</readercomment>')
     resp_body = simulate_registrar_post(reader_approved)
     expect(resp_body).to eq "#{prefixed_druid} updated"
-    page.refresh  # needed to show updated progress box
+    page.refresh # needed to show updated progress box
     reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
     expect(reader_progress_list_el).to have_content('Verified by Final Reader - Done')
 
@@ -176,25 +176,26 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
     expect(registrar_progress_list_el).to have_content('Approved by Registrar - Not done')
     registrar_approved = xml_from_registrar.dup.sub(/<regapproval>Not Submitted<\/regapproval>/,
-                                             '<regapproval>Approved</regapproval>')
+                                                    '<regapproval>Approved</regapproval>')
     now = Time.now.strftime('%m/%d/%Y %T')
     registrar_approved.sub!(/<regactiondttm> <\/regactiondttm>/, "<regactiondttm>#{now}</regactiondttm>")
     resp_body = simulate_registrar_post(registrar_approved)
     expect(resp_body).to eq "#{prefixed_druid} updated"
-    page.refresh  # needed to show updated progress box
+    page.refresh # needed to show updated progress box
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
     expect(registrar_progress_list_el).to have_content('Approved by Registrar - Done')
 
     expect(page.find('#submissionApproved')).to have_content('Submission approved')
 
     # check Argo for object
+    sleep(3) # waiting for Fedora/Solr
     visit "https://argo-stage.stanford.edu/view/#{prefixed_druid}"
     expect(page).to have_content dissertation_title
     apo_element = first('dd.blacklight-is_governed_by_ssim > a')
     expect(apo_element[:href]).to have_text('druid:bx911tp9024') # this is hardcoded in hydra_etd app
     status_element = first('dd.blacklight-status_ssi')
     expect(status_element).to have_text('v1 Registered')
-    # sleep(5) # waiting for fedora/Solr to get embargo info so it shows up in Argo
+    # sleep(15) # waiting for fedora/Solr to get embargo info so it shows up in Argo
     # page.refresh
     # expect(page).to have_content('This item is embargoed until')
     click_link('etdSubmitWF')
@@ -218,7 +219,7 @@ RSpec.describe 'Create a new ETD', type: :feature, js: true do
 end
 
 def simulate_registrar_post(xml)
-  user =  'admindlss'
+  user = 'admindlss'
   password = 'p0stpl3as3'
   conn = Faraday.new(url: "https://#{user}:#{password}@#{etd_base_url}/etds")
   resp = conn.post do |req|
@@ -230,6 +231,5 @@ def simulate_registrar_post(xml)
 
   return resp.body if resp.success?
 
-  errmsg = "Error POSTing ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
-  raise(RuntimeError, errmsg)
+  raise "Error POSTing ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
 end
