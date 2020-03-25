@@ -10,5 +10,10 @@ AllCops:
     - './Rakefile'
     - '**/*.rb'
 
-Metrics/LineLength:
-  Max: 120
+Capybara/FeatureMethods:
+  EnabledMethods:
+    - 'scenario'
+
+RSpec/ExampleLength:
+  Exclude:
+    - 'spec/features/*.rb'

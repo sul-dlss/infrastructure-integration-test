@@ -25,7 +25,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     click_button 'Save'
 
     expect(page).to have_content collection_title
-    collection_druid = current_url.match(/collections\/(?<druid>druid:.+)/)[:druid]
+    collection_druid = current_url.match(%r{collections/(?<druid>druid:.+)})[:druid]
     click_button 'Open Collection'
 
     expect(page).to have_content 'Collection opened'
@@ -37,7 +37,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     click_link 'image'
 
     expect(page).to have_content 'Edit Draft'
-    item_druid = current_url.match(/items\/(?<druid>druid:.+)\/edit/)[:druid]
+    item_druid = current_url.match(%r{items/(?<druid>druid:.+)/edit})[:druid]
     fill_in 'Title of item', with: item_title
     fill_in 'Contact email', with: user_email
     find('input#hydrus_item_contributors_0_name').fill_in(with: 'Stanford, Jane Lathrop')
