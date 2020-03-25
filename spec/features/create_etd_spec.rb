@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Create a new ETD', type: :feature do
+  now = '' # used in reader and registrar approved xml
+
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { format('D%09d', Kernel.rand(1..999_999_999)) }
   let(:dissertation_title) { 'Integration Testing of ETD Processing' }
-  let(:xml_from_registrar) do
+  let(:dissertation_author) { 'Kelly, DeForest' }
+  let(:initial_xml_from_registrar) do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
     <<-XML
     <DISSERTATION>
@@ -39,7 +42,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
       </reader>
       <univid>05543256</univid>
       <sunetid>dkelley</sunetid>
-      <name>Kelley, DeForest</name>
+      <name>#{dissertation_author}</name>
       <career code="MED">Medicine</career>
       <program code="MED">Medical</program>
       <plan code="ANT">Neurology</plan>
@@ -47,35 +50,45 @@ RSpec.describe 'Create a new ETD', type: :feature do
     </DISSERTATION>
     XML
   end
-
-  # may need to increase this: file uploads and submission to registrar
-  # Capybara.default_max_wait_time = 5
+  let(:reader_approval_xml_from_registrar) do
+    reader_approved = initial_xml_from_registrar.dup.sub(/<readerapproval>Not Submitted<\/readerapproval>/,
+                                                         '<readerapproval>Approved</readerapproval>')
+    reader_approved.sub!(/<readeractiondttm> <\/readeractiondttm>/, "<readeractiondttm>#{now}</readeractiondttm>")
+    reader_approved.sub!(/<readercomment> <\/readercomment>/, '<readercomment>Spock approves</readercomment>')
+  end
+  let(:registrar_approval_xml_from_registrar) do
+    registrar_approved = reader_approval_xml_from_registrar.dup.sub(/<regapproval>Not Submitted<\/regapproval>/,
+                                                                    '<regapproval>Approved</regapproval>')
+    registrar_approved.sub!(/<regactiondttm> <\/regactiondttm>/, "<regactiondttm>#{now}</regactiondttm>")
+  end
 
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
   it do
     # registrar creates ETD in hydra_etd application by posting xml
-    resp_body = simulate_registrar_post(xml_from_registrar)
+    resp_body = simulate_registrar_post(initial_xml_from_registrar)
     prefixed_druid = resp_body.split.first
     expect(prefixed_druid).to start_with('druid:')
-    puts "dissertation id is #{dissertation_id}"
-    puts "druid is #{prefixed_druid}"
+    # puts "dissertation id is #{dissertation_id}" # helpful for debugging
+    # puts "druid is #{prefixed_druid}" # helpful for debugging
 
     etd_submit_url = "https://#{etd_base_url}/submit/#{prefixed_druid}"
-    puts "etd submit url: #{etd_submit_url}" # helpful for debugging
+    # puts "etd submit url: #{etd_submit_url}" # helpful for debugging
     authenticate!(start_url: etd_submit_url,
                   expected_text: "Dissertation ID : #{dissertation_id}")
     visit etd_submit_url
 
     # verify citation details
+    expect(page).to have_selector('#pbCitationDetails', text: 'Citation details verified - Not done')
     expect(page.find('#pbCitationDetails')['style']).to eq '' # citation details not yet verified
     expect(page).to have_content(dissertation_id)
-    expect(page).to have_content('Kelley, DeForest')
+    expect(page).to have_content(dissertation_author)
     expect(page).to have_content(dissertation_title)
     check('confirmCitationDetails')
-    # a checked box in the progress section is a background image
+    # this checked box in the progress section now has a background image check mark without page reload
     expect(page.find('#pbCitationDetails')['style']).to match(/background-image/)
 
     # provide abstract
+    expect(page).to have_selector('#pbAbstractProvided', text: 'Abstract provided - Not done')
     expect(page.find('#pbAbstractProvided')['style']).to eq '' # abstract not yet provided
     abstract_text = 'this is the abstract text'
     within '#submissionSteps' do
@@ -86,55 +99,57 @@ RSpec.describe 'Create a new ETD', type: :feature do
         click_button 'Save'
       end
     end
-    # a checked box in the progress section is a background image and has class .progressItemChecked
     expect(page).to have_content(abstract_text)
+    # this checked box in the progress section now has a background image check mark without page reload
     expect(page.find('#pbAbstractProvided')['style']).to match(/background-image/)
 
     # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
     #   and when uploading files, we have to attach the file to the right one of these elements
-    #   I think this may be an artifact of the js framework it usees, prototype
+    #   This is probably an artifact of the js framework it uses, prototype
     file_upload_elements = all('input[type=file]', visible: false)
 
     # upload dissertation PDF
     filename = 'etd_dissertation.pdf'
-    expect(page.find('#pbDissertationUploaded')['style']).to eq '' # dissertation PDF not yet provided
     expect(page).not_to have_content(filename)
+    expect(page).to have_selector('#pbDissertationUploaded', text: 'Dissertation uploaded - Not done')
+    expect(page.find('#pbDissertationUploaded')['style']).to eq '' # dissertation PDF not yet provided
     dissertation_pdf_upload_input = file_upload_elements.first
     dissertation_pdf_upload_input.attach_file("spec/fixtures/#{filename}")
-    sleep(3) # wait for upload
     expect(page).to have_content(filename)
-    # a checked box in the progress section is a background image
+    # this checked box in the progress section now has a background image check mark without page reload
     expect(page.find('#pbDissertationUploaded')['style']).to match(/background-image/)
 
     # upload supplemental file
-    find('input#cbSupplementalFiles').check
     filename = 'etd_supplemental.txt'
     expect(page).not_to have_content(filename)
-    # supplemental files uploaded progress checkbox not visible by default
-    expect(page.find('#pbSupplementalFilesUploaded', visible: false)).not_to be_visible
+    expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :hidden)
+    find('input#cbSupplementalFiles').check
     supplemental_upload_input = file_upload_elements[1]
     supplemental_upload_input.attach_file("spec/fixtures/#{filename}")
     expect(page).to have_content(filename)
-    # a checked box in the progress section is a background image
+    expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: true)
+    # this checked box in the progress section now has a background image check mark without page reload
     expect(page.find('#pbSupplementalFilesUploaded')['style']).to match(/background-image/)
 
     # indicate copyrighted material
+    expect(page).to have_selector('#pbPermissionsProvided', text: 'Copyrighted material checked - Not done')
     expect(page.find('#pbPermissionsProvided')['style']).to eq '' # rights not yet selected
     page.select 'does include', from: 'selectPermissionsOptions'
 
     # provide copyright permissions letters/files
-    # permission files uploaded progress checkbox not visible by default
-    expect(page.find('#pbPermissionFilesUploaded', visible: false)).not_to be_visible
     filename = 'etd_permissions.pdf'
     expect(page).not_to have_content(filename)
+    expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :hidden)
     permissions_upload_input = file_upload_elements[11]
     permissions_upload_input.attach_file("spec/fixtures/#{filename}")
     expect(page).to have_content(filename)
-    # a checked box in the progress section is a background image
+    expect(page).to have_selector('#pbPermissionFilesUploaded', visible: true)
+    # these checked boxes in the progress section now have a background image check mark without page reload
+    expect(page.find('#pbPermissionFilesUploaded')['style']).to match(/background-image/)
     expect(page.find('#pbPermissionsProvided')['style']).to match(/background-image/)
-    expect(page.find('#pbPermissionFilesUploaded')).to be_instance_of Capybara::Node::Element
 
     # apply licenses
+    expect(page).to have_selector('#pbRightsSelected', text: 'License terms applied - Not done')
     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
     click_link('View Stanford University publication license')
     page.find('input#cbLicenseStanford').check
@@ -148,64 +163,67 @@ RSpec.describe 'Create a new ETD', type: :feature do
     page.select '6 months', from: 'selectReleaseDelayOptions'
     click_link('Close this window')
 
+    # this checked box in the progress section now has a background image without page reload
     expect(page.find('#pbRightsSelected')['style']).to match(/background-image/)
 
     # "submit etd to registrar"
     accept_alert do
-      page.find('#submitToRegistrar').click # javascript
+      page.find('#submitToRegistrar').click # this uses onclick attrib for javascript
     end
-    # page.find waits for this element to appear
-    expect(page.find('#submissionSuccessful')).to have_content('Submission successful')
-    expect(page.find('#submitToRegistrarDiv > p.progressItemChecked')).to have_content('Submitted')
+    expect(page).to have_selector('#submissionSuccessful', text: 'Submission successful')
+    expect(page).to have_selector('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
+
+    # page has reloaded with submit to registrar and these now will show as updated
+    expect(page).to have_selector('#pbCitationDetails', text: 'Citation details verified - Done')
+    expect(page).to have_selector('#pbAbstractProvided', text: 'Abstract provided - Done')
+    expect(page).to have_selector('#pbDissertationUploaded', text: 'Dissertation uploaded - Done')
+    expect(page).to have_selector('#pbSupplementalFilesUploaded', text: 'Supplemental files uploaded - Done')
+    expect(page).to have_selector('#pbPermissionsProvided', text: 'Copyrighted material checked - Done')
+    expect(page).to have_selector('#pbPermissionFilesUploaded', text: 'Permission files uploaded - Done')
+    expect(page).to have_selector('#pbRightsSelected', text: 'License terms applied - Done')
 
     # fake reader approval
     reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
-    expect(reader_progress_list_el).to have_content('Verified by Final Reader - Not done')
-    reader_approved = xml_from_registrar.dup.sub(/<readerapproval>Not Submitted<\/readerapproval>/,
-                                                 '<readerapproval>Approved</readerapproval>')
+    expect(reader_progress_list_el).to have_text('Verified by Final Reader - Not done')
     now = Time.now.strftime('%m/%d/%Y %T')
-    reader_approved.sub!(/<readeractiondttm> <\/readeractiondttm>/, "<readeractiondttm>#{now}</readeractiondttm>")
-    reader_approved.sub!(/<readercomment> <\/readercomment>/, '<readercomment>Spock approves</readercomment>')
-    resp_body = simulate_registrar_post(reader_approved)
+    resp_body = simulate_registrar_post(reader_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
     reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
-    expect(reader_progress_list_el).to have_content('Verified by Final Reader - Done')
+    expect(reader_progress_list_el).to have_text('Verified by Final Reader - Done')
 
     # fake registrar approval
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
-    expect(registrar_progress_list_el).to have_content('Approved by Registrar - Not done')
-    registrar_approved = xml_from_registrar.dup.sub(/<regapproval>Not Submitted<\/regapproval>/,
-                                                    '<regapproval>Approved</regapproval>')
+    expect(registrar_progress_list_el).to have_text('Approved by Registrar - Not done')
     now = Time.now.strftime('%m/%d/%Y %T')
-    registrar_approved.sub!(/<regactiondttm> <\/regactiondttm>/, "<regactiondttm>#{now}</regactiondttm>")
-    resp_body = simulate_registrar_post(registrar_approved)
+    resp_body = simulate_registrar_post(registrar_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
-    expect(registrar_progress_list_el).to have_content('Approved by Registrar - Done')
+    expect(registrar_progress_list_el).to have_text('Approved by Registrar - Done')
 
-    expect(page.find('#submissionApproved')).to have_content('Submission approved')
+    expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
 
-    # check Argo for object
-    sleep(3) # waiting for Fedora/Solr
-    visit "https://argo-stage.stanford.edu/view/#{prefixed_druid}"
-    expect(page).to have_content dissertation_title
+    # check Argo for object (wait for embargo info)
+    Timeout.timeout(100) do
+      loop do
+        visit "https://argo-stage.stanford.edu/view/#{prefixed_druid}"
+        break if page.has_text?('This item is embargoed until')
+      end
+    end
+    expect(page).to have_content(dissertation_title)
     apo_element = first('dd.blacklight-is_governed_by_ssim > a')
     expect(apo_element[:href]).to have_text('druid:bx911tp9024') # this is hardcoded in hydra_etd app
     status_element = first('dd.blacklight-status_ssi')
     expect(status_element).to have_text('v1 Registered')
-    # sleep(15) # waiting for fedora/Solr to get embargo info so it shows up in Argo
-    # page.refresh
-    # expect(page).to have_content('This item is embargoed until')
     click_link('etdSubmitWF')
     modal_element = page.find('#blacklight-modal')
     # expect first 4 steps to have completed
-    expect(modal_element).to have_content(/register-object completed/)
-    expect(modal_element).to have_content(/submit completed/)
-    expect(modal_element).to have_content(/reader-approval completed/)
-    expect(modal_element).to have_content(/registrar-approval completed/)
-    expect(modal_element).to have_content(/submit-marc waiting/)
+    expect(modal_element).to have_text(/register-object completed/)
+    expect(modal_element).to have_text(/submit completed/)
+    expect(modal_element).to have_text(/reader-approval completed/)
+    expect(modal_element).to have_text(/registrar-approval completed/)
+    expect(modal_element).to have_text(/submit-marc waiting/)
 
     # TODO: the next etd wf steps are run by cron talking to symphony:  submit-marc, check-marc, catalog-status
     #  NOTE: these three steps will be migrating to hydra_etd app in the nearish future,
