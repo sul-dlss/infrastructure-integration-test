@@ -51,15 +51,15 @@ RSpec.describe 'Create a new ETD', type: :feature do
     XML
   end
   let(:reader_approval_xml_from_registrar) do
-    reader_approved = initial_xml_from_registrar.dup.sub(/<readerapproval>Not Submitted<\/readerapproval>/,
+    reader_approved = initial_xml_from_registrar.dup.sub(%r{<readerapproval>Not Submitted</readerapproval>},
                                                          '<readerapproval>Approved</readerapproval>')
-    reader_approved.sub!(/<readeractiondttm> <\/readeractiondttm>/, "<readeractiondttm>#{now}</readeractiondttm>")
-    reader_approved.sub!(/<readercomment> <\/readercomment>/, '<readercomment>Spock approves</readercomment>')
+    reader_approved.sub!(%r{<readeractiondttm> </readeractiondttm>}, "<readeractiondttm>#{now}</readeractiondttm>")
+    reader_approved.sub!(%r{<readercomment> </readercomment>}, '<readercomment>Spock approves</readercomment>')
   end
   let(:registrar_approval_xml_from_registrar) do
-    registrar_approved = reader_approval_xml_from_registrar.dup.sub(/<regapproval>Not Submitted<\/regapproval>/,
+    registrar_approved = reader_approval_xml_from_registrar.dup.sub(%r{<regapproval>Not Submitted</regapproval>},
                                                                     '<regapproval>Approved</regapproval>')
-    registrar_approved.sub!(/<regactiondttm> <\/regactiondttm>/, "<regactiondttm>#{now}</regactiondttm>")
+    registrar_approved.sub!(%r{<regactiondttm> </regactiondttm>}, "<regactiondttm>#{now}</regactiondttm>")
   end
   let(:abstract_text) { 'this is the abstract text' }
   let(:dissertation_filename) { 'etd_dissertation.pdf' }
