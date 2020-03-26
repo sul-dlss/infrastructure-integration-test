@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require 'random_word'
-
 RSpec.describe 'Use Argo to create a collection', type: :feature do
   let(:collection_title) { RandomWord.phrases.next }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }

@@ -82,7 +82,13 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     expect(find('dd.blacklight-project_tag_ssim').text).to eq 'Hydrus'
 
     visit "https://argo-stage.stanford.edu/view/#{item_druid}"
-    expect(page).to have_content "Stanford, Jane Lathrop #{item_title}: 2000-01-01"
+    # page does not initially display title, loop until reindexed
+    Timeout.timeout(100) do
+      loop do
+        page.evaluate_script('window.location.reload()')
+        break if page.has_text?("Stanford, Jane Lathrop #{item_title}: 2000-01-01")
+      end
+    end
     expect(find('dd.blacklight-tag_ssim').text).to include 'Project : Hydrus'
     expect(find('dd.blacklight-project_tag_ssim').text).to eq 'Hydrus'
     expect(find('dd.blacklight-is_member_of_collection_ssim').text).to include collection_title
