@@ -2,3 +2,8 @@ capybara-*.html
 geckodriver*
 
 spec/examples.txt
+
+# create_audio_spec creates these
+tmp/manifest.csv
+tmp/media_manifest.csv
+downloads
