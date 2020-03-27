@@ -6,8 +6,10 @@ RSpec.describe 'Create a new ETD', type: :feature do
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { format('D%09d', Kernel.rand(1..999_999_999)) }
-  let(:dissertation_title) { 'Integration Testing of ETD Processing' }
-  let(:dissertation_author) { 'Kelly, DeForest' }
+  let(:random_title_word) { RandomWord.nouns.next }
+  let(:dissertation_title) { "Integration Testing of ETD Processing - #{random_title_word}" }
+  let(:random_author_word) { RandomWord.nouns.next }
+  let(:dissertation_author) { "Kelly, DeForest #{random_author_word}" }
   let(:initial_xml_from_registrar) do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
     <<-XML
