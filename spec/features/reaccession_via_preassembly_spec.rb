@@ -26,7 +26,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
 
     fill_in 'Project name', with: "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}"
     select 'Pre Assembly Run', from: 'Job type'
-    fill_in 'Bundle dir', with: '/dor/staging/integration-tests'
+    fill_in 'Bundle dir', with: '/dor/staging/integration-tests/reaccessioning-test'
     select 'Filename', from: 'Content metadata creation'
 
     click_button 'Submit'
