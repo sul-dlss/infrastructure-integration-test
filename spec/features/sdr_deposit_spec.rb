@@ -4,8 +4,8 @@ RSpec.describe 'SDR deposit', type: :feature do
   let(:start_url) { 'https://argo-stage.stanford.edu/' }
   let(:api_url) { 'https://sdr-api-stage.stanford.edu' }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
-  let(:apo) { 'druid:sc012gz0974' }
-  let(:collection) { 'druid:hv320hk4091' }
+  let(:apo) { 'druid:qc410yz8746' }
+  let(:collection) { 'druid:bc778pm9866' }
   let(:catkey) { '10065784' }
 
   before do

@@ -1,30 +1,17 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create a collection', type: :feature do
+RSpec.describe 'Use Argo to create a collection from APO page', type: :feature do
+  let(:integration_test_apo) { 'druid:qc410yz8746' }
   let(:collection_title) { RandomWord.phrases.next }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
-  let(:start_url) do
-    'https://argo-stage.stanford.edu/catalog?f%5BobjectType_ssim%5D%5B%5D=adminPolicy&f%5Bprocessing_status_text_ssi%5D%5B%5D=Accessioned'
-  end
+  let(:start_url) { "https://argo-stage.stanford.edu/view/#{integration_test_apo}" }
 
   before do
     authenticate!(start_url: start_url,
-                  expected_text: 'You searched for:')
+                  expected_text: 'integration-testing')
   end
 
-  scenario do
-    # Grab the first APO
-    within('#documents') do
-      first('h3 > a').click
-    end
-
-    # Make sure we're on an APO show view
-    expect(page).to have_content 'View in new window'
-    object_type_element = find('dd.blacklight-objecttype_ssim')
-    expect(object_type_element.text).to eq('adminPolicy')
-
-    apo_druid = find('dd.blacklight-id').text
-
+  it do
     click_link 'Create Collection'
 
     within('#blacklight-modal') do
@@ -44,9 +31,9 @@ RSpec.describe 'Use Argo to create a collection', type: :feature do
     expect(object_type_element.text).to eq('collection')
 
     apo_element = first('dd.blacklight-is_governed_by_ssim > a')
-    expect(apo_element[:href]).to end_with(apo_druid)
+    expect(apo_element[:href]).to end_with(integration_test_apo)
 
-    # Wait for workflows to finish
+    # Wait for object to be accessioned
     Timeout.timeout(100) do
       loop do
         page.evaluate_script('window.location.reload()')
