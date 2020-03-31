@@ -125,7 +125,7 @@ GEM
       i18n
     ruby-progressbar (1.10.1)
     rubyzip (2.3.0)
-    sdr-client (0.20.0)
+    sdr-client (0.21.0)
       activesupport
       cocina-models (~> 0.31.0)
       dry-monads
@@ -156,7 +156,7 @@ DEPENDENCIES
   rspec
   rubocop (~> 0.73.0)
   rubocop-rspec
-  sdr-client (~> 0.16)
+  sdr-client (~> 0.21)
   selenium-webdriver
 
 BUNDLED WITH
