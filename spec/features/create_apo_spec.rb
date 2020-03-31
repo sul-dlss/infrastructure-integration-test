@@ -26,7 +26,7 @@ RSpec.describe 'Use Argo to create an administrative policy object', type: :feat
     object_type_element = find('dd.blacklight-objecttype_ssim')
     expect(object_type_element.text).to eq('adminPolicy')
 
-    # Wait for workflows to finish
+    # Wait for object to be accessioned
     Timeout.timeout(100) do
       loop do
         page.evaluate_script('window.location.reload()')
