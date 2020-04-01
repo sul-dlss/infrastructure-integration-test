@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Create a new ETD', type: :feature do
-  now = '' # used in reader and registrar approved xml
+  now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
