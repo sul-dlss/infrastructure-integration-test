@@ -20,3 +20,9 @@ You must be on VPN in order to run this script.
 `bundle exec rspec`
 
 You will be prompted to put in your credentials and then to approve a duo push.
+
+## Add New Tests
+
+Please use the integration-testing APO and collection when feasible:
+- integration-testing APO: qc410yz8746
+- integration-testing collection: bc778pm9866
