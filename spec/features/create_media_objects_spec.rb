@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Create a new Audio object via Pre-assembly', type: :feature do
+RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
   audio_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
   let(:start_url) { 'https://argo-stage.stanford.edu/items/register' }
-  let(:preassembly_project_name) { "IntegrationTest-Audio-#{RandomWord.nouns.next}" }
-  let(:source_id_random_word) { "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}" }
-  let(:audio_source_id) { "audio-integration-test:#{source_id_random_word}" }
-  let(:object_label_random_words) { "#{RandomWord.adjs.next} #{RandomWord.nouns.next}" }
-  let(:object_label) { "audio integration test #{object_label_random_words}" }
+  let(:preassembly_bundle_dir) { '/dor/staging/integration-tests/media-test' }
+  let(:remote_manifest_location) { "preassembly@sul-preassembly-stage:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:local_media_manifest_location) { 'tmp/media_manifest.csv' }
-  let(:preassembly_bundle_dir) { '/dor/staging/integration-tests/audio-test' }
-  let(:remote_manifest_location) { "preassembly@sul-preassembly-stage:#{preassembly_bundle_dir}" }
+  let(:preassembly_project_name) { "IntegrationTest-media-#{RandomWord.nouns.next}" }
+  let(:audio_source_id_random_word) { "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}" }
+  let(:audio_source_id) { "audio-integration-test:#{audio_source_id_random_word}" }
+  let(:audio_label_random_words) { "#{RandomWord.adjs.next} #{RandomWord.nouns.next}" }
+  let(:audio_object_label) { "audio integration test #{audio_label_random_words}" }
   let(:remote_audio_files_location) { "#{remote_manifest_location}/audio-object" }
   let(:audio_files) do
     [
@@ -58,16 +58,16 @@ RSpec.describe 'Create a new Audio object via Pre-assembly', type: :feature do
     td_list[0].click
     fill_in '1_source_id', with: audio_source_id
     td_list[1].click
-    fill_in '1_label', with: object_label
+    fill_in '1_label', with: audio_object_label
     click_button('Lock')
     click_button('Register')
 
-    # wait for object to be registered
+    # wait for audio object to be registered
     Timeout.timeout(100) do
       loop do
-        fill_in 'q', with: "#{source_id_random_word} #{object_label_random_words}"
+        fill_in 'q', with: "#{audio_source_id_random_word} #{audio_label_random_words}"
         find_button('search').click
-        break if page.has_text?(object_label) && page.has_text?('v1 Registered')
+        break if page.has_text?(audio_object_label) && page.has_text?('v1 Registered')
       end
     end
     new_object_druid = find('dd.blacklight-id').text
@@ -125,16 +125,7 @@ RSpec.describe 'Create a new Audio object via Pre-assembly', type: :feature do
 
     visit "https://argo-stage.stanford.edu/view/#{audio_druid}"
 
-    # Wait for accessioningWF to finish
-    Timeout.timeout(100) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?('v1 Accessioned')
-      end
-    end
-
-    # ensure files are all there, organized into specified resources
-    expect(page).to have_selector('.blacklight-content_type_ssim', text: 'media')
+    # ensure files are all there, per pre-assembly, organized into specified resources
     expect(page).to have_selector('#document-contents-section > .resource-list > li.resource', text: 'Resource (1) audio')
     expect(page).to have_selector('#document-contents-section > .resource-list > li', text: 'Audio file 1')
     expect(page).to have_selector('#document-contents-section > .resource-list > li.resource', text: 'Resource (2) text')
@@ -142,5 +133,15 @@ RSpec.describe 'Create a new Audio object via Pre-assembly', type: :feature do
     audio_files.each do |af|
       expect(page).to have_text("#{audio_druid}_#{af}")
     end
+
+    # Wait for accessioningWF to finish
+    Timeout.timeout(100) do
+      loop do
+        page.evaluate_script('window.location.reload()')
+        break if page.has_text?('v1 Accessioned')
+      end
+    end
+    expect(page).to have_selector('.blacklight-content_type_ssim', text: 'media') # filled in by accessioning
+
   end
 end
