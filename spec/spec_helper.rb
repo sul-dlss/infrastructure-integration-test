@@ -9,7 +9,7 @@ require 'sdr-client'
 require 'selenium-webdriver'
 
 root = Pathname.new(File.expand_path('../', __dir__))
-Dir[root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+Dir[root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
 
 Capybara.run_server = false
 
