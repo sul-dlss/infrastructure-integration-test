@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Preassembly requires files to be included in an object to be available on a mounted drive
+# To this end, files have been placed on preassembly-stage at /dor/staging/integration-tests/reaccessioning-test
 RSpec.describe 'Reaccession from preassembly', type: :feature do
   # This druid is pre-loaded in /dor/staging/jcoyne-test
   let(:druid) { 'druid:vy293gd2473' }
