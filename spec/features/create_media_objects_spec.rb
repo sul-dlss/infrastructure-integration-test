@@ -9,7 +9,8 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
 
   let(:start_url) { 'https://argo-stage.stanford.edu/items/register' }
   let(:preassembly_bundle_dir) { '/dor/staging/integration-tests/media-test' }
-  let(:remote_manifest_location) { "preassembly@sul-preassembly-stage:#{preassembly_bundle_dir}" }
+  let(:preassembly_machine) { 'preassembly@sul-preassembly-stage.stanford.edu' }
+  let(:remote_manifest_location) { "#{preassembly_machine}:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:local_media_manifest_location) { 'tmp/media_manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-media-#{RandomWord.nouns.next}" }
@@ -129,7 +130,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
 
     new_audio_files_dir = "#{preassembly_bundle_dir}/#{audio_druid}"
     command = "\"cd #{new_audio_files_dir}; for FNAME in *; do mv \"\\$FNAME\" #{audio_druid}_\"\\$FNAME\"; done\""
-    `ssh preassembly@sul-preassembly-stage #{command}`
+    `ssh #{preassembly_machine} #{command}`
     unless $CHILD_STATUS.success?
       raise("unable to mv #{new_audio_files_dir}/* to #{audio_druid}_* - got #{$CHILD_STATUS.inspect}")
     end
@@ -142,7 +143,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
 
     new_video_files_dir = "#{preassembly_bundle_dir}/#{video_druid}"
     command = "\"cd #{new_video_files_dir}; for FNAME in *; do mv \"\\$FNAME\" #{video_druid}_\"\\$FNAME\"; done\""
-    `ssh preassembly@sul-preassembly-stage #{command}`
+    `ssh #{preassembly_machine} #{command}`
     unless $CHILD_STATUS.success?
       raise("unable to mv #{new_video_files_dir}/* to #{video_druid}_* - got #{$CHILD_STATUS.inspect}")
     end
