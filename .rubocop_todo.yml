@@ -38,12 +38,6 @@ Style/FormatStringToken:
   Exclude:
     - 'spec/features/create_etd_spec.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'spec/features/create_media_objects_spec.rb'
-    - 'spec/features/deposit_via_hydrus_spec.rb'
 
 # Offense count: 119
 # Cop supports --auto-correct.
