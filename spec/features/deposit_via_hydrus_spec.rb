@@ -86,7 +86,9 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     Timeout.timeout(100) do
       loop do
         page.evaluate_script('window.location.reload()')
-        break if page.has_text?("Stanford, Jane Lathrop #{item_title}: 2000-01-01")
+        if page.has_text?("Stanford, Jane Lathrop #{item_title}: 2000-01-01")
+          break
+        end
       end
     end
     expect(find('dd.blacklight-tag_ssim').text).to include 'Project : Hydrus'
