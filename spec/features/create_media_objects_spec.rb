@@ -104,9 +104,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
       loop do
         fill_in 'q', with: "#{audio_source_id_random_word} #{audio_label_random_words}"
         find_button('search').click
-        if page.has_text?(audio_object_label) && page.has_text?('v1 Registered')
-          break
-        end
+        break if page.has_text?(audio_object_label) && page.has_text?('v1 Registered')
       end
     end
     audio_druid = find('dd.blacklight-id').text.split(':').last
@@ -115,9 +113,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
       loop do
         fill_in 'q', with: "#{video_source_id_random_word} #{video_label_random_words}"
         find_button('search').click
-        if page.has_text?(video_object_label) && page.has_text?('v1 Registered')
-          break
-        end
+        break if page.has_text?(video_object_label) && page.has_text?('v1 Registered')
       end
     end
     video_druid = find('dd.blacklight-id').text.split(':').last
