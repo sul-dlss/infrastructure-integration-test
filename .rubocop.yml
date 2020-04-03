@@ -17,3 +17,13 @@ Capybara/FeatureMethods:
 RSpec/ExampleLength:
   Exclude:
     - 'spec/features/*.rb'
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Metrics/BlockLength:
+  ExcludedMethods:
+    - describe
+    - it
+    - context
+    - scenario
