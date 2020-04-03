@@ -1,58 +1,50 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo registration to create an object without any files', type: :feature do
+RSpec.describe 'Use Argo to create an object without any files', type: :feature do
   let(:random_word) { RandomWord.phrases.next }
   let(:object_label) { "Object Label for #{random_word}" }
-  let(:start_url) { 'https://argo-stage.stanford.edu/' }
+  let(:start_url) { 'https://argo-stage.stanford.edu/items/register' }
   let(:source_id) { "create-obj-no-files-test:#{random_word}" }
 
   before do
     authenticate!(start_url: start_url,
-                  expected_text: 'Welcome to Argo!')
+                  expected_text: 'Register DOR Items')
   end
 
   scenario do
-    click_link 'Register'
-    click_link 'Register Items'
-    expect(page).to have_content 'Register DOR Items'
-
     # fill in registration form
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
     click_button 'Add Row'
-
-    # Click Source ID and Label to add input
     td_list = all('td.invalidDisplay')
     td_list[0].click
     fill_in '1_source_id', with: source_id
-
     td_list[1].click
     fill_in '1_label', with: object_label
-
-    # Click on check-box to select row, then enter to save
-    find('#jqg_data_0').click
     find_field('1_label').send_keys :enter
 
-    find_button('Register').click
+    click_button('Register')
+    # wait for object to be registered
+    find('td[aria-describedby=data_status][title=success]')
+    object_druid = find('td[aria-describedby=data_druid]').text
+    # puts "object_druid: #{object_druid}" # useful for debugging
 
-    # Searches for source id
+    visit "https://argo-stage.stanford.edu/view/#{object_druid}"
+
+    # wait for registrationWF to finish
     Timeout.timeout(100) do
       loop do
-        fill_in 'q', with: source_id
-        find_button('search').click
+        page.evaluate_script('window.location.reload()')
         break if page.has_text?('v1 Registered')
       end
     end
 
-    object_druid = find('dd.blacklight-id').text
-    visit "https://argo-stage.stanford.edu/view/#{object_druid}"
-
-    # Opens Add workflow modal and starts accessionWF
+    # add accessionWF
     find_link('Add workflow').click
     page.select 'accessionWF', from: 'wf'
     find_button('Add').click
 
-    # Wait for object to be accessioned
+    # wait for accessioningWF to finish
     Timeout.timeout(100) do
       loop do
         page.evaluate_script('window.location.reload()')

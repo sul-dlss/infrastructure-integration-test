@@ -97,27 +97,17 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
     fill_in '2_source_id', with: video_source_id
     td_list[3].click
     fill_in '2_label', with: video_object_label
-    click_button('Lock')
+    find_field('2_label').send_keys :enter
     click_button('Register')
-
     # wait for objects to be registered
-    Timeout.timeout(100) do
-      loop do
-        fill_in 'q', with: "#{audio_source_id_random_word} #{audio_label_random_words}"
-        find_button('search').click
-        break if page.has_text?(audio_object_label) && page.has_text?('v1 Registered')
-      end
-    end
-    audio_druid = find('dd.blacklight-id').text.split(':').last
+    registered = find_all('td[aria-describedby=data_status][title=success]')
+    expect(registered.size).to eq 2
+    # get druids
+    druids = find_all('td[aria-describedby=data_druid]')
+    expect(druids.size).to eq 2
+    audio_druid = druids[0].text
+    video_druid = druids[1].text
     # puts "audio druid: #{audio_druid}" # useful for debugging
-    Timeout.timeout(100) do
-      loop do
-        fill_in 'q', with: "#{video_source_id_random_word} #{video_label_random_words}"
-        find_button('search').click
-        break if page.has_text?(video_object_label) && page.has_text?('v1 Registered')
-      end
-    end
-    video_druid = find('dd.blacklight-id').text.split(':').last
     # puts "video druid: #{video_druid}" # useful for debugging
 
     # Set up preassembly staging directories and files with druid in the name,
@@ -216,7 +206,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
       expect(page).to have_text("#{video_druid}_#{fname}")
     end
 
-    # Wait for accessioningWF to finish for video object
+    # wait for accessioningWF to finish for video object
     Timeout.timeout(100) do
       loop do
         page.evaluate_script('window.location.reload()')
@@ -225,7 +215,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
     end
     expect(page).to have_selector('.blacklight-content_type_ssim', text: 'media') # filled in by accessioning
 
-    # Wait for accessioningWF to finish for audio object
+    # wait for accessioningWF to finish for audio object
     visit "https://argo-stage.stanford.edu/view/#{audio_druid}"
     Timeout.timeout(100) do
       loop do

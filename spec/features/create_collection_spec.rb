@@ -33,7 +33,7 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     apo_element = first('dd.blacklight-is_governed_by_ssim > a')
     expect(apo_element[:href]).to end_with(integration_test_apo)
 
-    # Wait for object to be accessioned
+    # wait for accessioningWF to finish
     Timeout.timeout(100) do
       loop do
         page.evaluate_script('window.location.reload()')
