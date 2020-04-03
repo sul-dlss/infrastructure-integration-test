@@ -104,7 +104,9 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
       loop do
         fill_in 'q', with: "#{audio_source_id_random_word} #{audio_label_random_words}"
         find_button('search').click
-        break if page.has_text?(audio_object_label) && page.has_text?('v1 Registered')
+        if page.has_text?(audio_object_label) && page.has_text?('v1 Registered')
+          break
+        end
       end
     end
     audio_druid = find('dd.blacklight-id').text.split(':').last
@@ -113,7 +115,9 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
       loop do
         fill_in 'q', with: "#{video_source_id_random_word} #{video_label_random_words}"
         find_button('search').click
-        break if page.has_text?(video_object_label) && page.has_text?('v1 Registered')
+        if page.has_text?(video_object_label) && page.has_text?('v1 Registered')
+          break
+        end
       end
     end
     video_druid = find('dd.blacklight-id').text.split(':').last
@@ -123,31 +127,43 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
     #   per media preassembly requirements
     remote_audio_files_dir = "#{remote_manifest_location}/#{audio_druid}"
     `scp -r #{remote_audio_files_location} #{remote_audio_files_dir}`
-    raise("unable to scp #{remote_audio_files_location} to #{remote_audio_files_dir} - got #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{remote_audio_files_location} to #{remote_audio_files_dir} - got #{$CHILD_STATUS.inspect}")
+    end
 
     new_audio_files_dir = "#{preassembly_bundle_dir}/#{audio_druid}"
     command = "\"cd #{new_audio_files_dir}; for FNAME in *; do mv \"\\$FNAME\" #{audio_druid}_\"\\$FNAME\"; done\""
     `ssh preassembly@sul-preassembly-stage #{command}`
-    raise("unable to mv #{new_audio_files_dir}/* to #{audio_druid}_* - got #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    unless $CHILD_STATUS.success?
+      raise("unable to mv #{new_audio_files_dir}/* to #{audio_druid}_* - got #{$CHILD_STATUS.inspect}")
+    end
 
     remote_video_files_dir = "#{remote_manifest_location}/#{video_druid}"
     `scp -r #{remote_video_files_location} #{remote_video_files_dir}`
-    raise("unable to scp #{remote_video_files_location} to #{remote_video_files_dir} - got #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{remote_video_files_location} to #{remote_video_files_dir} - got #{$CHILD_STATUS.inspect}")
+    end
 
     new_video_files_dir = "#{preassembly_bundle_dir}/#{video_druid}"
     command = "\"cd #{new_video_files_dir}; for FNAME in *; do mv \"\\$FNAME\" #{video_druid}_\"\\$FNAME\"; done\""
     `ssh preassembly@sul-preassembly-stage #{command}`
-    raise("unable to mv #{new_video_files_dir}/* to #{video_druid}_* - got #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    unless $CHILD_STATUS.success?
+      raise("unable to mv #{new_video_files_dir}/* to #{video_druid}_* - got #{$CHILD_STATUS.inspect}")
+    end
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
     `scp #{local_manifest_location} #{remote_manifest_location}`
-    raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    end
 
     # create media_manifest.csv and scp it to preassembly staging directory
     File.write(local_media_manifest_location, media_manifest_csv)
     `scp #{local_media_manifest_location} #{remote_manifest_location}`
-    raise("unable to scp #{local_media_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{local_media_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    end
 
     visit 'https://sul-preassembly-stage.stanford.edu/'
     expect(page).to have_selector('h3', text: 'Complete the form below')
