@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Preassembly requires files to be included in an object to be available on a mounted drive
+# Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on preassembly-stage at /dor/staging/integration-tests/media-test
 # Note that media accessioning requires that directories be named for druids and filenames be prefixed by druid
 # Note further that there must be (and are) associated md5 files present for every file in the media_manifest.csv
@@ -166,7 +166,7 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
     expect(page).to have_content exp_str
 
     # go to job details page, download result
-    first('td  > a').click
+    first('td > a').click
     expect(page).to have_content preassembly_project_name
     # wait for preassembly background job to finish
     Timeout.timeout(100) do

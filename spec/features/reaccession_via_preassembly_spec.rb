@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Preassembly requires files to be included in an object to be available on a mounted drive
+# Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on preassembly-stage at /dor/staging/integration-tests/reaccessioning-test
 RSpec.describe 'Reaccession from preassembly', type: :feature do
   # This druid is pre-loaded in /dor/staging/jcoyne-test
@@ -36,7 +36,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
     expect(page).to have_content exp_str
 
-    first('td  > a').click # Click to the job details page
+    first('td > a').click # Click to the job details page
 
     # Wait for the background job to finish:
     Timeout.timeout(100) do
