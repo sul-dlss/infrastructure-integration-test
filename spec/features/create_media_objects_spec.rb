@@ -100,8 +100,12 @@ RSpec.describe 'Create new media objects via Pre-assembly', type: :feature do
     find_field('2_label').send_keys :enter
     click_button('Register')
     # wait for objects to be registered
-    registered = find_all('td[aria-describedby=data_status][title=success]')
-    expect(registered.size).to eq 2
+    Timeout.timeout(100) do
+      loop do
+        registered = find_all('td[aria-describedby=data_status][title=success]')
+        break if registered.size == 2
+      end
+    end
     # get druids
     druids = find_all('td[aria-describedby=data_druid]')
     expect(druids.size).to eq 2
