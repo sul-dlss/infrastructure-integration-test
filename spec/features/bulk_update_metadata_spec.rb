@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rubyXL'
 require 'rubyXL/convenience_methods/cell'
 
@@ -12,14 +13,17 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
   let(:title2) { RandomWord.phrases.next }
   let(:note) { RandomWord.phrases.next }
 
-
   before do
     filled_xlsx = RubyXL::Parser.parse(spec_location)
-    sheet_1 = filled_xlsx.worksheets[0]
-    sheet_1[2][3].change_contents title1
-    sheet_1[3][3].change_contents title2
+    sheet_one = filled_xlsx.worksheets[0]
+    sheet_one[2][3].change_contents title1
+    sheet_one[3][3].change_contents title2
     filled_xlsx.write(spec_location)
     authenticate!(start_url: start_url, expected_text: 'integration-testing')
+  end
+
+  after do
+    system "git checkout #{spec_location}"
   end
 
   scenario do
@@ -46,13 +50,22 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     end
 
     # Delete's job run
-    byebug
+    job_rows = page.find_all('div#bulk-upload-table > table > tbody > tr')
+    job_rows.drop(1).each do |row|
+      tds = row.find_all('td')
+      next unless tds[3].text == note
+
+      tds[9].find('form > button').click
+      click_link 'Delete'
+      break
+    end
+    expect(page).to have_content('Bulk job for APO (druid:qc410yz8746) deleted.')
 
     # Open druids and tests for titles
+    visit(druid1_url)
+    expect(page).to have_content title1
 
-  end
-
-  after do
-    system "git checkout #{spec_location}"
+    visit(druid2_url)
+    expect(page).to have_content title2
   end
 end
