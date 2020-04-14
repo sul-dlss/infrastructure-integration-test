@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
-require 'rubyXL'
-require 'rubyXL/convenience_methods/cell'
-
 RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
   let(:argo_home) { 'https://argo-stage.stanford.edu/' }
   let(:start_url) { "#{argo_home}view/druid:qc410yz8746" }
   let(:druid1_url) { "#{argo_home}view/fh141gk9610" }
   let(:druid2_url) { "#{argo_home}view/mw605wr9855" }
   let(:spec_location) { 'spec/fixtures/filled_template.xlsx' }
+  let(:temp_xlsx) { Tempfile.new(['filled', '.xlsx']) }
   let(:title1) { RandomWord.phrases.next }
   let(:title2) { RandomWord.phrases.next }
   let(:note) { RandomWord.phrases.next }
@@ -18,12 +16,8 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     sheet_one = filled_xlsx.worksheets[0]
     sheet_one[2][3].change_contents title1
     sheet_one[3][3].change_contents title2
-    filled_xlsx.write(spec_location)
+    filled_xlsx.write(temp_xlsx)
     authenticate!(start_url: start_url, expected_text: 'integration-testing')
-  end
-
-  after do
-    system "git checkout #{spec_location}"
   end
 
   scenario do
@@ -36,7 +30,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     expect(page).to have_content 'Submit MODS descriptive metadata for bulk processing'
 
     # Attaches spreadsheet fixture, selects spreadsheet input, and adds note
-    find('input#spreadsheet_file').attach_file('spec/fixtures/filled_template.xlsx')
+    find('input#spreadsheet_file').attach_file(temp_xlsx.path)
     find('input#filetypes_1').click
     find('input#note_text').fill_in(with: note)
     click_button 'Submit'
