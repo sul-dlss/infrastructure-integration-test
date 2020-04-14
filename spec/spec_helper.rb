@@ -5,6 +5,8 @@ require 'capybara/rspec'
 require 'io/console'
 require 'pry-byebug'
 require 'random_word'
+require 'rubyXL'
+require 'rubyXL/convenience_methods/cell'
 require 'sdr-client'
 require 'selenium-webdriver'
 
