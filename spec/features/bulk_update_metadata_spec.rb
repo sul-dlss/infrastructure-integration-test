@@ -3,24 +3,20 @@
 RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
   let(:argo_home) { 'https://argo-stage.stanford.edu/' }
   let(:start_url) { "#{argo_home}view/druid:qc410yz8746" }
-  let(:druid1_url) { "#{argo_home}view/fh141gk9610" }
-  let(:druid2_url) { "#{argo_home}view/mw605wr9855" }
-  let(:spec_location) { 'spec/fixtures/filled_template.xlsx' }
-  let(:temp_xlsx) { Tempfile.new(['filled', '.xlsx']) }
   let(:title1) { RandomWord.phrases.next }
   let(:title2) { RandomWord.phrases.next }
   let(:note) { RandomWord.phrases.next }
 
   before do
-    filled_xlsx = RubyXL::Parser.parse(spec_location)
-    sheet_one = filled_xlsx.worksheets[0]
-    sheet_one[2][3].change_contents title1
-    sheet_one[3][3].change_contents title2
-    filled_xlsx.write(temp_xlsx)
     authenticate!(start_url: start_url, expected_text: 'integration-testing')
   end
 
   scenario do
+    druid1 = create_druid
+    druid2 = create_druid
+    temp_xlsx = update_xlsx(druid1, title1, druid2, title2)
+
+    visit(start_url)
     # Opens the MODS bulk jobs
     click_link 'MODS bulk loads'
     expect(page).to have_content 'Datastream spreadsheet bulk upload for APO'
@@ -56,10 +52,10 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     expect(page).to have_content('Bulk job for APO (druid:qc410yz8746) deleted.')
 
     # Open druids and tests for titles
-    visit(druid1_url)
+    visit("#{argo_home}view/#{druid1}")
     expect(page).to have_content title1
 
-    visit(druid2_url)
+    visit("#{argo_home}view/#{druid2}")
     expect(page).to have_content title2
   end
 end
