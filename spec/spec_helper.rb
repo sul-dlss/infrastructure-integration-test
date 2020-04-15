@@ -6,7 +6,6 @@ require 'io/console'
 require 'pry-byebug'
 require 'random_word'
 require 'rubyXL'
-require 'rubyXL/convenience_methods/cell'
 require 'sdr-client'
 require 'selenium-webdriver'
 
@@ -40,6 +39,7 @@ Capybara.default_max_wait_time = 30
 RSpec.configure do |config|
   config.include DownloadHelpers
   config.include AuthenticationHelpers
+  config.include XlsxHelpers
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

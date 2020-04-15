@@ -13,6 +13,6 @@ gem 'random-word'
 gem 'rspec'
 gem 'rubocop', '~> 0.73.0'
 gem 'rubocop-rspec'
-gem 'rubyXL'
+gem 'rubyXL' # for updating Excel spreadsheets
 gem 'selenium-webdriver'
 gem 'sdr-client', '~> 0.21'
