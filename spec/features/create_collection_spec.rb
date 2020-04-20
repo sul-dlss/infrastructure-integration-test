@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to create a collection from APO page', type: :feature do
-  let(:integration_test_apo) { 'druid:qc410yz8746' }
   let(:collection_title) { RandomWord.phrases.next }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
-  let(:start_url) { "https://argo-stage.stanford.edu/view/#{integration_test_apo}" }
+  let(:start_url) { "https://argo-stage.stanford.edu/view/#{APO}" }
 
   before do
     authenticate!(start_url: start_url,
@@ -31,7 +30,7 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     expect(object_type_element.text).to eq('collection')
 
     apo_element = first('dd.blacklight-is_governed_by_ssim > a')
-    expect(apo_element[:href]).to end_with(integration_test_apo)
+    expect(apo_element[:href]).to end_with(APO)
 
     # wait for accessioningWF to finish
     Timeout.timeout(100) do
