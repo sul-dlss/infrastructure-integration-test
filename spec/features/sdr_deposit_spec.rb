@@ -4,7 +4,6 @@ RSpec.describe 'SDR deposit', type: :feature do
   let(:start_url) { 'https://argo-stage.stanford.edu/' }
   let(:api_url) { 'https://sdr-api-stage.stanford.edu' }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
-  let(:apo) { 'druid:qc410yz8746' }
   let(:collection) { 'druid:bc778pm9866' }
   let(:catkey) { '10065784' }
 
@@ -18,7 +17,7 @@ RSpec.describe 'SDR deposit', type: :feature do
 
     SdrClient::Credentials.write(find_field('Token').value)
 
-    result = SdrClient::Deposit.run(apo: apo,
+    result = SdrClient::Deposit.run(apo: APO,
                                     source_id: source_id,
                                     collection: collection,
                                     catkey: catkey,

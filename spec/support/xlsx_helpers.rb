@@ -6,7 +6,6 @@ module XlsxHelpers
   def create_druid
     source_id = "spreadsheet-druid:#{RandomWord.phrases.next}"
     object_label = "Object Label for #{RandomWord.phrases.next}"
-    visit('https://argo-stage.stanford.edu/items/register')
     # fill in registration form
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
