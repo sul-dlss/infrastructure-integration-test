@@ -2,9 +2,7 @@
 
 RSpec.describe 'SDR deposit', type: :feature do
   let(:start_url) { 'https://argo-stage.stanford.edu/' }
-  let(:api_url) { 'https://sdr-api-stage.stanford.edu' }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
-  let(:collection) { 'druid:bc778pm9866' }
   let(:catkey) { '10065784' }
 
   before do
@@ -12,16 +10,14 @@ RSpec.describe 'SDR deposit', type: :feature do
   end
 
   it 'deposits objects' do
-    visit "#{start_url}/settings/tokens"
-    click_button 'Generate new token'
-
-    SdrClient::Credentials.write(find_field('Token').value)
+    ensure_token
 
     result = SdrClient::Deposit.run(apo: APO,
                                     source_id: source_id,
-                                    collection: collection,
+                                    collection: COLLECTION,
                                     catkey: catkey,
-                                    url: api_url,
+                                    url: API_URL,
+                                    accession: true,
                                     files: ['Gemfile', 'Gemfile.lock'])
     object_druid = result[:druid]
 
