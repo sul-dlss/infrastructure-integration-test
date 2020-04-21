@@ -2,21 +2,22 @@
 
 RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
   let(:argo_home) { 'https://argo-stage.stanford.edu/' }
-  let(:start_url) { "#{argo_home}view/druid:qc410yz8746" }
+  let(:start_url) { "#{argo_home}items/register" }
   let(:title1) { RandomWord.phrases.next }
   let(:title2) { RandomWord.phrases.next }
   let(:note) { RandomWord.phrases.next }
 
   before do
-    authenticate!(start_url: start_url, expected_text: 'integration-testing')
+    authenticate!(start_url: start_url, expected_text: 'Register DOR Items')
   end
 
   scenario do
     druid1 = create_druid
+    visit start_url
     druid2 = create_druid
     temp_xlsx = update_xlsx(druid1, title1, druid2, title2)
 
-    visit(start_url)
+    visit("#{argo_home}view/#{APO}")
     # Opens the MODS bulk jobs
     click_link 'MODS bulk loads'
     expect(page).to have_content 'Datastream spreadsheet bulk upload for APO'
@@ -49,7 +50,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
       click_link 'Delete'
       break
     end
-    expect(page).to have_content('Bulk job for APO (druid:qc410yz8746) deleted.')
+    expect(page).to have_content "Bulk job for APO (#{APO}) deleted."
 
     # Open druids and tests for titles
     visit("#{argo_home}view/#{druid1}")
