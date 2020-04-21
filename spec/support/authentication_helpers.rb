@@ -36,4 +36,14 @@ module AuthenticationHelpers
       expect(page).to have_content expected_text
     end
   end
+
+  def ensure_token
+    @@token ||= begin
+      visit "#{BASE_URL}/settings/tokens"
+      click_button 'Generate new token'
+      find_field('Token').value.tap do |token|
+        SdrClient::Credentials.write(token)
+      end
+    end
+  end
 end
