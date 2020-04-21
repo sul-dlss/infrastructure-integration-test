@@ -11,14 +11,17 @@ RSpec.describe 'SDR deposit', type: :feature do
 
   it 'deposits objects' do
     ensure_token
-
     result = SdrClient::Deposit.run(apo: APO,
                                     source_id: source_id,
                                     collection: COLLECTION,
                                     catkey: catkey,
                                     url: API_URL,
                                     accession: true,
-                                    files: ['Gemfile', 'Gemfile.lock'])
+                                    files: ['Gemfile', 'Gemfile.lock'],
+                                    files_metadata: {
+                                      'Gemfile' => { 'preserve' => true },
+                                      'Gemfile.lock' => { 'preserve' => true }
+                                    })
     object_druid = result[:druid]
 
     visit "#{start_url}view/#{object_druid}?beta=true"
