@@ -128,7 +128,7 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
     rubyzip (2.3.0)
-    sdr-client (0.24.0)
+    sdr-client (0.25.0)
       activesupport
       cocina-models (~> 0.32.0)
       dry-monads
