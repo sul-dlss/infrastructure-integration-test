@@ -17,6 +17,7 @@ RSpec.describe 'SDR deposit', type: :feature do
                                     catkey: catkey,
                                     url: API_URL,
                                     accession: true,
+                                    access: 'world',
                                     files: ['Gemfile', 'Gemfile.lock'],
                                     files_metadata: {
                                       'Gemfile' => { 'preserve' => true },
