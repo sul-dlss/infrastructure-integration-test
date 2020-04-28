@@ -25,6 +25,10 @@ Host *.stanford.edu
     GSSAPIDelegateCredentials yes
 ```
 
+### ETD Credentials
+
+In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application. In order to do this, set the following two environment variables: `ETD_POST_USERNAME` and `ETD_POST_PASSWORD`. You can find the correct values for our staging environment in the shared_configs repository.
+
 ## Run Tests
 
 `bundle exec rspec`
