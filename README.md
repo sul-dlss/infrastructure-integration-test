@@ -27,7 +27,9 @@ Host *.stanford.edu
 
 ### ETD Credentials
 
-In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application. In order to do this, set the following two environment variables: `ETD_POST_USERNAME` and `ETD_POST_PASSWORD`. You can find the correct values for our staging environment in the shared_configs repository.
+In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application. In order to do this, copy `settings.yml` to `settings.local.yml` and set the ETD username and password to the [values expected in our staging environment](https://github.com/sul-dlss/shared_configs/blob/a90c636b968a1ede4886a61dadc799dd5d162fe1/config/settings/production.yml#L34-L35).
+
+**NOTE**: `settings.local.yml` is ignored by git and should remain so. Please do not accidentally add this file to version control.
 
 ## Run Tests
 
