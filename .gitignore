@@ -7,3 +7,6 @@ spec/examples.txt
 tmp/manifest.csv
 tmp/media_manifest.csv
 downloads
+
+# config to hold sensitive values
+settings.local.yml
