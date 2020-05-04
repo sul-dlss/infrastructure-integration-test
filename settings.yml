@@ -1,3 +1,9 @@
 etd:
   username: ~
   password: ~
+timeouts:
+  capybara: 30
+  workflow: 100
+sunet:
+  id: ~
+  password: ~

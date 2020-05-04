@@ -28,7 +28,7 @@ RSpec.describe 'SDR deposit', type: :feature do
     visit "#{start_url}view/#{object_druid}?beta=true"
 
     # Wait for indexing and workflows to finish
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_text?('v1 Accessioned')

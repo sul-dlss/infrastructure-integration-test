@@ -2,19 +2,8 @@
 
 module AuthenticationHelpers
   def authenticate!(start_url:, expected_text:)
-    @@username ||= begin
-      print 'SUNet ID: '
-      username = $stdin.gets
-      username.strip
-    end
-
-    @@password ||= begin
-      print 'Password: '
-      password = $stdin.noecho(&:gets)
-      # So the user knows we're off the password prompt
-      puts
-      password.strip
-    end
+    @@username ||= username_from_config_or_prompt
+    @@password ||= password_from_config_or_prompt
 
     # View the specified starting URL
     visit start_url
@@ -45,5 +34,25 @@ module AuthenticationHelpers
         SdrClient::Credentials.write(token)
       end
     end
+  end
+
+  private
+
+  def username_from_config_or_prompt
+    Settings.sunet.id || begin
+                           print 'SUNet ID: '
+                           username = $stdin.gets
+                           username.strip
+                         end
+  end
+
+  def password_from_config_or_prompt
+    Settings.sunet.password || begin
+                                 print 'Password: '
+                                 password = $stdin.noecho(&:gets)
+                                 # So the user knows we're off the password prompt
+                                 puts
+                                 password.strip
+                               end
   end
 end
