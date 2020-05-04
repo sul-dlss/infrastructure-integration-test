@@ -201,7 +201,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
 
     # check Argo for object (wait for embargo info)
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         visit "https://argo-stage.stanford.edu/view/#{prefixed_druid}"
         break if page.has_text?('This item is embargoed until')

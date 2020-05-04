@@ -23,7 +23,7 @@ RSpec.describe 'Use Argo to create an administrative policy object', type: :feat
     expect(object_type_element.text).to eq('adminPolicy')
 
     # wait for accessioningWF to finish
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_text?('v1 Accessioned')

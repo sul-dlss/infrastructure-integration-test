@@ -72,7 +72,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     visit "https://argo-stage.stanford.edu/view/#{collection_druid}"
     expect(page).to have_content('View in new window')
     # page does not initially display title, loop until reindexed
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_text?(collection_title)
@@ -83,7 +83,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
 
     visit "https://argo-stage.stanford.edu/view/#{item_druid}"
     # page does not initially display title, loop until reindexed
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_text?("Stanford, Jane Lathrop #{item_title}: 2000-01-01")

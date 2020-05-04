@@ -69,7 +69,7 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
     first('td > a').click
     expect(page).to have_content preassembly_project_name
     # wait for preassembly background job to finish
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_link?('Download')
@@ -90,7 +90,7 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
     expect(files.last.text). to eq 'File image.jp2 (image/jp2, 64.4 KB, publish/shelve)'
 
     # Wait for accessioningWF to finish
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_text?('v1 Accessioned')

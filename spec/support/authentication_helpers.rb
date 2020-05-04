@@ -2,13 +2,13 @@
 
 module AuthenticationHelpers
   def authenticate!(start_url:, expected_text:)
-    @@username ||= begin
+    @@username ||= Settings.sunet.id || begin
       print 'SUNet ID: '
       username = $stdin.gets
       username.strip
     end
 
-    @@password ||= begin
+    @@password ||= Settings.sunet.password || begin
       print 'Password: '
       password = $stdin.noecho(&:gets)
       # So the user knows we're off the password prompt

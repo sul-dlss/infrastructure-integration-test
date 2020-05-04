@@ -29,7 +29,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     click_button 'Submit'
 
     # Checks if job's note is on page
-    Timeout.timeout(100) do
+    Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         page.evaluate_script('window.location.reload()')
         break if page.has_text?(note)

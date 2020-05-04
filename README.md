@@ -25,6 +25,10 @@ Host *.stanford.edu
     GSSAPIDelegateCredentials yes
 ```
 
+### SUNet Credentials
+
+If you tire of typing in your SUNet credentials over and over, you may add them to `settings.local.yml` (ignored by git). Copy the dummy values from `settings.yml` to get started. Do *not* add this file to version control, if you do this!
+
 ### ETD Credentials
 
 In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application. In order to do this, copy `settings.yml` to `settings.local.yml` and set the ETD username and password to the [values expected in our staging environment](https://github.com/sul-dlss/shared_configs/blob/a90c636b968a1ede4886a61dadc799dd5d162fe1/config/settings/production.yml#L34-L35).
@@ -36,6 +40,10 @@ In order to run the tests in `spec/features/create_etd_spec.rb`, you will need t
 `bundle exec rspec`
 
 You will be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push.
+
+### Timeouts
+
+If you are experiencing timeout errors, you may tweak the default Capybara and workflow-related timeout values by changing `timeouts.capybara` and/or `timeouts.workflow` in `config/settings.yml`.
 
 ## Add New Tests
 
