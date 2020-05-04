@@ -109,7 +109,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
     #   and when uploading files, we have to attach the file to the right one of these elements
     #   This is probably an artifact of the js framework it uses, prototype
-    file_upload_elements = all('input[type=file]', visible: false)
+    file_upload_elements = all('input[type=file]', visible: :all)
 
     # upload dissertation PDF
     expect(page).not_to have_content(dissertation_filename)
@@ -127,7 +127,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     supplemental_upload_input = file_upload_elements[1]
     supplemental_upload_input.attach_file("spec/fixtures/#{supplemental_filename}")
     expect(page).to have_content(supplemental_filename)
-    expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: true)
+    expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :visible)
     expect(page).to have_a_complete_step('#pbSupplementalFilesUploaded')
 
     # indicate copyrighted material
@@ -141,7 +141,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     permissions_upload_input = file_upload_elements[11]
     permissions_upload_input.attach_file("spec/fixtures/#{permissions_filename}")
     expect(page).to have_content(permissions_filename)
-    expect(page).to have_selector('#pbPermissionFilesUploaded', visible: true)
+    expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :visible)
 
     expect(page).to have_a_complete_step('#pbPermissionFilesUploaded')
     expect(page).to have_a_complete_step('#pbPermissionsProvided')
