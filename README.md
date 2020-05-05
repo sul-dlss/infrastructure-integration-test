@@ -43,7 +43,7 @@ You will be prompted to type in your Stanford credentials and will then need to 
 
 ### Timeouts
 
-If you are experiencing timeout errors, you may tweak the default Capybara and workflow-related timeout values by changing `timeouts.capybara` and/or `timeouts.workflow` in `config/settings.yml`.
+If you are experiencing timeout errors, you may override the default Capybara and workflow-related timeout values by adding `timeouts.capybara` and/or `timeouts.workflow` in `config/settings.local.yml`.
 
 ## Add New Tests
 
