@@ -39,6 +39,10 @@ In order to run the tests in `spec/features/create_etd_spec.rb`, you will need t
 
 `bundle exec rspec`
 
+or to run with rubocop, use the default rake task:
+
+`bundle exec rake`
+
 You will be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push.
 
 ### Timeouts

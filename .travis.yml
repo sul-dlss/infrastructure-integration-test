@@ -3,5 +3,8 @@ cache: bundler
 before_install:
   - yes | gem update --system
 
+script:
+  - bundle exec rake rubocop
+
 notifications:
   email: false
