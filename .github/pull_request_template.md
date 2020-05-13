@@ -2,4 +2,9 @@
 
 
 
-## Was the usage documentation (e.g. README) updated?
+## How was this change tested?
+
+
+
+## Which documentation and/or configurations were updated?
+- README, settings.yml, wiki, ...
