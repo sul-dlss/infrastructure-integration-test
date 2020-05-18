@@ -14,8 +14,8 @@ Dir[root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
 
 Capybara.run_server = false
 
-browser_options = ::Selenium::WebDriver::Firefox::Options.new
-browser_options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
+firefox_options = ::Selenium::WebDriver::Firefox::Options.new
+firefox_options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
   profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
   # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
   profile['browser.download.folderList'] = 2
@@ -23,16 +23,21 @@ browser_options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |prof
 end
 
 Capybara.register_driver :my_firefox_driver do |app|
-  Capybara::Selenium::Driver.new(app, browser: :firefox, options: browser_options)
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: firefox_options)
 end
 
-# Capybara.register_driver :chrome do |app|
-#   Capybara::Selenium::Driver.new(app, browser: :chrome).tap do |driver|
-#     driver.browser.download_path = DownloadHelpers::PATH.to_s
-#   end
-# end
+Capybara.register_driver :my_chrome_driver do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome).tap do |driver|
+    driver.browser.download_path = DownloadHelpers::PATH.to_s
+  end
+end
 
-Capybara.default_driver = :my_firefox_driver
+Capybara.default_driver = case Settings.webdriver
+                          when 'chrome'
+                            :my_chrome_driver
+                          else
+                            :my_firefox_driver
+                          end
 Capybara.default_max_wait_time = Settings.timeouts.capybara
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
