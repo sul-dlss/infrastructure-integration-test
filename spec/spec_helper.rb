@@ -2,6 +2,7 @@
 
 require 'byebug'
 require 'capybara/rspec'
+require 'csv'
 require 'io/console'
 require 'pry-byebug'
 require 'random_word'
@@ -21,7 +22,7 @@ Capybara.register_driver :my_firefox_driver do |app|
     profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
     # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
     profile['browser.download.folderList'] = 2
-    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml'
+    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml;text/csv'
   end
   # NOTE: You might think the `--window-size` arg would work here. Not for me, it didn't.
   options.add_argument("--width=#{Settings.browser.width}")
