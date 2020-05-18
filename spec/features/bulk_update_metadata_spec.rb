@@ -22,8 +22,9 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     # Opens the Submit new file modal
     click_link 'Submit new file ...'
     expect(page).to have_content 'Submit MODS descriptive metadata for bulk processing'
+
     # Attaches spreadsheet fixture, selects spreadsheet input, and adds note
-    find('input#spreadsheet_file').attach_file(temp_xlsx.path)
+    attach_file('Select', temp_xlsx.path)
     choose 'Spreadsheet input; load into objects'
     fill_in '3. Note', with: note
     click_button 'Submit'
