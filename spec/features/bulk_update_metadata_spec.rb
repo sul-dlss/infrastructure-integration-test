@@ -24,8 +24,8 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     expect(page).to have_content 'Submit MODS descriptive metadata for bulk processing'
     # Attaches spreadsheet fixture, selects spreadsheet input, and adds note
     find('input#spreadsheet_file').attach_file(temp_xlsx.path)
-    find('input#filetypes_1').click
-    find('input#note_text').fill_in(with: note)
+    choose 'Spreadsheet input; load into objects'
+    fill_in '3. Note', with: note
     click_button 'Submit'
 
     # Checks if job's note is on page
