@@ -43,8 +43,11 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
       next unless tds[3].text == note
 
       tds[9].find('form > button').click
-      # Confirm delete in the popup
-      click_link 'Delete'
+      within('#confirm-delete-modal') do
+        # Confirm delete in the popup
+        click_link 'Delete'
+      end
+
       break
     end
     expect(page).to have_content "Bulk job for APO (#{APO}) deleted."
