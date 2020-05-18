@@ -8,6 +8,7 @@ require 'random_word'
 require 'rubyXL'
 require 'sdr-client'
 require 'selenium-webdriver'
+require 'webdrivers'
 
 root = Pathname.new(File.expand_path('../', __dir__))
 Dir[root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }

@@ -11,16 +11,12 @@ This script depends on having Firefox or Chrome downloaded.
 ### Using Firefox (default)
 
 1. `bundle install`
-1. Download geckodriver `curl -L --output geckodriver-v0.26.0-macos.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-macos.tar.gz`
-1. Uncompress it `tar -zxvf geckodriver-v0.26.0-macos.tar.gz`
-1. Put geckodriver on the path `export PATH=$PATH:$(pwd)`
+1. `rake webdrivers:geckodriver:update`
 
 ### Using Chrome
 
 1. `bundle install`
-1. Download chromedriver per these instructions: https://chromedriver.chromium.org/downloads
-1. Uncompress it: `unzip chromedriver_linux64.zip`
-1. Put chromedriver on the path: `export PATH=$PATH:$(pwd)`
+1. `rake webdrivers:chromedriver:update`
 1. Set `webdriver` to `chrome` in `settings.local.yml`
 
 ## Prerequisites

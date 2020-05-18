@@ -1,6 +1,4 @@
 capybara-*.html
-geckodriver*
-chromedriver*
 
 spec/examples.txt
 

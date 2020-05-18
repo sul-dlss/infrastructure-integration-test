@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'webdrivers'
+load 'webdrivers/Rakefile'
+
 require 'rubocop/rake_task'
 RuboCop::RakeTask.new
 
