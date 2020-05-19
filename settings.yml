@@ -7,7 +7,10 @@ timeouts:
   workflow: 100
 
 sunet:
-  id: ~
+  id: ~ # NOTE: *without* @stanford.edu!
   password: ~
 
-webdriver: firefox
+browser:
+  driver: firefox
+  height: 900
+  width: 1440

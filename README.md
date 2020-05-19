@@ -17,7 +17,11 @@ This script depends on having Firefox or Chrome downloaded.
 
 1. `bundle install`
 1. `rake webdrivers:chromedriver:update`
-1. Set `webdriver` to `chrome` in `settings.local.yml`
+1. Set `browser.driver` to `chrome` in `settings.local.yml`
+
+### Browser Window Size
+
+If you find you need to modify the default window size for either browser, copy the default settings for `browser.height` and `browser.width` from `settings.yml` to `settings.local.yml` and modify them to meet your needs.
 
 ## Prerequisites
 
