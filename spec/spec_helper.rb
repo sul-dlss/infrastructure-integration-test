@@ -15,25 +15,32 @@ Dir[root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
 
 Capybara.run_server = false
 
-firefox_options = ::Selenium::WebDriver::Firefox::Options.new
-firefox_options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
-  profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
-  # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
-  profile['browser.download.folderList'] = 2
-  profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml'
-end
-
 Capybara.register_driver :my_firefox_driver do |app|
-  Capybara::Selenium::Driver.new(app, browser: :firefox, options: firefox_options)
+  options = Selenium::WebDriver::Firefox::Options.new
+  options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
+    profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
+    # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
+    profile['browser.download.folderList'] = 2
+    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml'
+  end
+  # NOTE: You might think the `--window-size` arg would work here. Not for me, it didn't.
+  options.add_argument("--width=#{Settings.browser.width}")
+  options.add_argument("--height=#{Settings.browser.height}")
+
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
 end
 
 Capybara.register_driver :my_chrome_driver do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome).tap do |driver|
+  options = Selenium::WebDriver::Chrome::Options.new(
+    args: ["window-size=#{Settings.browser.width},#{Settings.browser.height}"]
+  )
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options).tap do |driver|
     driver.browser.download_path = DownloadHelpers::PATH.to_s
   end
 end
 
-Capybara.default_driver = case Settings.webdriver
+Capybara.default_driver = case Settings.browser.driver
                           when 'chrome'
                             :my_chrome_driver
                           else
