@@ -1,12 +1,5 @@
 ## Why was this change made?
 
+## Was README.md updated if necessary?
 
-
-## How was this change tested?
-
-
-
-## Which documentation and/or configurations were updated?
-
-
-
+## Are there any configuration changes for shared_configs?
