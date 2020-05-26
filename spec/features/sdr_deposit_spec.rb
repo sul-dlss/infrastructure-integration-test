@@ -11,7 +11,7 @@ RSpec.describe 'SDR deposit', type: :feature do
 
   it 'deposits objects' do
     ensure_token
-    result = SdrClient::Deposit.run(apo: APO,
+    job_id = SdrClient::Deposit.run(apo: APO,
                                     source_id: source_id,
                                     collection: COLLECTION,
                                     catkey: catkey,
@@ -23,7 +23,18 @@ RSpec.describe 'SDR deposit', type: :feature do
                                       'Gemfile' => { 'preserve' => true },
                                       'Gemfile.lock' => { 'preserve' => true }
                                     })
-    object_druid = result[:druid]
+
+    # Wait for the deposit to be complete.
+    object_druid = nil
+    Timeout.timeout(Settings.timeouts.workflow) do
+      loop do
+        result = SdrClient::BackgroundJobResults.show(url: API_URL, job_id: job_id)
+        raise result[:output][:errors] if result[:output][:errors].present?
+
+        object_druid = result[:output][:druid]
+        break if object_druid
+      end
+    end
 
     visit "#{start_url}view/#{object_druid}?beta=true"
 
