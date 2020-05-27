@@ -3,8 +3,8 @@ etd:
   password: ~
 
 timeouts:
-  capybara: 30
-  workflow: 100
+  capybara: 60
+  workflow: 200
 
 sunet:
   id: ~ # NOTE: *without* @stanford.edu!
