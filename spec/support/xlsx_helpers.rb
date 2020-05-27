@@ -8,12 +8,13 @@ module XlsxHelpers
     object_label = "Object Label for #{RandomWord.phrases.next}"
 
     ensure_token
-    result = SdrClient::Deposit.run(apo: APO,
-                                    source_id: source_id,
-                                    label: object_label,
-                                    collection: COLLECTION,
-                                    url: API_URL)
-    result[:druid]
+    deposit(
+      apo: APO,
+      source_id: source_id,
+      label: object_label,
+      collection: COLLECTION,
+      url: API_URL
+    )
   end
 
   def update_xlsx(druid1, title1, druid2, title2)
