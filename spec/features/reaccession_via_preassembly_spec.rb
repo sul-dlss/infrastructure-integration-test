@@ -38,13 +38,7 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
 
     first('td > a').click # Click to the job details page
 
-    # Wait for the background job to finish:
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_link?('Download')
-      end
-    end
+    reload_page_until_timeout!(text: 'Download', as_link: true)
 
     click_link 'Download'
 
@@ -55,12 +49,6 @@ RSpec.describe 'Reaccession from preassembly', type: :feature do
 
     visit "https://argo-stage.stanford.edu/view/druid:#{yaml[:pid]}"
 
-    # Wait for the accessioningWF to finish:
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?("v#{version + 1} Accessioned")
-      end
-    end
+    reload_page_until_timeout!(text: "v#{version + 1} Accessioned")
   end
 end

@@ -29,13 +29,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     fill_in '3. Note', with: note
     click_button 'Submit'
 
-    # Checks if job's note is on page
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?(note)
-      end
-    end
+    reload_page_until_timeout!(text: note)
 
     # Delete's job run
     job_rows = page.find_all('div#bulk-upload-table > table > tbody > tr')

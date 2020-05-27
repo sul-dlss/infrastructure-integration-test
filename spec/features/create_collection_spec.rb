@@ -33,11 +33,6 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     expect(apo_element[:href]).to end_with(APO)
 
     # wait for accessioningWF to finish
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?('v1 Accessioned')
-      end
-    end
+    reload_page_until_timeout!(text: 'v1 Accessioned')
   end
 end

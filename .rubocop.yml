@@ -27,3 +27,7 @@ Metrics/BlockLength:
     - it
     - context
     - scenario
+
+Style/IfInsideElse:
+  Exclude:
+    - 'spec/support/page_helpers.rb'

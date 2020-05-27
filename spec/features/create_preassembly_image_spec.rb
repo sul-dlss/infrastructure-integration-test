@@ -5,7 +5,7 @@
 RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
   druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
-  let(:start_url) { 'https://argo-stage.stanford.edu/items/register' }
+  let(:start_url) { 'https://argo-stage.stanford.edu/registration' }
   let(:preassembly_bundle_dir) { '/dor/staging/integration-tests/image-test' }
   let(:remote_manifest_location) { "preassembly@sul-preassembly-stage:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
@@ -68,13 +68,10 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
     # go to job details page, download result
     first('td > a').click
     expect(page).to have_content preassembly_project_name
+
     # wait for preassembly background job to finish
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_link?('Download')
-      end
-    end
+    reload_page_until_timeout!(text: 'Download', as_link: true)
+
     click_link 'Download'
     wait_for_download
     yaml = YAML.load_file(download)
@@ -90,12 +87,8 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
     expect(files.last.text). to eq 'File image.jp2 (image/jp2, 64.2 KB, publish/shelve)'
 
     # Wait for accessioningWF to finish
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?('v1 Accessioned')
-      end
-    end
+    reload_page_until_timeout!(text: 'v1 Accessioned')
+
     expect(page).to have_selector('.blacklight-content_type_ssim', text: 'image') # filled in by accessioning
   end
 end

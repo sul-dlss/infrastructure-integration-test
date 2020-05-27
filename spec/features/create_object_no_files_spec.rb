@@ -3,7 +3,7 @@
 RSpec.describe 'Use Argo to create an object without any files', type: :feature do
   let(:random_word) { RandomWord.phrases.next }
   let(:object_label) { "Object Label for #{random_word}" }
-  let(:start_url) { 'https://argo-stage.stanford.edu/items/register' }
+  let(:start_url) { 'https://argo-stage.stanford.edu/registration' }
   let(:source_id) { "create-obj-no-files-test:#{random_word}" }
 
   before do
@@ -32,12 +32,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     visit "https://argo-stage.stanford.edu/view/#{object_druid}"
 
     # wait for registrationWF to finish
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?('v1 Registered')
-      end
-    end
+    reload_page_until_timeout!(text: 'v1 Registered')
 
     # add accessionWF
     find_link('Add workflow').click
@@ -45,11 +40,6 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     find_button('Add').click
 
     # wait for accessioningWF to finish
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?('v1 Accessioned')
-      end
-    end
+    reload_page_until_timeout!(text: 'v1 Accessioned')
   end
 end

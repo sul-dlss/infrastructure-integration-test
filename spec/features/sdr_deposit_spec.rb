@@ -11,40 +11,23 @@ RSpec.describe 'SDR deposit', type: :feature do
 
   it 'deposits objects' do
     ensure_token
-    job_id = SdrClient::Deposit.run(apo: APO,
-                                    source_id: source_id,
-                                    collection: COLLECTION,
-                                    catkey: catkey,
-                                    url: API_URL,
-                                    accession: true,
-                                    access: 'world',
-                                    files: ['Gemfile', 'Gemfile.lock'],
-                                    files_metadata: {
-                                      'Gemfile' => { 'preserve' => true },
-                                      'Gemfile.lock' => { 'preserve' => true }
-                                    })
-
-    # Wait for the deposit to be complete.
-    object_druid = nil
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        result = SdrClient::BackgroundJobResults.show(url: API_URL, job_id: job_id)
-        raise result[:output][:errors] if result[:output][:errors].present?
-
-        object_druid = result[:output][:druid]
-        break if object_druid
-      end
-    end
+    object_druid = deposit(apo: APO,
+                           collection: COLLECTION,
+                           url: API_URL,
+                           source_id: source_id,
+                           catkey: catkey,
+                           accession: true,
+                           access: 'world',
+                           files: ['Gemfile', 'Gemfile.lock'],
+                           files_metadata: {
+                             'Gemfile' => { 'preserve' => true },
+                             'Gemfile.lock' => { 'preserve' => true }
+                           })
 
     visit "#{start_url}view/#{object_druid}?beta=true"
 
     # Wait for indexing and workflows to finish
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.evaluate_script('window.location.reload()')
-        break if page.has_text?('v1 Accessioned')
-      end
-    end
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     expect(page).to have_content 'The means to prosperity'
 
