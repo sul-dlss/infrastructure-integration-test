@@ -6,10 +6,18 @@ This script drives a browser to do inter-system integration testing of SDR in th
 
 ## Installation
 
-This script depends on having Firefox downloaded.
+This script depends on having Firefox or Chrome downloaded.
+
+### Using Firefox (default)
 
 1. `bundle install`
 1. `rake webdrivers:geckodriver:update`
+
+### Using Chrome
+
+1. `bundle install`
+1. `rake webdrivers:chromedriver:update`
+1. Set `browser.driver` to `chrome` in `settings.local.yml`
 
 ### Browser Window Size
 

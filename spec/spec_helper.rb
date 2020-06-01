@@ -30,7 +30,22 @@ Capybara.register_driver :my_firefox_driver do |app|
   Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
 end
 
-Capybara.default_driver = :my_firefox_driver
+Capybara.register_driver :my_chrome_driver do |app|
+  options = Selenium::WebDriver::Chrome::Options.new(
+    args: ["window-size=#{Settings.browser.width},#{Settings.browser.height}"]
+  )
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options).tap do |driver|
+    driver.browser.download_path = DownloadHelpers::PATH.to_s
+  end
+end
+
+Capybara.default_driver = case Settings.browser.driver
+                          when 'chrome'
+                            :my_chrome_driver
+                          else
+                            :my_firefox_driver
+                          end
 Capybara.default_max_wait_time = Settings.timeouts.capybara
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
