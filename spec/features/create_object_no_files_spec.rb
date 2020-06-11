@@ -36,7 +36,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
 
     # add accessionWF
     find_link('Add workflow').click
-    page.select 'accessionWF', from: 'wf'
+    select 'accessionWF', from: 'wf'
     find_button('Add').click
 
     # wait for accessioningWF to finish
