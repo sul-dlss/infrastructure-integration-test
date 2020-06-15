@@ -106,6 +106,12 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_content(abstract_text)
     expect(page).to have_a_complete_step('#pbAbstractProvided')
 
+    # confirm format has been reviewed
+    expect(page).not_to have_a_complete_step('#pbFormatReviewed')
+    expect(page).to have_selector('#pbFormatReviewed', text: 'Format reviewed - Not done')
+    check('confirmFormatReview')
+    expect(page).to have_a_complete_step('#pbFormatReviewed')
+
     # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
     #   and when uploading files, we have to attach the file to the right one of these elements
     #   This is probably an artifact of the js framework it uses, prototype
@@ -172,6 +178,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # page has reloaded with submit to registrar and these now will show as updated
     expect(page).to have_selector('#pbCitationDetails', text: 'Citation details verified - Done')
     expect(page).to have_selector('#pbAbstractProvided', text: 'Abstract provided - Done')
+    expect(page).to have_selector('#pbFormatReviewed', text: 'Format reviewed - Done')
     expect(page).to have_selector('#pbDissertationUploaded', text: 'Dissertation uploaded - Done')
     expect(page).to have_selector('#pbSupplementalFilesUploaded', text: 'Supplemental files uploaded - Done')
     expect(page).to have_selector('#pbPermissionsProvided', text: 'Copyrighted material checked - Done')
@@ -179,23 +186,23 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_selector('#pbRightsSelected', text: 'License terms applied - Done')
 
     # fake reader approval
-    reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
+    reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
     expect(reader_progress_list_el).to have_text('Verified by Final Reader - Not done')
     now = Time.now.strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(reader_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
-    reader_progress_list_el = all('#progressBoxContent > ol > li')[8]
+    reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
     expect(reader_progress_list_el).to have_text('Verified by Final Reader - Done')
 
     # fake registrar approval
-    registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
+    registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
     expect(registrar_progress_list_el).to have_text('Approved by Registrar - Not done')
     now = Time.now.strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(registrar_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
-    registrar_progress_list_el = all('#progressBoxContent > ol > li')[9]
+    registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
     expect(registrar_progress_list_el).to have_text('Approved by Registrar - Done')
 
     expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
