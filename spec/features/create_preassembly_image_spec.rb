@@ -2,7 +2,7 @@
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on preassembly-stage at /dor/staging/integration-tests/image-test
-RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
+RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature do
   druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
   let(:start_url) { 'https://argo-stage.stanford.edu/registration' }
@@ -24,6 +24,10 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
   before do
     authenticate!(start_url: start_url,
                   expected_text: 'Register DOR Items')
+  end
+
+  after do
+    clear_downloads
   end
 
   it do
@@ -77,7 +81,7 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
 
-    # ensure audio object files are all there, per pre-assembly, organized into specified resources
+    # ensure Image files are all there, per pre-assembly, organized into specified resources
     visit "https://argo-stage.stanford.edu/view/#{druid}"
     expect(page).to have_selector('#document-contents-section > .resource-list > li.resource', text: 'Resource (1) image')
     expect(page).to have_selector('#document-contents-section > .resource-list > li', text: 'Image 1')
@@ -90,5 +94,41 @@ RSpec.describe 'Create new image object via Pre-assembly', type: :feature do
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
     expect(page).to have_selector('.blacklight-content_type_ssim', text: 'image') # filled in by accessioning
+
+    ### Re-accession
+
+    # Get the original version from the page
+    elem = find('dd.blacklight-status_ssi', text: 'Accessioned')
+    md = /^v(\d+) Accessioned/.match(elem.text)
+    version = md[1].to_i
+
+    visit 'https://sul-preassembly-stage.stanford.edu/'
+
+    expect(page).to have_content 'Complete the form below'
+
+    fill_in 'Project name', with: "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}"
+    select 'Pre Assembly Run', from: 'Job type'
+    fill_in 'Bundle dir', with: preassembly_bundle_dir
+    select 'Filename', from: 'Content metadata creation'
+
+    click_button 'Submit'
+
+    exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+    expect(page).to have_content exp_str
+
+    first('td > a').click # Click to the job details page
+
+    reload_page_until_timeout!(text: 'Download', as_link: true)
+
+    click_link 'Download'
+
+    wait_for_download
+
+    yaml = YAML.load_file(download)
+    expect(yaml[:status]).to eq 'success'
+
+    visit "https://argo-stage.stanford.edu/view/druid:#{yaml[:pid]}"
+
+    reload_page_until_timeout!(text: "v#{version + 1} Accessioned")
   end
 end
