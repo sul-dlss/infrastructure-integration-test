@@ -4,9 +4,7 @@ module PageHelpers
   def reload_page_until_timeout!(text:, as_link: false)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
-        # NOTE: Using passing `true` to this JavaScript function should force
-        #       the browser to bypass its cache.
-        page.evaluate_script('location.reload(true);')
+        page.evaluate_script('location.reload();')
 
         # NOTE: This could have been a ternary but I was concerned about its
         #       readability.
