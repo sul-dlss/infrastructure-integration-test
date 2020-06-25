@@ -24,10 +24,12 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
     click_link 'Bulk Update (synchronous)'
 
     expect(page).to have_content 'Bulk update operations'
-    find('span#paste-druids-button').click
+    click_button 'Paste a druid list'
+
     expect(page).to have_content 'Bulk actions will be performed on this list of druids'
     find('textarea#pids').fill_in(with: bulk_druids.join("\n"))
     click_button 'Tags'
+
     expect(page).to have_content 'Change tags'
     find('textarea#tags').fill_in(with: druids_with_tags)
     find('span#set_tags').click
