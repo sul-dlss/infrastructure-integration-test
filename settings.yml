@@ -5,6 +5,7 @@ etd:
 timeouts:
   capybara: 60
   workflow: 200
+  bulk_action: 200
 
 sunet:
   id: ~ # NOTE: *without* @stanford.edu!

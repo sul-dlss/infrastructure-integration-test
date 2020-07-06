@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require 'random_word'
-
 RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
   let(:collection_title) { RandomWord.nouns.next }
   let(:item_title) { RandomWord.nouns.next }
