@@ -5,7 +5,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
   let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
-  let(:dissertation_id) { format('D%09d', Kernel.rand(1..999_999_999)) }
+  let(:dissertation_id) { format('%10d', Kernel.rand(1..9_999_999_999)) }
   let(:random_title_word) { RandomWord.nouns.next }
   let(:dissertation_title) { "Integration Testing of ETD Processing - #{random_title_word}" }
   let(:random_author_word) { RandomWord.nouns.next }
@@ -31,18 +31,18 @@ RSpec.describe 'Create a new ETD', type: :feature do
         <sunetid>dedwards</sunetid>
         <name>Edwards, Doris</name>
         <type>int</type>
-        <univid>05358772</univid>
+        <univid>12345</univid>
         <readerrole>Doct Dissert Advisor (AC)</readerrole>
         <finalreader>Yes</finalreader>
       </reader>
       <reader type="int">
-        <univid>05221995</univid>
+        <univid>54321</univid>
         <sunetid>rkatila</sunetid>
         <name>Katila, Riitta</name>
         <readerrole>Doct Dissert Reader (AC)</readerrole>
         <finalreader>No</finalreader>
       </reader>
-      <univid>05543256</univid>
+      <univid>33333</univid>
       <sunetid>dkelley</sunetid>
       <name>#{dissertation_author}</name>
       <career code="MED">Medicine</career>
@@ -221,16 +221,18 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(status_element).to have_text('v1 Registered')
     click_link('etdSubmitWF')
     modal_element = find('#blacklight-modal')
-    # expect first 5 steps to have completed
+    # expect first 4 steps to have completed
     expect(modal_element).to have_text(/register-object completed/)
     expect(modal_element).to have_text(/submit completed/)
     expect(modal_element).to have_text(/reader-approval completed/)
     expect(modal_element).to have_text(/registrar-approval completed/)
-    expect(modal_element).to have_text(/submit-marc completed/)
-    expect(modal_element).to have_text(/check-marc waiting/)
+    # TODO: submit-marc is run by cron on hydra_etd app
+    expect(modal_element).to have_text(/submit-marc waiting/)
 
     # TODO: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
     # TODO: click over to argo and make sure accessionWF is running
+    # TODO: check identityMetadata, rightsMetadata and contentMetadata in argo?
+    #    these are updated in otherMetadata WF step, right before start-accession
     # TODO: make sure accessioning completes cleanly (at least up to preservation robots steps)
   end
 end
