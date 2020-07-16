@@ -221,13 +221,13 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(status_element).to have_text('v1 Registered')
     click_link('etdSubmitWF')
     modal_element = find('#blacklight-modal')
-    # expect first 4 steps to have completed
+    # expect first 5 steps to have completed
     expect(modal_element).to have_text(/register-object completed/)
     expect(modal_element).to have_text(/submit completed/)
     expect(modal_element).to have_text(/reader-approval completed/)
     expect(modal_element).to have_text(/registrar-approval completed/)
-    # TODO: submit-marc is run by cron on hydra_etd app
-    expect(modal_element).to have_text(/submit-marc waiting/)
+    expect(modal_element).to have_text(/submit-marc completed/)
+    expect(modal_element).to have_text(/check-marc waiting/)
 
     # TODO: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
     # TODO: click over to argo and make sure accessionWF is running
