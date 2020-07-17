@@ -84,7 +84,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     visit etd_submit_url
 
     # verify citation details
-    expect(page).to have_selector('#pbCitationDetails', text: 'Citation details verified - Not done')
+    expect(page).to have_selector('#pbCitationDetails', text: "Citation details verified\n- Not done")
     expect(page).not_to have_a_complete_step('#pbCitationDetails')
     expect(page).to have_content(dissertation_id)
     expect(page).to have_content(dissertation_author)
@@ -93,7 +93,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_a_complete_step('#pbCitationDetails')
 
     # provide abstract
-    expect(page).to have_selector('#pbAbstractProvided', text: 'Abstract provided - Not done')
+    expect(page).to have_selector('#pbAbstractProvided', text: "Abstract provided\n- Not done")
     expect(page).not_to have_a_complete_step('#pbAbstractProvided')
     within '#submissionSteps' do
       step_list = all('div.step')
@@ -108,7 +108,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
     # confirm format has been reviewed
     expect(page).not_to have_a_complete_step('#pbFormatReviewed')
-    expect(page).to have_selector('#pbFormatReviewed', text: 'Format reviewed - Not done')
+    expect(page).to have_selector('#pbFormatReviewed', text: "Format reviewed\n- Not done")
     check('confirmFormatReview')
     expect(page).to have_a_complete_step('#pbFormatReviewed')
 
@@ -119,7 +119,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
     # upload dissertation PDF
     expect(page).not_to have_content(dissertation_filename)
-    expect(page).to have_selector('#pbDissertationUploaded', text: 'Dissertation uploaded - Not done')
+    expect(page).to have_selector('#pbDissertationUploaded', text: "Dissertation uploaded\n- Not done")
     expect(page).not_to have_a_complete_step('#pbDissertationUploaded')
     dissertation_pdf_upload_input = file_upload_elements.first
     dissertation_pdf_upload_input.attach_file("spec/fixtures/#{dissertation_filename}")
@@ -137,7 +137,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_a_complete_step('#pbSupplementalFilesUploaded')
 
     # indicate copyrighted material
-    expect(page).to have_selector('#pbPermissionsProvided', text: 'Copyrighted material checked - Not done')
+    expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
     expect(find('#pbPermissionsProvided')['style']).to eq '' # rights not yet selected
     select 'does include', from: 'selectPermissionsOptions'
 
@@ -153,7 +153,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_a_complete_step('#pbPermissionsProvided')
 
     # apply licenses
-    expect(page).to have_selector('#pbRightsSelected', text: 'License terms applied - Not done')
+    expect(page).to have_selector('#pbRightsSelected', text: "License terms applied\n- Not done")
     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
     click_link 'View Stanford University publication license'
     check 'I have read and agree to the terms of the Stanford University license.'
@@ -176,34 +176,34 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_selector('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
 
     # page has reloaded with submit to registrar and these now will show as updated
-    expect(page).to have_selector('#pbCitationDetails', text: 'Citation details verified - Done')
-    expect(page).to have_selector('#pbAbstractProvided', text: 'Abstract provided - Done')
-    expect(page).to have_selector('#pbFormatReviewed', text: 'Format reviewed - Done')
-    expect(page).to have_selector('#pbDissertationUploaded', text: 'Dissertation uploaded - Done')
-    expect(page).to have_selector('#pbSupplementalFilesUploaded', text: 'Supplemental files uploaded - Done')
-    expect(page).to have_selector('#pbPermissionsProvided', text: 'Copyrighted material checked - Done')
-    expect(page).to have_selector('#pbPermissionFilesUploaded', text: 'Permission files uploaded - Done')
-    expect(page).to have_selector('#pbRightsSelected', text: 'License terms applied - Done')
+    expect(page).to have_selector('#pbCitationDetails', text: "Citation details verified\n- Done")
+    expect(page).to have_selector('#pbAbstractProvided', text: "Abstract provided\n- Done")
+    expect(page).to have_selector('#pbFormatReviewed', text: "Format reviewed\n- Done")
+    expect(page).to have_selector('#pbDissertationUploaded', text: "Dissertation uploaded\n- Done")
+    expect(page).to have_selector('#pbSupplementalFilesUploaded', text: "Supplemental files uploaded\n- Done")
+    expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Done")
+    expect(page).to have_selector('#pbPermissionFilesUploaded', text: "Permission files uploaded\n- Done")
+    expect(page).to have_selector('#pbRightsSelected', text: "License terms applied\n- Done")
 
     # fake reader approval
     reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
-    expect(reader_progress_list_el).to have_text('Verified by Final Reader - Not done')
+    expect(reader_progress_list_el).to have_text("Verified by Final Reader\n- Not done")
     now = Time.now.strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(reader_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
     reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
-    expect(reader_progress_list_el).to have_text('Verified by Final Reader - Done')
+    expect(reader_progress_list_el).to have_text("Verified by Final Reader\n- Done")
 
     # fake registrar approval
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
-    expect(registrar_progress_list_el).to have_text('Approved by Registrar - Not done')
+    expect(registrar_progress_list_el).to have_text("Approved by Registrar\n- Not done")
     now = Time.now.strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(registrar_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
-    expect(registrar_progress_list_el).to have_text('Approved by Registrar - Done')
+    expect(registrar_progress_list_el).to have_text("Approved by Registrar\n- Done")
 
     expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
 
