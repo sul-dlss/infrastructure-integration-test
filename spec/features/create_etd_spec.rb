@@ -5,6 +5,7 @@ require 'dor/workflow/client'
 
 RSpec.describe 'Create a new ETD', type: :feature do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
+  prefixed_druid = ''
 
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { format('%10d', Kernel.rand(1..9_999_999_999)) }
@@ -70,6 +71,62 @@ RSpec.describe 'Create a new ETD', type: :feature do
   let(:dissertation_filename) { 'etd_dissertation.pdf' }
   let(:supplemental_filename) { 'etd_supplemental.txt' }
   let(:permissions_filename) { 'etd_permissions.pdf' }
+  let(:bare_druid) { prefixed_druid.split('druid:').last }
+  let(:generated_content_metadata) do
+    <<-XML
+      <contentMetadata type="file" objectId="#{prefixed_druid}">
+        <resource id="ab123cd4567_1" type="main-original">
+          <attr name="label">Body of dissertation (as submitted)</attr>
+          <file id="#{dissertation_filename}" mimetype="application/pdf" size="1634" shelve="yes" publish="no" preserve="yes">
+            <checksum type="md5">f7169731f4c163f98eed35e1be12a209</checksum>
+            <checksum type="sha1">c9fbb6eaf4549da5a798e50eeb376b167042db9a</checksum>
+          </file>
+        </resource>
+        <resource id="#{bare_druid}_2" type="main-augmented" objectId="">
+          <attr name="label">Body of dissertation</attr>
+          <file id="#{dissertation_filename}-augmented.pdf" mimetype="application/pdf" size="8336" shelve="yes" publish="yes" preserve="yes">
+            <checksum type="md5">56ffb383d08abe5e3a99494a1ef72afa</checksum>
+            <checksum type="sha1">8a2232b27aa5347fb86ef9878a4997008699a2ff</checksum>
+          </file>
+        </resource>
+        <resource id="#{bare_druid}_3" type="supplement" sequence="1">
+          <file id="#{supplemental_filename}" mimetype="text/plain" size="59" shelve="yes" publish="yes" preserve="yes">
+            <checksum type="md5">06b92ab61a355d6efb95629b18801164</checksum>
+            <checksum type="sha1">2ae1de5a7386824fd2ca47e04a6733dd249ca312</checksum>
+          </file>
+        </resource>
+        <resource id="#{bare_druid}_4" type="permissions">
+          <file id="#{permissions_filename}" mimetype="application/pdf" size="1634" shelve="yes" publish="no" preserve="yes">
+            <checksum type="md5">f7169731f4c163f98eed35e1be12a209</checksum>
+            <checksum type="sha1">c9fbb6eaf4549da5a798e50eeb376b167042db9a</checksum>
+          </file>
+        </resource>
+      </contentMetadata>
+    XML
+  end
+  let(:generated_rights_metadata) do
+    <<-XML
+      <rightsMetadata objectId="#{prefixed_druid}">
+        <copyright>
+          <human>(c) Copyright 2016 by Midge Klump</human>
+        </copyright>
+        <access type="discover">
+          <machine>
+            <world/>
+          </machine>
+        </access>
+        <access type="read">
+          <machine>
+            <group>stanford</group>
+          </machine>
+        </access>
+        <use>
+          <machine type="creativeCommons">none</machine>
+          <human type="creativeCommons"></human>
+        </use>
+      </rightsMetadata>
+    XML
+  end
 
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
   scenario do
@@ -225,26 +282,39 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(modal_element).to have_text(/reader-approval completed/)
     expect(modal_element).to have_text(/registrar-approval completed/)
     expect(modal_element).to have_text(/submit-marc completed/)
+    expect(modal_element).to have_text(/check-marc waiting/)
+    click_button('Cancel')
 
     # we simulate the check-marc etdSubmitWF step because its pre-conditions are:
     # 1. etd cron job has taken MARC stub record from submit-marc step and combined it into the daily file
     # 2. Symphony (ILS) cron job has loaded the daily file of stubbed MARC records with ours in it
-    expect(modal_element).to have_text(/check-marc waiting/)
     simulate_check_marc(prefixed_druid)
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        page.click_button('Cancel')
-        click_link('etdSubmitWF')
-        modal_element = find('#blacklight-modal')
-        break if modal_element.has_text?(/check-marc completed/, wait: 1)
-      end
-    end
+    # Timeout.timeout(Settings.timeouts.workflow) do
+    #   loop do
+    #     page.click_button('Cancel')
+    #     click_link('etdSubmitWF')
+    #     modal_element = find('#blacklight-modal')
+    #     break if modal_element.has_text?(/check-marc completed/, wait: 1)
+    #   end
+    # end
 
-    # TODO: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
-    # TODO: click over to argo and make sure accessionWF is running
-    # TODO: check identityMetadata, rightsMetadata and contentMetadata in argo?
-    #    these are updated in otherMetadata WF step, right before start-accession
-    # TODO: make sure accessioning completes cleanly (at least up to preservation robots steps)
+    # we simulate the remaining etdSubmitWF steps because they all require external
+    #  circumstances to this app:
+    # - catalog-status: requires cataloger to update Marc record in symphony, and cron job to notice
+    # - other-metadata: triggered as a background job as the last part of catalog-status code in ETD app
+    # - start-accession: triggered as a background job as the last part of otherMetadataJob in ETD app
+    # since we cannot update the WF directly, we will ignore it
+    simulate_other_metadata(prefixed_druid)
+
+    # The ETD app programmatically adds the accessionWF; we add it manually
+    find_link('Add workflow').click
+    select 'accessionWF', from: 'wf'
+    find_button('Add').click
+
+    # wait for accessioningWF to finish
+    reload_page_until_timeout!(text: 'v1 Accessioned')
+
+    # TODO: check descMetadata, identityMetadata?
   end
 end
 
@@ -263,7 +333,7 @@ def simulate_registrar_post(xml)
   raise "Error POSTing ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
 end
 
-# Execute the code from the check-marc robot in the ETD app, which is run by a cron job.
+# Execute code from the check-marc robot in the ETD app, which is run by a cron job.
 # EXCEPT: we are hard-coding the catkey, since no cataloging will take place for this test
 # See https://github.com/sul-dlss/hydra_etd/blob/master/app/services/check_marc.rb
 def simulate_check_marc(druid)
@@ -275,7 +345,31 @@ def simulate_check_marc(druid)
   dro_as_hash[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: catkey }]
   object_client.update(params: dro_as_hash)
   # Set the etdSubmitWF step to completed, as the robot would
-  workflow_step_completed('check-marc', druid)
+#  workflow_step_completed('check-marc', druid)
+end
+
+# Execute code for the otherMetadataJob - a background job that
+#   is kicked off by the code for the previous catalog-status etdSubmitWF step, and that ends
+#   by kicking off a background to run the start-accession step in etdSubmitWF
+# Execute the code here for the other-metadata etdSubmitWF step in the ETD app.
+# The ETD app runs other-metadata as a background job; we must rMetadataJob steps we are forcing otherMetadataJob to run, as it is kicked off as a background job as the last
+#  thing in catalog-status
+def simulate_other_metadata(druid)
+  object_client = dor_services_object_client(druid)
+  object_client.refresh_metadata
+  object_client.metadata.legacy_update(
+    content: {
+      updated: Time.now,
+      content: generated_content_metadata
+    },
+    rights: {
+      updated: Time.now,
+      content: generated_rights_metadata
+    }
+  )
+  object_client.administrative_tags.create(tags: ['ETD : Dissertation'])
+  # workflow_step_completed('other-metadata', druid)
+  # simulate_start_accession
 end
 
 def dor_services_object_client(druid)
@@ -288,13 +382,16 @@ end
 
 # Set an etdSubmitWF step to completed (as a robot would)
 def workflow_step_completed(step, druid)
+  # FIXME:  it hangs here because no TCP access allowed.
+  # See section in README and also see https://github.com/sul-dlss/operations-tasks/issues/2301
+  workflow_client.update_status(druid: druid,
+                                workflow: 'etdSubmitWF',
+                                process: step,
+                                status: 'completed')
+end
+
+def workflow_client
   @workflow_client ||= Dor::Workflow::Client.new(url: Settings.workflow.url,
                                                  logger: Settings.workflow.logfile,
                                                  timeout: Settings.timeouts.workflow)
-  # FIXME:  it hangs here because no TCP access allowed.
-  # See section in README and also see https://github.com/sul-dlss/operations-tasks/issues/2301
-  @workflow_client.update_status(druid: druid,
-                                 workflow: 'etdSubmitWF',
-                                 process: step,
-                                 status: 'completed')
 end
