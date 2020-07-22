@@ -9,7 +9,7 @@ module DepositHelpers
 
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
-        result = SdrClient::BackgroundJobResults.show(url: API_URL, job_id: job_id)
+        result = SdrClient::BackgroundJobResults.show(url: Settings.sdrapi_url, job_id: job_id)
         raise result[:output][:errors] if result[:output][:errors].present?
 
         object_druid = result[:output][:druid]

@@ -6,7 +6,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
   let(:note) { RandomWord.phrases.next }
 
   before do
-    authenticate!(start_url: BASE_URL, expected_text: 'Welcome to Argo!')
+    authenticate!(start_url: Settings.argo_url, expected_text: 'Welcome to Argo!')
   end
 
   scenario do
@@ -14,16 +14,16 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     druid2 = create_druid
     temp_xlsx = update_xlsx(druid1, title1, druid2, title2)
 
-    visit("#{BASE_URL}view/#{APO}")
-    # Opens the MODS bulk jobs
+    visit "#{Settings.argo_url}/view/#{Settings.default_apo}"
+    # Open the MODS bulk jobs
     click_link 'MODS bulk loads'
     expect(page).to have_content 'Datastream spreadsheet bulk upload for APO'
 
-    # Opens the Submit new file modal
+    # Open the Submit new file modal
     click_link 'Submit new file ...'
     expect(page).to have_content 'Submit MODS descriptive metadata for bulk processing'
 
-    # Attaches spreadsheet fixture, selects spreadsheet input, and adds note
+    # Attach spreadsheet fixture, select spreadsheet input, and add note
     attach_file('Select', temp_xlsx.path)
     choose 'Spreadsheet input; load into objects'
     fill_in '3. Note', with: note
@@ -31,9 +31,9 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
 
     reload_page_until_timeout!(text: note)
 
-    # Delete's job run
+    # Delete job run
     job_rows = page.find_all('div#bulk-upload-table > table > tbody > tr')
-    job_rows.drop(1).each do |row|
+    job_rows.each do |row|
       tds = row.find_all('td')
       next unless tds[3].text == note
 
@@ -42,13 +42,13 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
       click_link 'Delete'
       break
     end
-    expect(page).to have_content "Bulk job for APO (#{APO}) deleted."
+    expect(page).to have_content "Bulk job for APO (#{Settings.default_apo}) deleted."
 
     # Open druids and tests for titles
-    visit("#{BASE_URL}view/#{druid1}")
-    expect(page).to have_content title1
+    visit "#{Settings.argo_url}/view/#{druid1}"
+    reload_page_until_timeout!(text: title1)
 
-    visit("#{BASE_URL}view/#{druid2}")
-    expect(page).to have_content title2
+    visit "#{Settings.argo_url}/view/#{druid2}"
+    reload_page_until_timeout!(text: title2)
   end
 end

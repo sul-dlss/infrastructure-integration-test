@@ -2,7 +2,7 @@
 
 RSpec.describe 'Use Argo to edit administrative tags for a single item', type: :feature do
   let(:start_url) do
-    'https://argo-stage.stanford.edu/catalog?f%5BobjectType_ssim%5D%5B%5D=item&f%5Bprocessing_status_text_ssi%5D%5B%5D=Accessioned'
+    "#{Settings.argo_url}/catalog?f%5BobjectType_ssim%5D%5B%5D=item&f%5Bprocessing_status_text_ssi%5D%5B%5D=Accessioned"
   end
 
   before do

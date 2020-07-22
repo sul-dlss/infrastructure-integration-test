@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
-# To this end, files have been placed on preassembly-stage at /dor/staging/integration-tests/image-test
+# To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
 RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature do
   druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
-  let(:start_url) { 'https://argo-stage.stanford.edu/registration' }
-  let(:preassembly_bundle_dir) { '/dor/staging/integration-tests/image-test' }
-  let(:remote_manifest_location) { "preassembly@sul-preassembly-stage:#{preassembly_bundle_dir}" }
+  let(:start_url) { "#{Settings.argo_url}/registration" }
+  let(:preassembly_bundle_dir) { Settings.preassembly_bundle_directory }
+  let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{RandomWord.nouns.next}" }
   let(:source_id_random_word) { "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}" }
@@ -30,7 +30,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     clear_downloads
   end
 
-  it do
+  scenario do
     # register new object
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
@@ -57,7 +57,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
 
-    visit 'https://sul-preassembly-stage.stanford.edu/'
+    visit Settings.preassembly_url
     expect(page).to have_selector('h3', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
@@ -82,7 +82,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     expect(yaml[:status]).to eq 'success'
 
     # ensure Image files are all there, per pre-assembly, organized into specified resources
-    visit "https://argo-stage.stanford.edu/view/#{druid}"
+    visit "#{Settings.argo_url}/view/#{druid}"
     expect(page).to have_selector('#document-contents-section > .resource-list > li.resource', text: 'Resource (1) image')
     expect(page).to have_selector('#document-contents-section > .resource-list > li', text: 'Image 1')
     files = all('li.file')
@@ -102,7 +102,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     md = /^v(\d+) Accessioned/.match(elem.text)
     version = md[1].to_i
 
-    visit 'https://sul-preassembly-stage.stanford.edu/'
+    visit Settings.preassembly_url
 
     expect(page).to have_content 'Complete the form below'
 
@@ -127,7 +127,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
 
-    visit "https://argo-stage.stanford.edu/view/druid:#{yaml[:pid]}"
+    visit "#{Settings.argo_url}/view/druid:#{yaml[:pid]}"
 
     reload_page_until_timeout!(text: "v#{version + 1} Accessioned")
   end

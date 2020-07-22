@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'SDR deposit', type: :feature do
-  let(:start_url) { 'https://argo-stage.stanford.edu/' }
+  let(:start_url) { Settings.argo_url }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
   let(:catkey) { '10065784' }
 
@@ -11,9 +11,9 @@ RSpec.describe 'SDR deposit', type: :feature do
 
   it 'deposits objects' do
     ensure_token
-    object_druid = deposit(apo: APO,
-                           collection: COLLECTION,
-                           url: API_URL,
+    object_druid = deposit(apo: Settings.default_apo,
+                           collection: Settings.default_collection,
+                           url: Settings.sdrapi_url,
                            source_id: source_id,
                            catkey: catkey,
                            accession: true,
@@ -24,7 +24,7 @@ RSpec.describe 'SDR deposit', type: :feature do
                              'Gemfile.lock' => { 'preserve' => true }
                            })
 
-    visit "#{start_url}view/#{object_druid}?beta=true"
+    visit "#{start_url}/view/#{object_druid}?beta=true"
 
     # Wait for indexing and workflows to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')

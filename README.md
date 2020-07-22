@@ -2,7 +2,7 @@
 
 # SDR Integration Tests
 
-This script drives a browser to do inter-system integration testing of SDR in the staging environment.
+This script drives a browser to do inter-system integration testing of SDR in the staging or QA environment.
 
 ## Installation
 
@@ -17,11 +17,11 @@ This script depends on having Firefox or Chrome downloaded.
 
 1. `bundle install`
 1. `rake webdrivers:chromedriver:update`
-1. Set `browser.driver` to `chrome` in `settings.local.yml`
+1. Set `browser.driver` to `chrome` in `config/settings.local.yml`
 
 ### Browser Window Size
 
-If you find you need to modify the default window size for either browser, copy the default settings for `browser.height` and `browser.width` from `settings.yml` to `settings.local.yml` and modify them to meet your needs.
+If you find you need to modify the default window size for either browser, copy the default settings for `browser.height` and `browser.width` from `config/settings.yml` to `config/settings.local.yml` and modify them to meet your needs.
 
 ## Prerequisites
 
@@ -37,13 +37,23 @@ Host *.stanford.edu
 
 ### SUNet Credentials
 
-If you tire of typing in your SUNet credentials over and over, you may add them to `settings.local.yml` (ignored by git). Copy the dummy values from `settings.yml` to get started. Do *not* add this file to version control, if you do this!
+If you tire of typing in your SUNet credentials over and over, you may add them to `config/settings.local.yml` (ignored by git). Copy the dummy values from `config/settings.yml` to get started. Do *not* add this file to version control, if you do this!
 
 ### ETD Credentials
 
-In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application. In order to do this, copy `settings.yml` to `settings.local.yml` and set the ETD username and password to the [values expected in our staging environment](https://github.com/sul-dlss/shared_configs/blob/a90c636b968a1ede4886a61dadc799dd5d162fe1/config/settings/production.yml#L34-L35).
+In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application.
 
-**NOTE**: `settings.local.yml` is ignored by git and should remain so. Please do not accidentally add this file to version control.
+#### Staging Environment
+
+For the staging environment, copy `config/settings.yml` to `config/settings/staging.local.yml` and set the ETD username and password to the [values expected in our staging environment](https://github.com/sul-dlss/shared_configs/blob/a90c636b968a1ede4886a61dadc799dd5d162fe1/config/settings/production.yml#L34-L35).
+
+**NOTE**: `config/settings/staging.local.yml` is ignored by git and should remain so. Please do not accidentally add this file to version control.
+
+#### QA Environment
+
+For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml` and set the ETD username and password to the [values expected in our QA environment](https://github.com/sul-dlss/shared_configs/blob/59ead7acbdf351930ad45922fd44e0f45810bf37/config/settings/production.yml#L16-L17).
+
+**NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not accidentally add this file to version control.
 
 ## Run Tests
 
@@ -58,6 +68,14 @@ You will be prompted to type in your Stanford credentials and will then need to 
 ### Timeouts
 
 If you are experiencing timeout errors, you may override the default Capybara and workflow-related timeout values by adding `timeouts.capybara` and/or `timeouts.workflow` in `config/settings.local.yml`.
+
+### SDR Environments
+
+By default, the integration tests run in the SDR staging environment. To test in the SDR QA environment, run tests with the `SDR_ENV` environment variable, like so:
+
+```shell
+SDR_ENV=qa bundle exec rspec
+```
 
 ## Add New Tests
 

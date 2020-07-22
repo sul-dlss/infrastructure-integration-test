@@ -28,7 +28,7 @@ module AuthenticationHelpers
 
   def ensure_token
     @@token ||= begin
-      visit "#{BASE_URL}/settings/tokens"
+      visit "#{Settings.argo_url}/settings/tokens"
       click_button 'Generate new token'
       find_field('Token').value.tap do |token|
         SdrClient::Credentials.write(token)

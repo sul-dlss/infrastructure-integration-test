@@ -3,8 +3,9 @@
 require 'config'
 
 # NOTE: For some reason `File.expand_path(__dir__, '../..')` did not do the right thing.
-app_root = Pathname.new(__dir__).parent.parent
+app_root = Pathname.new(__dir__).parent.parent + 'config'
+env = ENV.fetch('SDR_ENV', 'staging')
 
 Config.load_and_set_settings(
-  Config.setting_files(app_root, 'local')
+  Config.setting_files(app_root, env)
 )

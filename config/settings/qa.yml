@@ -1,0 +1,7 @@
+argo_url: 'https://argo-qa.stanford.edu'
+etd_url: 'https://etd-qa.stanford.edu'
+hydrus_url: 'https://sdr-qa.stanford.edu'
+preassembly_bundle_directory: '/dor/staging/integration-tests/image-test'
+preassembly_host: 'sul-preassembly-qa'
+preassembly_url: 'https://sul-preassembly-qa.stanford.edu'
+sdrapi_url: 'https://sdr-api-qa.stanford.edu'

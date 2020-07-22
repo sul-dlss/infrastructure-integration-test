@@ -3,14 +3,14 @@
 RSpec.describe 'Use Argo to create a collection from APO page', type: :feature do
   let(:collection_title) { RandomWord.phrases.next }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
-  let(:start_url) { "https://argo-stage.stanford.edu/view/#{APO}" }
+  let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
 
   before do
     authenticate!(start_url: start_url,
                   expected_text: 'integration-testing')
   end
 
-  it do
+  scenario do
     click_link 'Create Collection'
 
     within('#blacklight-modal') do
@@ -22,7 +22,7 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     expect(page).to have_content 'Created collection'
 
     collection_druid = find('.alert-info').text.split[2]
-    visit "https://argo-stage.stanford.edu/view/#{collection_druid}"
+    visit "#{Settings.argo_url}/view/#{collection_druid}"
 
     expect(page).to have_content collection_title
 
@@ -30,7 +30,7 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     expect(object_type_element.text).to eq('collection')
 
     apo_element = first('dd.blacklight-is_governed_by_ssim > a')
-    expect(apo_element[:href]).to end_with(APO)
+    expect(apo_element[:href]).to end_with(Settings.default_apo)
 
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')
