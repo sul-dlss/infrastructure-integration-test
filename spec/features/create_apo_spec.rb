@@ -2,7 +2,7 @@
 
 RSpec.describe 'Use Argo to create an administrative policy object', type: :feature do
   let(:apo_title) { RandomWord.phrases.next }
-  let(:start_url) { 'https://argo-stage.stanford.edu/apo/new' }
+  let(:start_url) { "#{Settings.argo_url}/apo/new" }
 
   before do
     expected_txt = 'The following defaults will apply to all newly registered objects.'

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
-  let(:start_url) { 'https://argo-stage.stanford.edu/catalog?f%5Bexploded_tag_ssim%5D%5B%5D=Registered+By' }
+  let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_tag_ssim%5D%5B%5D=Registered+By" }
   let(:export_tag_description) { RandomWord.phrases.next }
   let(:import_tag_description) { RandomWord.phrases.next }
   let(:number_of_druids) { 3 }
@@ -112,13 +112,13 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
       end
     end
 
-    visit "https://argo-stage.stanford.edu/view/#{druid_with_added_tag.first}"
+    visit "#{Settings.argo_url}/view/#{druid_with_added_tag.first}"
     expect(page).to have_content(added_tag)
 
-    visit "https://argo-stage.stanford.edu/view/#{druid_with_removed_tag.first}"
+    visit "#{Settings.argo_url}/view/#{druid_with_removed_tag.first}"
     expect(page).not_to have_content(removed_tag)
 
-    visit "https://argo-stage.stanford.edu/view/#{druid_with_changed_tag.first}"
+    visit "#{Settings.argo_url}/view/#{druid_with_changed_tag.first}"
     expect(page).to have_content(edited_tag)
     expect(page).not_to have_content(replaced_tag)
   end

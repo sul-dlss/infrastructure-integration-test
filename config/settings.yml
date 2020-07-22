@@ -15,3 +15,6 @@ browser:
   driver: firefox
   height: 900
   width: 1440
+
+default_apo: 'druid:qc410yz8746'
+default_collection: 'druid:bc778pm9866'

@@ -3,7 +3,7 @@
 RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
   let(:collection_title) { RandomWord.nouns.next }
   let(:item_title) { RandomWord.nouns.next }
-  let(:start_url) { 'https://sdr-test.stanford.edu/webauth/login?referrer=/' }
+  let(:start_url) { "#{Settings.hydrus_url}/webauth/login?referrer=/" }
   let(:user_email) { "#{AuthenticationHelpers.class_variable_get(:@@username)}@stanford.edu" }
 
   before do
@@ -66,7 +66,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     expect(page).to have_content 'Collection closed'
     expect(page).to have_content 'Closed for deposit'
 
-    visit "https://argo-stage.stanford.edu/view/#{collection_druid}"
+    visit "#{Settings.argo_url}/view/#{collection_druid}"
     expect(page).to have_content('View in new window')
 
     # page does not initially display title, loop until reindexed
@@ -75,7 +75,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     expect(find('dd.blacklight-tag_ssim').text).to include 'Project : Hydrus'
     expect(find('dd.blacklight-project_tag_ssim').text).to eq 'Hydrus'
 
-    visit "https://argo-stage.stanford.edu/view/#{item_druid}"
+    visit "#{Settings.argo_url}/view/#{item_druid}"
 
     # page does not initially display title, loop until reindexed
     reload_page_until_timeout!(text: "Stanford, Jane Lathrop #{item_title}: 2000-01-01")

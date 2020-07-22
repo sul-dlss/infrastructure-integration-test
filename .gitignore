@@ -7,5 +7,5 @@ tmp/manifest.csv
 tmp/media_manifest.csv
 downloads
 
-# config to hold sensitive values
-settings.local.yml
+# configs to hold sensitive values
+*.local.yml

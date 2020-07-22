@@ -3,7 +3,7 @@
 RSpec.describe 'Use Argo to create an object without any files', type: :feature do
   let(:random_word) { RandomWord.phrases.next }
   let(:object_label) { "Object Label for #{random_word}" }
-  let(:start_url) { 'https://argo-stage.stanford.edu/registration' }
+  let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:source_id) { "create-obj-no-files-test:#{random_word}" }
 
   before do
@@ -29,7 +29,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     object_druid = find('td[aria-describedby=data_druid]').text
     # puts "object_druid: #{object_druid}" # useful for debugging
 
-    visit "https://argo-stage.stanford.edu/view/#{object_druid}"
+    visit "#{Settings.argo_url}/view/#{object_druid}"
 
     # wait for registrationWF to finish
     reload_page_until_timeout!(text: 'v1 Registered')

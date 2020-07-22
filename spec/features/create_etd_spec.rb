@@ -3,7 +3,6 @@
 RSpec.describe 'Create a new ETD', type: :feature do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
-  let(:etd_base_url) { 'etd-stage.stanford.edu' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { format('%10d', Kernel.rand(1..9_999_999_999)) }
   let(:random_title_word) { RandomWord.nouns.next }
@@ -69,7 +68,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
   let(:permissions_filename) { 'etd_permissions.pdf' }
 
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
-  it do
+  scenario do
     # registrar creates ETD in hydra_etd application by posting xml
     resp_body = simulate_registrar_post(initial_xml_from_registrar)
     prefixed_druid = resp_body.split.first
@@ -77,7 +76,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # puts "dissertation id is #{dissertation_id}" # helpful for debugging
     # puts "druid is #{prefixed_druid}" # helpful for debugging
 
-    etd_submit_url = "https://#{etd_base_url}/submit/#{prefixed_druid}"
+    etd_submit_url = "#{Settings.etd_url}/submit/#{prefixed_druid}"
     # puts "etd submit url: #{etd_submit_url}" # helpful for debugging
     authenticate!(start_url: etd_submit_url,
                   expected_text: "Dissertation ID : #{dissertation_id}")
@@ -210,7 +209,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # check Argo for object (wait for embargo info)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
-        visit "https://argo-stage.stanford.edu/view/#{prefixed_druid}"
+        visit "#{Settings.argo_url}/view/#{prefixed_druid}"
         break if page.has_text?('This item is embargoed until', wait: 1)
       end
     end
@@ -238,9 +237,8 @@ RSpec.describe 'Create a new ETD', type: :feature do
 end
 
 def simulate_registrar_post(xml)
-  username = Settings.etd.username
-  password = Settings.etd.password
-  conn = Faraday.new(url: "https://#{username}:#{password}@#{etd_base_url}/etds")
+  conn = Faraday.new(url: "#{Settings.etd_url}/etds")
+  conn.basic_auth(Settings.etd.username, Settings.etd.password)
   resp = conn.post do |req|
     req.options.timeout = 10
     req.options.open_timeout = 10
