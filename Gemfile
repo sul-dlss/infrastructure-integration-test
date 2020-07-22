@@ -7,7 +7,9 @@ gem 'activesupport'
 gem 'byebug'
 gem 'capybara'
 gem 'config'
-gem 'faraday' # etds require POST request from registrar
+gem 'dor-services-client' # ETD test must access dor-services-app
+gem 'dor-workflow-client' # ETD test must directly update etdSubmitWF
+gem 'faraday' # ETD test must POST requests from registrar
 gem 'pry-byebug'
 gem 'rake'
 gem 'random-word'

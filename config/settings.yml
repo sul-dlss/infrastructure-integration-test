@@ -11,6 +11,19 @@ sunet:
   id: ~ # NOTE: *without* @stanford.edu!
   password: ~
 
+# for ETD test
+dor_services_app:
+  # NOTE:  this will need to be changed for qa
+  url: 'https://dor-services-stage.stanford.edu'
+  token: 'generate-yer-token-on-dor-services-app'
+
+# for ETD test
+workflow:
+  # NOTE: for now, there is no access to the stage or qa workflow-service directly
+  #  we must ssh tunnel instead ... maybe from etd-stage??
+  url: 'https://workflow-service-stage.stanford.edu'
+  logfile: 'tmp/workflow_service.log'
+
 browser:
   driver: firefox
   height: 900

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'dor/services/client'
+require 'dor/workflow/client'
+
 RSpec.describe 'Create a new ETD', type: :feature do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
@@ -216,13 +219,26 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(status_element).to have_text('v1 Registered')
     click_link('etdSubmitWF')
     modal_element = find('#blacklight-modal')
-    # expect first 5 steps to have completed
+    # expect first 5 etdSubmitWF steps to have completed
     expect(modal_element).to have_text(/register-object completed/)
     expect(modal_element).to have_text(/submit completed/)
     expect(modal_element).to have_text(/reader-approval completed/)
     expect(modal_element).to have_text(/registrar-approval completed/)
     expect(modal_element).to have_text(/submit-marc completed/)
+
+    # we simulate the check-marc etdSubmitWF step because its pre-conditions are:
+    # 1. etd cron job has taken MARC stub record from submit-marc step and combined it into the daily file
+    # 2. Symphony (ILS) cron job has loaded the daily file of stubbed MARC records with ours in it
     expect(modal_element).to have_text(/check-marc waiting/)
+    simulate_check_marc(prefixed_druid)
+    Timeout.timeout(Settings.timeouts.workflow) do
+      loop do
+        page.click_button('Cancel')
+        click_link('etdSubmitWF')
+        modal_element = find('#blacklight-modal')
+        break if modal_element.has_text?(/check-marc completed/, wait: 1)
+      end
+    end
 
     # TODO: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
     # TODO: click over to argo and make sure accessionWF is running
@@ -245,4 +261,40 @@ def simulate_registrar_post(xml)
   return resp.body if resp.success?
 
   raise "Error POSTing ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
+end
+
+# Execute the code from the check-marc robot in the ETD app, which is run by a cron job.
+# EXCEPT: we are hard-coding the catkey, since no cataloging will take place for this test
+# See https://github.com/sul-dlss/hydra_etd/blob/master/app/services/check_marc.rb
+def simulate_check_marc(druid)
+  catkey = '3060835' # an ETD (pre-etd app, but whatevs) in both prod and non-prod ILS
+  object_client = dor_services_object_client(druid)
+  dro = object_client.find # returns cocina metadata
+  dro_as_hash = dro.to_h
+  dro_as_hash[:structural][:hasAgreement] = 'druid:ct692vv3660' # ETD deposit agreement object
+  dro_as_hash[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: catkey }]
+  object_client.update(params: dro_as_hash)
+  # Set the etdSubmitWF step to completed, as the robot would
+  workflow_step_completed('check-marc', druid)
+end
+
+def dor_services_object_client(druid)
+  @dor_services_client ||= begin
+    Dor::Services::Client.configure(url: Settings.dor_services_app.url,
+                                    token: Settings.dor_services_app.token)
+  end
+  @object_client ||= @dor_services_client.object(druid)
+end
+
+# Set an etdSubmitWF step to completed (as a robot would)
+def workflow_step_completed(step, druid)
+  @workflow_client ||= Dor::Workflow::Client.new(url: Settings.workflow.url,
+                                                 logger: Settings.workflow.logfile,
+                                                 timeout: Settings.timeouts.workflow)
+  # FIXME:  it hangs here because no TCP access allowed.
+  # See section in README and also see https://github.com/sul-dlss/operations-tasks/issues/2301
+  @workflow_client.update_status(druid: druid,
+                                 workflow: 'etdSubmitWF',
+                                 process: step,
+                                 status: 'completed')
 end
