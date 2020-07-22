@@ -47,13 +47,13 @@ In order to run the tests in `spec/features/create_etd_spec.rb`, you will need t
 
 For the staging environment, copy `config/settings.yml` to `config/settings/staging.local.yml` and set the ETD username and password to the [values expected in our staging environment](https://github.com/sul-dlss/shared_configs/blob/a90c636b968a1ede4886a61dadc799dd5d162fe1/config/settings/production.yml#L34-L35).
 
-**NOTE**: `config/settings/staging.local.yml` is ignored by git and should remain so. Please do not accidentally add this file to version control.
+**NOTE**: `config/settings/staging.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
 
 #### QA Environment
 
 For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml` and set the ETD username and password to the [values expected in our QA environment](https://github.com/sul-dlss/shared_configs/blob/59ead7acbdf351930ad45922fd44e0f45810bf37/config/settings/production.yml#L16-L17).
 
-**NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not accidentally add this file to version control.
+**NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
 
 ## Run Tests
 
@@ -65,10 +65,6 @@ or to run with rubocop, use the default rake task:
 
 You will be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push.
 
-### Timeouts
-
-If you are experiencing timeout errors, you may override the default Capybara and workflow-related timeout values by adding `timeouts.capybara` and/or `timeouts.workflow` in `config/settings.local.yml`.
-
 ### SDR Environments
 
 By default, the integration tests run in the SDR staging environment. To test in the SDR QA environment, run tests with the `SDR_ENV` environment variable, like so:
@@ -76,6 +72,10 @@ By default, the integration tests run in the SDR staging environment. To test in
 ```shell
 SDR_ENV=qa bundle exec rspec
 ```
+
+### Timeouts
+
+If you are experiencing timeout errors, you may override the default Capybara and workflow-related timeout values by adding `timeouts.capybara` and/or `timeouts.workflow` in `config/settings.local.yml`.
 
 ## Add New Tests
 
