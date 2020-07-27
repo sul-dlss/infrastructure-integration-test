@@ -9,13 +9,14 @@ RSpec.describe 'Create a new ETD', type: :feature do
   let(:dissertation_title) { "Integration Testing of ETD Processing - #{random_title_word}" }
   let(:random_author_word) { RandomWord.nouns.next }
   let(:dissertation_author) { "Kelly, DeForest #{random_author_word}" }
+  let(:dissertation_type) { 'Dissertation' }
   let(:initial_xml_from_registrar) do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
     <<-XML
     <DISSERTATION>
       <dissertationid>#{dissertation_id}</dissertationid>
       <title>#{dissertation_title}</title>
-      <type>Dissertation</type>
+      <type>#{dissertation_type}</type>
       <vpname>Patricia J. Gumport</vpname>
       <readerapproval>Not Submitted</readerapproval>
       <readercomment> </readercomment>
@@ -138,7 +139,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # indicate copyrighted material
     expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
     expect(find('#pbPermissionsProvided')['style']).to eq '' # rights not yet selected
-    select 'Yes', from: 'My thesis contains copyright material'
+    select 'Yes', from: "My #{dissertation_type.downcase} contains copyright material"
 
     # provide copyright permissions letters/files
     expect(page).not_to have_content(permissions_filename)
