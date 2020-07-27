@@ -138,7 +138,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # indicate copyrighted material
     expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
     expect(find('#pbPermissionsProvided')['style']).to eq '' # rights not yet selected
-    select 'does include', from: 'selectPermissionsOptions'
+    select 'Yes', from: 'My thesis contains copyright material'
 
     # provide copyright permissions letters/files
     expect(page).not_to have_content(permissions_filename)
