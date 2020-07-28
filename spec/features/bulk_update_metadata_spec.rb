@@ -32,16 +32,11 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     reload_page_until_timeout!(text: note)
 
     # Delete job run
-    job_rows = page.find_all('div#bulk-upload-table > table > tbody > tr')
-    job_rows.each do |row|
-      tds = row.find_all('td')
-      next unless tds[3].text == note
-
-      tds[9].find('form > button').click
-      # Confirm delete in the popup
-      click_link 'Delete'
-      break
-    end
+    row = page.find(:xpath, "//div[@id='bulk-upload-table']//tr[td/text()='#{note}']")
+    tds = row.all('td')
+    tds[9].find('form > button').click
+    # Confirm delete in the popup
+    click_link 'Delete'
     expect(page).to have_content "Bulk job for APO (#{Settings.default_apo}) deleted."
 
     # Open druids and tests for titles
