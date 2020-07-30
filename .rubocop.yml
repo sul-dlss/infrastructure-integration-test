@@ -28,6 +28,9 @@ Metrics/BlockLength:
     - context
     - scenario
 
+Metrics/LineLength:
+  Max: 120
+
 Style/IfInsideElse:
   Exclude:
     - 'spec/support/page_helpers.rb'
