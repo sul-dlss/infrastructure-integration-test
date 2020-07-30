@@ -43,7 +43,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
         <finalreader>No</finalreader>
       </reader>
       <univid>33333</univid>
-      <sunetid>dkelley</sunetid>
+      <sunetid>#{AuthenticationHelpers.username}</sunetid>
       <name>#{dissertation_author}</name>
       <career code="MED">Medicine</career>
       <program code="MED">Medical</program>
@@ -70,6 +70,9 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
   # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
   scenario do
+    authenticate!(start_url: "#{Settings.etd_url}/view/0001",
+                  expected_text: 'Could not find an Etd with id: 0001')
+
     # registrar creates ETD in hydra_etd application by posting xml
     resp_body = simulate_registrar_post(initial_xml_from_registrar)
     prefixed_druid = resp_body.split.first
@@ -79,8 +82,6 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
     etd_submit_url = "#{Settings.etd_url}/submit/#{prefixed_druid}"
     # puts "etd submit url: #{etd_submit_url}" # helpful for debugging
-    authenticate!(start_url: etd_submit_url,
-                  expected_text: "Dissertation ID : #{dissertation_id}")
     visit etd_submit_url
 
     # verify citation details

@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 module AuthenticationHelpers
+  mattr_accessor :username, :password
+
   def authenticate!(start_url:, expected_text:)
-    @@username ||= username_from_config_or_prompt
-    @@password ||= password_from_config_or_prompt
+    self.username ||= username_from_config_or_prompt
+    self.password ||= password_from_config_or_prompt
 
     # View the specified starting URL
     visit start_url
 
     # We're at the Stanford login page
     if page.has_content?('SUNet ID')
-      fill_in 'SUNet ID', with: @@username
-      fill_in 'Password', with: @@password
+      fill_in 'SUNet ID', with: username
+      fill_in 'Password', with: password
       sleep 1
       click_button 'Login'
 
