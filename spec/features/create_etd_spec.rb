@@ -189,7 +189,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # fake reader approval
     reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
     expect(reader_progress_list_el).to have_text("Verified by Final Reader\n- Not done")
-    now = Time.now.strftime('%m/%d/%Y %T')
+    now = Time.now.in_time_zone('America/Los_Angeles').strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(reader_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
@@ -199,7 +199,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # fake registrar approval
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
     expect(registrar_progress_list_el).to have_text("Approved by Registrar\n- Not done")
-    now = Time.now.strftime('%m/%d/%Y %T')
+    now = Time.now.in_time_zone('America/Los_Angeles').strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(registrar_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
