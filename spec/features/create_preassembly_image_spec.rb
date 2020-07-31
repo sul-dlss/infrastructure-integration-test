@@ -88,7 +88,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     files = all('li.file')
     expect(files.size).to eq 2
     expect(files.first.text).to eq 'File image.jpg (image/jpeg, 28.9 KB, preserve)'
-    expect(files.last.text). to eq 'File image.jp2 (image/jp2, 64.2 KB, publish/shelve)'
+    expect(files.last.text).to eq 'File image.jp2 (image/jp2, 64.2 KB, publish/shelve)'
 
     # Wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')

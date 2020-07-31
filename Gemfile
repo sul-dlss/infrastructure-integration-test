@@ -12,7 +12,7 @@ gem 'pry-byebug'
 gem 'rake'
 gem 'random-word'
 gem 'rspec'
-gem 'rubocop', '~> 0.73.0'
+gem 'rubocop', '~> 0.87'
 gem 'rubocop-rspec'
 gem 'rubyXL' # for updating Excel spreadsheets
 gem 'selenium-webdriver'
