@@ -3,6 +3,8 @@
 require 'byebug'
 require 'capybara/rspec'
 require 'csv'
+require 'dor/services/client'
+require 'dor/workflow/client'
 require 'io/console'
 require 'pry-byebug'
 require 'random_word'

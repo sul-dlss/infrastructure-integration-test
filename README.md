@@ -86,3 +86,19 @@ For the staging environment, copy `config/settings.yml` to `config/settings/stag
 For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml` and set the ETD username and password to the [values expected in our QA environment](https://github.com/sul-dlss/shared_configs/blob/59ead7acbdf351930ad45922fd44e0f45810bf37/config/settings/production.yml#L16-L17).
 
 **NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
+
+### Set DOR Services API Token
+
+In order to run the tests in `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the DOR Services API. This is environment-specific.
+
+#### Staging Environment
+
+For the staging environment, copy `config/settings.yml` to `config/settings/staging.local.yml` and set the DOR Services API token value after having generated one on dor-services-stage per [the dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication).
+
+**NOTE**: `config/settings/staging.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
+
+#### QA Environment
+
+For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml` and set the DOR Services API token value after having generated one on dor-services-qa per [the dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication).
+
+**NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not add this file to version control.

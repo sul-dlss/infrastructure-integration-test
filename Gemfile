@@ -7,6 +7,8 @@ gem 'activesupport'
 gem 'byebug'
 gem 'capybara'
 gem 'config'
+gem 'dor-services-client', '~> 6.7'
+gem 'dor-workflow-client', '~> 3.22'
 gem 'faraday' # etds require POST request from registrar
 gem 'pry-byebug'
 gem 'rake'

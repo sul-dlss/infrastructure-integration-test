@@ -3,6 +3,7 @@
 RSpec.describe 'Create a new ETD', type: :feature do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
+  let(:catkey) { '3060835' }
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { format('%10d', Kernel.rand(1..9_999_999_999)) }
   let(:random_title_word) { RandomWord.nouns.next }
@@ -14,6 +15,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
     <<-XML
     <DISSERTATION>
+      <catkey>#{catkey}</catkey>
       <dissertationid>#{dissertation_id}</dissertationid>
       <title>#{dissertation_title}</title>
       <type>#{dissertation_type}</type>
@@ -225,7 +227,41 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(modal_element).to have_text(/check-marc waiting/)
 
     # TODO: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
-    # TODO: click over to argo and make sure accessionWF is running
+    simulate_check_marc!(prefixed_druid, catkey)
+    simulate_catalog_status!(prefixed_druid)
+    simulate_other_metadata!(prefixed_druid, dissertation_type, dissertation_author)
+
+    page.refresh
+    click_link('etdSubmitWF')
+    modal_element = find('#blacklight-modal')
+    # expect first 5 steps to have completed
+    expect(modal_element).to have_text(/register-object completed/)
+    expect(modal_element).to have_text(/submit completed/)
+    expect(modal_element).to have_text(/reader-approval completed/)
+    expect(modal_element).to have_text(/registrar-approval completed/)
+    expect(modal_element).to have_text(/submit-marc completed/)
+    expect(modal_element).to have_text(/check-marc completed/)
+    expect(modal_element).to have_text(/catalog-status completed/)
+    expect(modal_element).to have_text(/other-metadata completed/)
+    expect(modal_element).to have_text(/start-accession completed/)
+    click_button('Cancel')
+
+    # wait for Accessioning WF to finish
+    Timeout.timeout(Settings.timeouts.workflow) do
+      loop do
+        visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+        break if page.has_text?('v1 Accessioned', wait: 1)
+      end
+    end
+
+    click_link('releaseWF')
+    modal_element = find('#blacklight-modal')
+    # expect first 5 steps to have completed
+    expect(modal_element).to have_text(/start completed/)
+    expect(modal_element).to have_text(/release-members completed/)
+    expect(modal_element).to have_text(/release-publish completed/)
+    expect(modal_element).to have_text(/update-marc completed/)
+
     # TODO: check identityMetadata, rightsMetadata and contentMetadata in argo?
     #    these are updated in otherMetadata WF step, right before start-accession
     # TODO: make sure accessioning completes cleanly (at least up to preservation robots steps)
@@ -245,4 +281,130 @@ def simulate_registrar_post(xml)
   return resp.body if resp.success?
 
   raise "Error POSTing ETD: status #{resp.status}, #{resp.reason_phrase}, #{resp.body}"
+end
+
+def simulate_check_marc!(druid, catkey)
+  object_client = Dor::Services::Client.object(druid)
+  dro = object_client.find
+  dro_as_hash = dro.to_h
+  dro_as_hash[:structural][:hasAgreement] = 'druid:ct692vv3660'
+  dro_as_hash[:identification][:catalogLinks] = [{ catalog: 'symphony', catalogRecordId: catkey }]
+  object_client.update(params: dro_as_hash)
+
+  workflow_client.update_status(
+    druid: druid,
+    workflow: 'etdSubmitWF',
+    process: 'check-marc',
+    status: 'completed'
+  )
+end
+
+def simulate_catalog_status!(druid)
+  workflow_client.update_status(
+    druid: druid,
+    workflow: 'etdSubmitWF',
+    process: 'catalog-status',
+    status: 'completed'
+  )
+end
+
+def simulate_other_metadata!(druid, etd_type, author)
+  object_client = Dor::Services::Client.object(druid)
+  object_client.refresh_metadata
+
+  content_md = generate_content_metadata(druid)
+  rights_md = generate_rights_metadata(druid, author)
+  object_client.metadata.legacy_update(
+    content: {
+      updated: Time.zone.now,
+      content: content_md
+    },
+    rights: {
+      updated: Time.zone.now,
+      content: rights_md
+    }
+  )
+
+  object_client.administrative_tags.create(tags: ["ETD : #{etd_type}"])
+
+  workflow_client.update_status(
+    druid: druid,
+    workflow: 'etdSubmitWF',
+    process: 'other-metadata',
+    status: 'completed'
+  )
+  workflow_client.create_workflow_by_name(
+    druid,
+    'accessionWF',
+    version: 1
+  )
+  workflow_client.update_status(
+    druid: druid,
+    workflow: 'etdSubmitWF',
+    process: 'start-accession',
+    status: 'completed'
+  )
+end
+
+def workflow_client
+  Dor::Workflow::Client.new(url: Settings.workflow_url, timeout: Settings.timeouts.workflow)
+end
+
+def generate_content_metadata(druid)
+  bare_druid = druid.delete_prefix('druid:')
+  %(
+    <contentMetadata type="file" objectId="#{druid}">
+      <resource id="#{bare_druid}_1" type="main-original">
+        <attr name="label">Body of dissertation (as submitted)</attr>
+        <file id="etd_dissertation.pdf" mimetype="application/pdf" size="1634" shelve="yes" publish="no" preserve="yes">
+          <checksum type="md5">f7169731f4c163f98eed35e1be12a209</checksum>
+          <checksum type="sha1">c9fbb6eaf4549da5a798e50eeb376b167042db9a</checksum>
+        </file>
+      </resource>
+      <resource id="#{bare_druid}_2" type="main-augmented">
+        <attr name="label">Body of dissertation</attr>
+        <file id="etd_dissertation-augmented.pdf" mimetype="application/pdf" size="8336" shelve="yes" publish="yes" preserve="yes">
+          <checksum type="md5">56ffb383d08abe5e3a99494a1ef72afa</checksum>
+          <checksum type="sha1">8a2232b27aa5347fb86ef9878a4997008699a2ff</checksum>
+        </file>
+      </resource>
+      <resource id="#{bare_druid}_3" type="supplement" sequence="1">
+        <file id="etd_supplemental.txt" mimetype="text/plain" size="59" shelve="yes" publish="yes" preserve="yes">
+          <checksum type="md5">06b92ab61a355d6efb95629b18801164</checksum>
+          <checksum type="sha1">2ae1de5a7386824fd2ca47e04a6733dd249ca312</checksum>
+        </file>
+      </resource>
+      <resource id="#{bare_druid}_4" type="permissions">
+        <file id="etd_permissions.pdf" mimetype="application/pdf" size="1634" shelve="yes" publish="no" preserve="yes">
+          <checksum type="md5">f7169731f4c163f98eed35e1be12a209</checksum>
+          <checksum type="sha1">c9fbb6eaf4549da5a798e50eeb376b167042db9a</checksum>
+        </file>
+      </resource>
+    </contentMetadata>
+  )
+end
+
+def generate_rights_metadata(druid, author)
+  %(
+    <rightsMetadata objectId="#{druid}">
+      <copyright>
+        <human>(c) Copyright 2020 by #{author}</human>
+      </copyright>
+      <access type="discover">
+        <machine>
+          <world/>
+        </machine>
+      </access>
+      <access type="read">
+        <machine>
+          <group>stanford</group>
+          <embargoReleaseDate>2021-01-21</embargoReleaseDate>
+        </machine>
+      </access>
+      <use>
+        <machine type="creativeCommons">by</machine>
+        <human type="creativeCommons">CC Attribution license</human>
+      </use>
+    </rightsMetadata>
+  )
 end
