@@ -96,15 +96,10 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # provide abstract
     expect(page).to have_selector('#pbAbstractProvided', text: "Abstract provided\n- Not done")
     expect(page).not_to have_a_complete_step('#pbAbstractProvided')
-    within '#submissionSteps' do
-      step_list = all('div.step')
-      within step_list[1] do
-        find('div#textareaAbstract').click
-        fill_in 'textareaAbstract_edit', with: abstract_text
-        click_button 'Save'
-      end
-    end
-    expect(page).to have_content(abstract_text)
+
+    fill_in 'Enter your abstract in plain text (no HTML or special formatting, such as bullets or indentation).',
+            with: abstract_text
+    page.find('body').click # focus out of the abstract, triggering a save
     expect(page).to have_a_complete_step('#pbAbstractProvided')
 
     # confirm format has been reviewed
