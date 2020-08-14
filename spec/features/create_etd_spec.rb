@@ -96,15 +96,9 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # provide abstract
     expect(page).to have_selector('#pbAbstractProvided', text: "Abstract provided\n- Not done")
     expect(page).not_to have_a_complete_step('#pbAbstractProvided')
-    within '#submissionSteps' do
-      step_list = all('div.step')
-      within step_list[1] do
-        find('div#textareaAbstract').click
-        fill_in 'textareaAbstract_edit', with: abstract_text
-        click_button 'Save'
-      end
-    end
-    expect(page).to have_content(abstract_text)
+    fill_in 'Enter your abstract in plain text (no HTML or special formatting, such as bullets or indentation).',
+            with: abstract_text
+    click_button 'Save'
     expect(page).to have_a_complete_step('#pbAbstractProvided')
 
     # confirm format has been reviewed
@@ -158,15 +152,15 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
     click_link 'View Stanford University publication license'
     check 'I have read and agree to the terms of the Stanford University license.'
-    click_link 'Close this window'
+    click_button 'Close'
     click_link 'View Creative Commons licenses'
     select 'CC Attribution license', from: 'selectCCLicenseOptions'
-    click_link 'Close this window'
+    click_button 'Close'
 
     # set embargo
     click_link 'Postpone release'
     select '6 months', from: 'selectReleaseDelayOptions'
-    click_link 'Close this window'
+    click_button 'Close'
 
     expect(page).to have_a_complete_step('#pbRightsSelected')
 
