@@ -4,7 +4,7 @@ etd:
 
 timeouts:
   capybara: 60
-  workflow: 200
+  workflow: 300
   bulk_action: 200
 
 sunet:
