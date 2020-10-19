@@ -27,7 +27,7 @@ RSpec.describe 'SDR deposit', type: :feature do
     visit "#{start_url}/view/#{object_druid}?beta=true"
 
     # Wait for indexing and workflows to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
     expect(page).to have_content 'The means to prosperity'
 

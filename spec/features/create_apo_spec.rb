@@ -23,6 +23,6 @@ RSpec.describe 'Use Argo to create an administrative policy object', type: :feat
     expect(object_type_element.text).to eq('adminPolicy')
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
   end
 end

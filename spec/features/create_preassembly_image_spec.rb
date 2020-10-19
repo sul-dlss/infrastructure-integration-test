@@ -91,7 +91,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     expect(files.last.text).to eq 'File image.jp2 (image/jp2, 64.2 KB, publish/shelve)'
 
     # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
     expect(page).to have_selector('.blacklight-content_type_ssim', text: 'image') # filled in by accessioning
 
@@ -129,6 +129,6 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
 
     visit "#{Settings.argo_url}/view/druid:#{yaml[:pid]}"
 
-    reload_page_until_timeout!(text: "v#{version + 1} Accessioned")
+    reload_page_until_timeout!(text: "v#{version + 1} Accessioned", with_reindex: true)
   end
 end
