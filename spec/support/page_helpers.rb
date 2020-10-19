@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 module PageHelpers
-  def reload_page_until_timeout!(text:, as_link: false)
+  def reload_page_until_timeout!(text:, as_link: false, with_reindex: false)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
-        page.evaluate_script('location.reload();')
+        if with_reindex
+          click_link 'Reindex'
+        else
+          page.driver.browser.navigate.refresh
+        end
 
-        # NOTE: This could have been a ternary but I was concerned about its
-        #       readability.
         if as_link
           break if page.has_link?(text, wait: 1)
         else

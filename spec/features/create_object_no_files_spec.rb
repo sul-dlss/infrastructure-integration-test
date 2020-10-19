@@ -32,7 +32,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     visit "#{Settings.argo_url}/view/#{object_druid}"
 
     # wait for registrationWF to finish
-    reload_page_until_timeout!(text: 'v1 Registered')
+    reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
 
     # add accessionWF
     find_link('Add workflow').click
@@ -40,6 +40,6 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     find_button('Add').click
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
   end
 end
