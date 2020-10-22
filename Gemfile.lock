@@ -191,7 +191,7 @@ DEPENDENCIES
   rubocop (~> 0.87)
   rubocop-rspec
   rubyXL
-  sdr-client (~> 0.22)
+  sdr-client (~> 0.30)
   selenium-webdriver
   webdrivers (~> 4.0)
 
