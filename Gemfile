@@ -16,5 +16,5 @@ gem 'rubocop', '~> 0.87'
 gem 'rubocop-rspec'
 gem 'rubyXL' # for updating Excel spreadsheets
 gem 'selenium-webdriver'
-gem 'sdr-client', '~> 0.22'
+gem 'sdr-client', '~> 0.30'
 gem 'webdrivers', '~> 4.0'
