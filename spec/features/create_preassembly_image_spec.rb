@@ -95,6 +95,8 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
 
     expect(page).to have_selector('.blacklight-content_type_ssim', text: 'image') # filled in by accessioning
 
+    sleep 10 # let's wait a bit before trying the re-accession to avoid a possible race condition
+
     ### Re-accession
 
     # Get the original version from the page
