@@ -4,7 +4,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
   let(:collection_title) { RandomWord.nouns.next }
   let(:item_title) { "SUL Logo for #{collection_title}" }
   let(:start_url) { "#{Settings.h2_url}/dashboard" }
-  let(:user_email) { "#{AuthenticationHelpers.class_variable_get(:@@username)}@stanford.edu" }
+  let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
 
   before do
     authenticate!(start_url: start_url,
@@ -23,7 +23,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Contact email', with: user_email
 
     # Adds user to depositor field
-    fill_in 'Depositors', with: AuthenticationHelpers.class_variable_get(:@@username)
+    fill_in 'Depositors', with: AuthenticationHelpers.username
 
     click_button 'Deposit'
 
