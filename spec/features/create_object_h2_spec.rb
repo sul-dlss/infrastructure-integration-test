@@ -39,7 +39,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     click_button 'Continue'
 
     # Work Deposit view
-    expect(page).to have_content('Deposit your work')
+    expect(page).to have_content('Deposit your content')
     attach_file('spec/fixtures/sul-logo.png') do
       find('div.dropzone').click
     end
@@ -49,8 +49,9 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'First name', with: 'Dana'
     fill_in 'Last name', with: 'Scully'
     fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
+    fill_in 'Keywords', with: 'Integration test'
 
-    fill_in 'Citation', with: 'All rights reserved'
+    fill_in 'Citation for this deposit', with: 'All rights reserved'
 
     find('input#work_agree_to_terms').click
 
