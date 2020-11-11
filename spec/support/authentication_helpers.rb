@@ -42,19 +42,19 @@ module AuthenticationHelpers
 
   def username_from_config_or_prompt
     Settings.sunet.id || begin
-                           print 'SUNet ID: '
-                           username = $stdin.gets
-                           username.strip
-                         end
+      print 'SUNet ID: '
+      username = $stdin.gets
+      username.strip
+    end
   end
 
   def password_from_config_or_prompt
     Settings.sunet.password || begin
-                                 print 'Password: '
-                                 password = $stdin.noecho(&:gets)
-                                 # So the user knows we're off the password prompt
-                                 puts
-                                 password.strip
-                               end
+      print 'Password: '
+      password = $stdin.noecho(&:gets)
+      # So the user knows we're off the password prompt
+      puts
+      password.strip
+    end
   end
 end
