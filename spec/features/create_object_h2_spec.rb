@@ -58,10 +58,10 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     find_button('Deposit').click
 
     # Checks if title is on resulting display
-    expect(page).to have_content("title = #{item_title}")
+    expect(page).to have_content(item_title)
 
     # Keep refreshing page until druid is available
-    reload_page_until_timeout!(text: 'druid = druid:')
+    reload_page_until_timeout!(text: 'https://purl')
 
     # Opens Argo and searches on title
     visit Settings.argo_url
