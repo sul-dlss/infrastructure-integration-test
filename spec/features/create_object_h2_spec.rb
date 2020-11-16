@@ -41,7 +41,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # Work Deposit view
     expect(page).to have_content('Deposit your content')
     attach_file('spec/fixtures/sul-logo.png') do
-      find('div.dropzone').click
+      find_button('Choose files').click
     end
     expect(page).to have_content('sul-logo.png')
     fill_in 'Title of deposit', with: item_title
