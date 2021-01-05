@@ -16,6 +16,8 @@ Dir[root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
 
 Capybara.run_server = false
 
+Capybara.enable_aria_label = true
+
 Capybara.register_driver :my_firefox_driver do |app|
   options = Selenium::WebDriver::Firefox::Options.new
   options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|

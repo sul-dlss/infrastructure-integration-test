@@ -107,17 +107,11 @@ RSpec.describe 'Create a new ETD', type: :feature do
     check('confirmFormatReview')
     expect(page).to have_a_complete_step('#pbFormatReviewed')
 
-    # the hydra_etd app has all the <input type=file> tags at the bottom of the page, disabled,
-    #   and when uploading files, we have to attach the file to the right one of these elements
-    #   This is probably an artifact of the js framework it uses, prototype
-    file_upload_elements = all('input[type=file]', visible: :all)
-
     # upload dissertation PDF
     expect(page).not_to have_content(dissertation_filename)
     expect(page).to have_selector('#pbDissertationUploaded', text: "Dissertation uploaded\n- Not done")
     expect(page).not_to have_a_complete_step('#pbDissertationUploaded')
-    dissertation_pdf_upload_input = file_upload_elements.first
-    dissertation_pdf_upload_input.attach_file("spec/fixtures/#{dissertation_filename}")
+    attach_file('primaryUpload', "spec/fixtures/#{dissertation_filename}", make_visible: true)
     expect(page).to have_content(dissertation_filename)
     expect(page).to have_a_complete_step('#pbDissertationUploaded')
 
@@ -125,8 +119,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).not_to have_content(supplemental_filename)
     expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :hidden)
     check('My dissertation includes supplemental files.')
-    supplemental_upload_input = file_upload_elements[1]
-    supplemental_upload_input.attach_file("spec/fixtures/#{supplemental_filename}")
+    attach_file('supplementalUpload_1', "spec/fixtures/#{supplemental_filename}", make_visible: true)
     expect(page).to have_content(supplemental_filename)
     expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :visible)
     expect(page).to have_a_complete_step('#pbSupplementalFilesUploaded')
@@ -139,8 +132,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # provide copyright permissions letters/files
     expect(page).not_to have_content(permissions_filename)
     expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :hidden)
-    permissions_upload_input = file_upload_elements[11]
-    permissions_upload_input.attach_file("spec/fixtures/#{permissions_filename}")
+    attach_file('permissionUpload_1', "spec/fixtures/#{permissions_filename}", make_visible: true)
     expect(page).to have_content(permissions_filename)
     expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :visible)
 
