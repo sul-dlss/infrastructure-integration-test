@@ -144,15 +144,21 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
     click_link 'View Stanford University publication license'
     check 'I have read and agree to the terms of the Stanford University license.'
-    click_button 'Close'
+    within('#lb_stanfordLicense') do
+      click_button 'Close'
+    end
     click_link 'View Creative Commons licenses'
-    select 'CC Attribution license', from: 'selectCCLicenseOptions'
-    click_button 'Close'
+    within('#lb_licenseCC') do
+      select 'CC Attribution license', from: 'selectCCLicenseOptions'
+      click_button 'Close'
+    end
 
     # set embargo
     click_link 'Postpone release'
-    select '6 months', from: 'selectReleaseDelayOptions'
-    click_button 'Close'
+    within('#lb_embargo') do
+      select '6 months', from: 'selectReleaseDelayOptions'
+      click_button 'Close'
+    end
 
     expect(page).to have_a_complete_step('#pbRightsSelected')
 
