@@ -26,11 +26,14 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Depositors', with: AuthenticationHelpers.username
 
     click_button 'Deposit'
-
     expect(page).to have_content(collection_title)
 
+    # Can't deposit to a collection until it's ready. Use the edit link as a
+    # signal that the background processes have finished before trying to
+    # deposit an item to a collection.
+    reload_page_until_timeout!(text: "Edit #{collection_title}", as_link: true)
     # Deposit an item to the collection
-    find('header', text: collection_title).sibling('button').click
+    find('table', text: collection_title).sibling('button').click
 
     # Selects image type
     find('label', text: 'Image').click
@@ -50,10 +53,10 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Last name', with: 'Scully'
     fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
     fill_in 'Keywords', with: 'Integration test'
+    # Blur keywords field so the client completes validation
+    find_field('work_keywords').native.send_keys(:tab)
 
-    fill_in 'Citation for this deposit', with: 'All rights reserved'
-
-    find('input#work_agree_to_terms').click
+    check('I agree to the SDR Terms of Deposit')
 
     find_button('Deposit').click
 
