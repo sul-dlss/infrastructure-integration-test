@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/sul-dlss/infrastructure-integration-test.svg?branch=master)](https://travis-ci.com/sul-dlss/infrastructure-integration-test)
+[![Build Status](https://travis-ci.com/sul-dlss/infrastructure-integration-test.svg?branch=main)](https://travis-ci.com/sul-dlss/infrastructure-integration-test)
 
 # SDR Integration Tests
 
