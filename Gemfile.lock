@@ -86,7 +86,7 @@ GEM
       faraday-net_http (~> 1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
-    faraday-net_http (1.0.0)
+    faraday-net_http (1.0.1)
     i18n (1.8.7)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -156,7 +156,7 @@ GEM
     ruby-enum (0.8.0)
       i18n
     ruby-progressbar (1.11.0)
-    ruby2_keywords (0.0.2)
+    ruby2_keywords (0.0.4)
     rubyXL (3.4.16)
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
@@ -204,4 +204,4 @@ DEPENDENCIES
   webdrivers (~> 4.0)
 
 BUNDLED WITH
-   2.2.4
+   2.2.6
