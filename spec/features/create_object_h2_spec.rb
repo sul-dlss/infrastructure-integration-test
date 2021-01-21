@@ -33,7 +33,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # deposit an item to a collection.
     reload_page_until_timeout!(text: "Edit #{collection_title}", as_link: true)
     # Deposit an item to the collection
-    find('table', text: collection_title).sibling('button').click
+    find(:table, collection_title).sibling('button').click
 
     # Selects image type
     find('label', text: 'Image').click
