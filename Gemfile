@@ -6,6 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'activesupport'
 gem 'byebug'
 gem 'capybara'
+gem 'capybara_table'
 gem 'config'
 gem 'faraday' # etds require POST request from registrar
 gem 'pry-byebug'

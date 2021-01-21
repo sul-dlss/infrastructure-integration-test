@@ -2,6 +2,7 @@
 
 require 'byebug'
 require 'capybara/rspec'
+require 'capybara_table/rspec'
 require 'csv'
 require 'io/console'
 require 'pry-byebug'
