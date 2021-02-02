@@ -22,6 +22,9 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Description', with: "Integration tests for #{collection_title}"
     fill_in 'Contact email', with: user_email
 
+    # Select license
+    select 'CC0-1.0', from: 'collection_required_license'
+
     # Adds user to depositor field
     fill_in 'Depositors', with: AuthenticationHelpers.username
 
@@ -49,8 +52,8 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     expect(page).to have_content('sul-logo.png')
     fill_in 'Title of deposit', with: item_title
     fill_in 'Contact email', with: user_email
-    fill_in 'First name', with: 'Dana'
-    fill_in 'Last name', with: 'Scully'
+    fill_in 'work_authors_attributes_0_first_name', with: 'Dana'
+    fill_in 'work_authors_attributes_0_last_name', with: 'Scully'
     fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
     fill_in 'Keywords', with: 'Integration test'
     # Blur keywords field so the client completes validation
