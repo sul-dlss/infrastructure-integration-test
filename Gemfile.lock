@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.1)
+    activesupport (6.1.2.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -24,7 +24,7 @@ GEM
       terminal-table
       xpath (>= 2.1)
     childprocess (3.0.0)
-    cocina-models (0.47.0)
+    cocina-models (0.47.2)
       activesupport
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -33,7 +33,7 @@ GEM
       thor
       zeitwerk (~> 2.1)
     coderay (1.1.3)
-    commonmarker (0.21.1)
+    commonmarker (0.21.2)
       ruby-enum (~> 0.5)
     concurrent-ruby (1.1.8)
     config (2.2.3)
@@ -41,7 +41,7 @@ GEM
       dry-validation (~> 1.0, >= 1.0.0)
     deep_merge (1.2.1)
     diff-lcs (1.4.4)
-    dry-configurable (0.12.0)
+    dry-configurable (0.12.1)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.5, >= 0.5.0)
     dry-container (0.7.2)
@@ -88,7 +88,7 @@ GEM
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
     faraday-net_http (1.0.1)
-    i18n (1.8.8)
+    i18n (1.8.9)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     method_source (1.0.0)
@@ -103,7 +103,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.11.1-x86_64-linux)
       racc (~> 1.4)
-    openapi3_parser (0.8.2)
+    openapi3_parser (0.9.0)
       commonmarker (~> 0.17)
       psych (~> 3.1)
     openapi_parser (0.12.1)
@@ -158,13 +158,13 @@ GEM
       i18n
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)
-    rubyXL (3.4.16)
+    rubyXL (3.4.17)
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
     rubyzip (2.3.0)
-    sdr-client (0.43.0)
+    sdr-client (0.43.1)
       activesupport
-      cocina-models (~> 0.47.0)
+      cocina-models (~> 0.47.2)
       dry-monads
       faraday (>= 0.16)
     selenium-webdriver (3.142.7)
@@ -208,4 +208,4 @@ DEPENDENCIES
   webdrivers (~> 4.0)
 
 BUNDLED WITH
-   2.2.8
+   2.2.9
