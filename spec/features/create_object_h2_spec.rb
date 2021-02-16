@@ -35,8 +35,9 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # signal that the background processes have finished before trying to
     # deposit an item to a collection.
     reload_page_until_timeout!(text: "Edit #{collection_title}", as_link: true)
+
     # Deposit an item to the collection
-    find(:table, collection_title).sibling('button').click
+    find(:table, collection_title).sibling('turbo-frame').first(:button).click
 
     # Selects image type
     find('label', text: 'Image').click

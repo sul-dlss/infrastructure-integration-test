@@ -23,6 +23,9 @@ Layout/SpaceAroundMethodCallOperator:
 Layout/BeginEndAlignment: # (new in 0.91)
   Enabled: true
 
+Layout/LineLength:
+  Max: 120
+
 Lint/BinaryOperatorWithIdenticalOperands:
   Enabled: true
 
@@ -98,9 +101,6 @@ Metrics/BlockLength:
     - it
     - context
     - scenario
-
-Metrics/LineLength:
-  Max: 120
 
 Metrics/MethodLength:
   Max: 20
