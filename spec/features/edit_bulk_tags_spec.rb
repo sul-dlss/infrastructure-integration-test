@@ -113,13 +113,13 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
     end
 
     visit "#{Settings.argo_url}/view/#{druid_with_added_tag.first}"
-    expect(page).to have_content(added_tag)
+    reload_page_until_timeout!(text: added_tag)
+
+    visit "#{Settings.argo_url}/view/#{druid_with_changed_tag.first}"
+    reload_page_until_timeout!(text: edited_tag)
+    expect(page).not_to have_content(replaced_tag)
 
     visit "#{Settings.argo_url}/view/#{druid_with_removed_tag.first}"
     expect(page).not_to have_content(removed_tag)
-
-    visit "#{Settings.argo_url}/view/#{druid_with_changed_tag.first}"
-    expect(page).to have_content(edited_tag)
-    expect(page).not_to have_content(replaced_tag)
   end
 end
