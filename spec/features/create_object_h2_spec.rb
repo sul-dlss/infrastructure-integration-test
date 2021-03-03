@@ -67,8 +67,8 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # Checks if title is on resulting display
     expect(page).to have_content(item_title)
 
-    # Keep refreshing page until druid is available
-    reload_page_until_timeout!(text: 'https://purl')
+    # This happens asynchronously, it might take a bit
+    expect(page).to have_content('https://sul-purl-stage')
 
     # Opens Argo and searches on title
     visit Settings.argo_url
