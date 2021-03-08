@@ -68,7 +68,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     expect(page).to have_content(item_title)
 
     # This happens asynchronously, it might take a bit
-    expect(page).to have_content('https://sul-purl-stage')
+    expect(page).to have_content('https://purl-stage.stanford.edu')
 
     # Opens Argo and searches on title
     visit Settings.argo_url
