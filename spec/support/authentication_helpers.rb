@@ -4,27 +4,31 @@ module AuthenticationHelpers
   mattr_accessor :username, :password
 
   def authenticate!(start_url:, expected_text:)
-    self.username ||= username_from_config_or_prompt
-    self.password ||= password_from_config_or_prompt
-
     # View the specified starting URL
     visit start_url
 
-    # We're at the Stanford login page
-    if page.has_content?('SUNet ID')
-      fill_in 'SUNet ID', with: username
-      fill_in 'Password', with: password
-      sleep 1
-      click_button 'Login'
-
-      within_frame('duo_iframe') do
-        click_button 'Send Me a Push'
-      end
-    end
+    submit_credentials
 
     using_wait_time 100 do
       # Once we see this we know the log in succeeded.
       expect(page).to have_content expected_text
+    end
+  end
+
+  def submit_credentials
+    self.username ||= username_from_config_or_prompt
+    self.password ||= password_from_config_or_prompt
+
+    return unless page.has_content?('SUNet ID')
+
+    # We're at the Stanford login page
+    fill_in 'SUNet ID', with: username
+    fill_in 'Password', with: password
+    sleep 1
+    click_button 'Login'
+
+    within_frame('duo_iframe') do
+      click_button 'Send Me a Push'
     end
   end
 
