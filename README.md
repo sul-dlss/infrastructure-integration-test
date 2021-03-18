@@ -13,7 +13,7 @@ The tests depend on having Firefox (default) or Chrome downloaded.
 
 See the `Configuration` section below for instructions on using Chrome and on tweaking default browser settings.
 
-## Prerequisites
+## Pre-requisites
 
 1. Connect to Stanford VPN (full-tunnel or split-tunnel)
 1. Ensure you have a valid, non-expired Kerberos ticket (use `klist` to verify, or run `kinit` to refresh)
