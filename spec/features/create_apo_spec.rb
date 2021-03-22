@@ -5,6 +5,11 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
   let(:object_label) { "Object Label for APO #{apo_title}" }
   let(:source_id) { "apo-rights-test:#{apo_title}" }
+  let(:rights) { 'Stanford' }
+  let(:terms_of_use) { 'Some oddly specific terms of use.' }
+  let(:copyright) { 'You may not do anything with my stuff.' }
+  let(:license) { 'Attribution Non-Commercial 3.0 Unported' }
+  let(:license_uri) { 'https://creativecommons.org/licenses/by-nc/3.0/' }
 
   before do
     expected_txt = 'The following defaults will apply to all newly registered objects.'
@@ -13,9 +18,10 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
 
   scenario do
     fill_in 'Title', with: apo_title
-    select 'Stanford', from: 'default_object_rights'
-
-    # TODO: More APO set-up steps / form fields exercised
+    select rights, from: 'default_object_rights'
+    select license, from: 'use_license'
+    fill_in 'use', with: terms_of_use
+    fill_in 'copyright', with: copyright
     click_button 'Register APO'
 
     # make sure we're on an APO show view
@@ -51,6 +57,11 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
 
     # wait for registrationWF to finish and verify default access rights
     reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
-    expect(page).to have_content "Access Rights:\nstanford"
+    expect(page).to have_content "Access Rights:\n#{rights.downcase}"
+
+    # these are in the cocina model data, which is hidden by default
+    expect(page).to have_content(:all, terms_of_use)
+    expect(page).to have_content(:all, copyright)
+    expect(page).to have_content(:all, license_uri)
   end
 end
