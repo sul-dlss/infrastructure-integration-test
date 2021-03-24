@@ -201,10 +201,11 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
 
     # check Argo for object (wait for embargo info)
+    embargo_date = DateTime.now.to_date >> 6
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-        break if page.has_text?('This item is embargoed until', wait: 1)
+        break if page.has_text?("This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}", wait: 1)
       end
     end
     expect(page).to have_content(dissertation_title)
@@ -213,20 +214,46 @@ RSpec.describe 'Create a new ETD', type: :feature do
     status_element = first('dd.blacklight-status_ssi')
     expect(status_element).to have_text('v1 Registered')
     click_link('etdSubmitWF')
-    modal_element = find('#blacklight-modal')
-    # expect first 5 steps to have completed
-    expect(modal_element).to have_text(/register-object completed/)
-    expect(modal_element).to have_text(/submit completed/)
-    expect(modal_element).to have_text(/reader-approval completed/)
-    expect(modal_element).to have_text(/registrar-approval completed/)
-    expect(modal_element).to have_text(/submit-marc completed/)
-    expect(modal_element).to have_text(/check-marc waiting/)
+    within('#blacklight-modal') do
+      # expect first 5 steps to have completed
+      expect(page).to have_text(/register-object completed/)
+      expect(page).to have_text(/submit completed/)
+      expect(page).to have_text(/reader-approval completed/)
+      expect(page).to have_text(/registrar-approval completed/)
+      expect(page).to have_text(/submit-marc completed/)
+      expect(page).to have_text(/check-marc waiting/)
+      # NOTE: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
+      #  identity, access rights and contentMetadata are updated in otherMetadata WF step
+      #  which is kicked off from ETD app cron noticing check-marc is completed,
+      #  and otherMetadata WF step in ETD app then kicks off start-accession
+      #  ideally, we would then make sure accessioning completes cleanly (at least up to preservation robots steps)
+      click_button 'Cancel'
+    end
 
-    # TODO: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
-    # TODO: click over to argo and make sure accessionWF is running
-    # TODO: check identityMetadata, rightsMetadata and contentMetadata in argo?
-    #    these are updated in otherMetadata WF step, right before start-accession
-    # TODO: make sure accessioning completes cleanly (at least up to preservation robots steps)
+    # check Argo facet field with 6 month embargo
+    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{prefixed_druid}"
+    click_button('Embargo Release Date')
+    within '#facet-embargo_release_date ul.facet-values' do
+      expect(page).not_to have_content('up to 7 days')
+    end
+
+    # update embargo
+    new_embargo_date = Date.today + 3
+    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+    find_link('Update embargo').click
+    within '#blacklight-modal' do
+      fill_in('embargo_date', with: new_embargo_date.strftime('%F'))
+      click_button 'Update Embargo'
+    end
+    reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
+                               with_reindex: true)
+
+    # check Argo facet field with 3 day embargo
+    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{prefixed_druid}"
+    click_button('Embargo Release Date')
+    within '#facet-embargo_release_date ul.facet-values' do
+      find_link('up to 7 days')
+    end
   end
 end
 
