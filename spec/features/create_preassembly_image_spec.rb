@@ -62,7 +62,7 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
 
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'
-    select 'Simple Image', from: 'Content structure'
+    select 'Image', from: 'Content structure'
     fill_in 'Bundle dir', with: preassembly_bundle_dir
 
     click_button 'Submit'
