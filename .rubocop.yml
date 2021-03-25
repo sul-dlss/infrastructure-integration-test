@@ -124,6 +124,11 @@ Style/AccessorGrouping:
 Style/ArrayCoercion:
   Enabled: true
 
+Style/AsciiComments:
+  Enabled: true
+  Exclude:
+    - 'spec/features/access_indexing_spec.rb'
+
 Style/BisectedAttrAccessor:
   Enabled: true
 
