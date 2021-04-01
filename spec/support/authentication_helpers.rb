@@ -7,7 +7,7 @@ module AuthenticationHelpers
     # View the specified starting URL
     visit start_url
 
-    submit_credentials
+    submit_credentials(expected_text)
 
     using_wait_time 100 do
       # Once we see this we know the log in succeeded.
@@ -15,7 +15,7 @@ module AuthenticationHelpers
     end
   end
 
-  def submit_credentials
+  def submit_credentials(expected_text)
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
@@ -27,8 +27,17 @@ module AuthenticationHelpers
     sleep 1
     click_button 'Login'
 
-    within_frame('duo_iframe') do
-      click_button 'Send Me a Push'
+    # did we already get authenticated?
+    return if page.has_text?(expected_text, wait: 100)
+
+    # did we already push, but not authenticated?
+    begin
+      return if page.has_text?('Pushed a login request to your device', wait: 100)
+    rescue Capybara::ElementNotFound
+      # the app uses an explicit push
+      within_frame('duo_iframe') do
+        click_button 'Send Me a Push'
+      end
     end
   end
 
