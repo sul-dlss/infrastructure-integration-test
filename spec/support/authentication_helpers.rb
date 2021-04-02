@@ -15,7 +15,7 @@ module AuthenticationHelpers
     end
   end
 
-  def submit_credentials(expected_text)
+  def submit_credentials(expected_text = "")
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
@@ -27,18 +27,25 @@ module AuthenticationHelpers
     sleep 1
     click_button 'Login'
 
-    # did we already get authenticated?
-    return if page.has_text?(expected_text, wait: 100)
+    if Settings.automatic_authentication
+      # did we already get authenticated?
+      return if page.has_text?(expected_text, wait: 3) if expected_text.present?
 
-    # did we already push, but not authenticated?
-    begin
-      return if page.has_text?('Pushed a login request to your device', wait: 100)
-    rescue Capybara::ElementNotFound
-      # the app uses an explicit push
+      # did we already push, but not authenticated?
+      begin
+        return if page.has_text?('Pushed a login request to your device', wait: 3)
+      rescue Capybara::ElementNotFound
+        # the app uses an explicit push
+        within_frame('duo_iframe') do
+          click_button 'Send Me a Push'
+        end
+      end
+    else
       within_frame('duo_iframe') do
         click_button 'Send Me a Push'
       end
     end
+
   end
 
   def ensure_token
