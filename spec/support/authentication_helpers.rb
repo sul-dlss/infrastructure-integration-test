@@ -29,11 +29,11 @@ module AuthenticationHelpers
 
     if Settings.automatic_authentication
       # did we already get authenticated?
-      return if page.has_text?(expected_text, wait: 3) if expected_text.present?
+      return if page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout) if expected_text.present?
 
       # did we already push, but not authenticated?
       begin
-        return if page.has_text?('Pushed a login request to your device', wait: 3)
+        return if page.has_text?('Pushed a login request to your device', wait: Settings.post_authentication_text_timeout)
       rescue Capybara::ElementNotFound
         # the app uses an explicit push
         within_frame('duo_iframe') do

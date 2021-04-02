@@ -10,7 +10,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
   end
 
   scenario do
-    click_button 'No' if page.has_content?('Continue your deposit', wait: 100)
+    click_button 'No' if page.has_content?('Continue your deposit', wait: Settings.post_authentication_text_timeout)
     click_link '+ Create a new collection'
 
     # Checks for specific content on create collection view
