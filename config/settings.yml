@@ -18,3 +18,6 @@ browser:
 
 default_apo: 'druid:qc410yz8746'
 default_collection: 'druid:bc778pm9866'
+
+automatic_authentication: false
+post_authentication_text_timeout: 5 # in seconds

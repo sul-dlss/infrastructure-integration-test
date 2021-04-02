@@ -53,6 +53,12 @@ Host *.stanford.edu
     GSSAPIDelegateCredentials yes
 ```
 
+### Problems with Authentication?
+
+If specs fail because they get through authentication without finding the "duo_iframe" "Send Me a Push", add `automatic_authentication: true` to `config/settings.local.yml`.
+
+You may also want to lower the time value of `post_authentication_text_timeout` in `config/settings.local.yml`.
+
 ### Use Chrome Browser
 
 1. `bundle install`
