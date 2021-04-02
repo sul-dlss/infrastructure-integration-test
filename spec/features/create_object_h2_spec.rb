@@ -5,13 +5,12 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
   let(:item_title) { "SUL Logo for #{collection_title}" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
 
+  before do
+    authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: 'Create a new collection')
+  end
+
   scenario do
-    visit Settings.h2_url
-    click_link 'Start here'
-    submit_credentials
-
-    click_button 'No' if has_content? 'Continue your deposit'
-
+    click_button 'No' if page.has_content?('Continue your deposit', wait: 100)
     click_link '+ Create a new collection'
 
     # Checks for specific content on create collection view
