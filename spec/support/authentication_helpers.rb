@@ -15,7 +15,11 @@ module AuthenticationHelpers
     end
   end
 
-  def submit_credentials(expected_text = "")
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/PerceivedComplexity
+  def submit_credentials(expected_text = '')
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
@@ -29,11 +33,11 @@ module AuthenticationHelpers
 
     if Settings.automatic_authentication
       # did we already get authenticated?
-      return if page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout) if expected_text.present?
+      return if expected_text.present? && page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout)
 
       # did we already push, but not authenticated?
       begin
-        return if page.has_text?('Pushed a login request to your device', wait: Settings.post_authentication_text_timeout)
+        page.has_text?('Pushed a login request to your device', wait: Settings.post_authentication_text_timeout)
       rescue Capybara::ElementNotFound
         # the app uses an explicit push
         within_frame('duo_iframe') do
@@ -45,8 +49,11 @@ module AuthenticationHelpers
         click_button 'Send Me a Push'
       end
     end
-
   end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def ensure_token
     @@token ||= begin
