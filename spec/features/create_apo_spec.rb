@@ -18,10 +18,10 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
 
   scenario do
     fill_in 'Title', with: apo_title
-    select rights, from: 'apo_form_default_rights'
-    select license, from: 'apo_form_use_license'
-    fill_in 'apo_form_use_statement', with: terms_of_use
-    fill_in 'apo_form_copyright_statement', with: copyright
+    select rights, from: 'Default Object Rights'
+    select license, from: 'Default use license'
+    fill_in 'Default Use and Reproduction statement', with: terms_of_use
+    fill_in 'Default Copyright statement', with: copyright
     click_button 'Register APO'
 
     # make sure we're on an APO show view
