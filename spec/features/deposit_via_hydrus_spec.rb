@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
+# NOTE: this can only be run on stage as there is no Solr collection for Hydrus qa
+RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true do
   let(:collection_title) { RandomWord.nouns.next }
   let(:item_title) { RandomWord.nouns.next }
   let(:start_url) { "#{Settings.hydrus_url}/webauth/login?referrer=/" }
