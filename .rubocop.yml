@@ -147,6 +147,11 @@ Style/ExplicitBlockArgument:
 Style/ExponentialNotation:
   Enabled: true
 
+Style/FormatStringToken:
+  Exclude:
+    - 'spec/features/create_etd_spec.rb'
+    - 'spec/features/embargo_spec.rb'
+
 Style/GlobalStdStream:
   Enabled: true
 
