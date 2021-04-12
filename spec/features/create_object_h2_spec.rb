@@ -76,8 +76,10 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     click_button 'Search'
 
-    # Click on link with the item's title
-    click_link item_title
+    # Click on link with the item's title in the search results
+    within '#documents' do
+      click_link item_title
+    end
 
     # Should be on item view
     find('h1', text: item_title)

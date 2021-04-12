@@ -4,7 +4,7 @@ spec/examples.txt
 
 # specs create these in the course of operation, but they're
 # ephemeral and shouldn't be committed.
-tmp/manifest.csv
+tmp/*.csv
 downloads
 
 # configs to hold sensitive values
