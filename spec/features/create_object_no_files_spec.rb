@@ -41,5 +41,26 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
 
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+
+    # open a new version
+    click_link 'Open for modification'
+    within '.modal-dialog' do
+      select 'Admin', from: 'Type'
+      fill_in 'Version description', with: 'opening version for integration testing'
+      click_button 'Open Version'
+    end
+    # look for version text in History section
+    expect(page).to have_text('opening version for integration testing')
+
+    # close version
+    click_link 'Close Version'
+    within '.modal-dialog' do
+      fill_in 'Version description', with: 'closing version for integration testing'
+      click_button 'Close Version'
+    end
+    expect(page).to have_text('closing version for integration testing')
+
+    # wait for accessioningWF to finish
+    reload_page_until_timeout!(text: 'v2 Accessioned', with_reindex: true)
   end
 end
