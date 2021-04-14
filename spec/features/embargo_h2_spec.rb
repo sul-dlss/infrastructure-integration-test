@@ -12,10 +12,8 @@
 RSpec.describe 'H2 item created with embargo; change embargo in Argo',
                type: :feature, stage_only: true, embargo: true, skip_for_default: true do
   let(:collection_title) { RandomWord.nouns.next }
-  let(:item_title) { "Text file for #{collection_title}" }
+  let(:item_title) { "Text file #{RandomWord.nouns.next} in H2 collection" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
-  let(:purl_xml_embargo_prefix) { '<access type="read">\s*<machine>\s*<embargoReleaseDate>' }
-  let(:purl_xml_embargo_suffix) { '</embargoReleaseDate>\s*<none.*>\s*</machine>\s*</access>' }
 
   before do
     authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: 'Create a new collection')
@@ -73,7 +71,9 @@ RSpec.describe 'H2 item created with embargo; change embargo in Argo',
       expect(page).not_to have_content('up to 7 days')
     end
 
-    click_link item_title
+    within '#documents' do
+      click_link item_title
+    end
     embargo_date = DateTime.now.utc.to_date >> 6
     expect(page).to have_content("This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}")
 
@@ -82,7 +82,7 @@ RSpec.describe 'H2 item created with embargo; change embargo in Argo',
 
     # check purl xml for embargo
     visit "#{Settings.purl_url}/#{druid}.xml"
-    purl_xml_has_content("#{purl_xml_embargo_prefix}#{embargo_date.strftime('%FT%TZ')}#{purl_xml_embargo_suffix}")
+    expect_embargo_date_in_purl(embargo_date)
 
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{druid}"
@@ -107,17 +107,24 @@ RSpec.describe 'H2 item created with embargo; change embargo in Argo',
 
     # check purl xml for 3 day embargo
     visit "#{Settings.purl_url}/#{druid}.xml"
-    purl_xml_has_content("#{purl_xml_embargo_prefix}#{new_embargo_date.strftime('%FT%TZ')}#{purl_xml_embargo_suffix}")
+    expect_embargo_date_in_purl(new_embargo_date)
   end
 end
 
-def purl_xml_has_content(expected_text)
+# rubocop:disable Metrics/AbcSize
+def expect_embargo_date_in_purl(embargo_date)
   Timeout.timeout(Settings.timeouts.workflow) do
     loop do
       page.driver.browser.navigate.refresh
-      break if html.match? expected_text
+      break unless html.empty?
 
       sleep 1
     end
   end
+
+  purl_ng_xml = Nokogiri::XML(html)
+  embargo_nodes = purl_ng_xml.xpath('//rightsMetadata/access[@type="read"]/machine/embargoReleaseDate')
+  expect(embargo_nodes.size).to eq 1
+  expect(embargo_nodes.first.content).to eq embargo_date.strftime('%FT%TZ')
 end
+# rubocop:enable Metrics/AbcSize
