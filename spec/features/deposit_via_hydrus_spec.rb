@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # NOTE: this can only be run on stage as there is no Solr collection for Hydrus qa
+# NOTE: this can only be run on stage as there is no purl page for qa
 RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true do
   let(:collection_title) { RandomWord.nouns.next }
   let(:item_title) { RandomWord.nouns.next }
@@ -20,6 +21,8 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
     fill_in 'Collection name', with: collection_title
     fill_in 'Description', with: 'Lorem ipsum yada yada yada.'
     fill_in 'Contact email', with: user_email
+    choose 'hydrus_collection_embargo_option_fixed'
+    select('6 months after deposit', from: 'embargo_option_fixed')
     click_button 'Save'
 
     expect(page).to have_content collection_title
@@ -84,5 +87,75 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
     expect(find('dd.blacklight-tag_ssim').text).to include 'Project : Hydrus'
     expect(find('dd.blacklight-project_tag_ssim').text).to eq 'Hydrus'
     expect(find('dd.blacklight-is_member_of_collection_ssim').text).to include collection_title
+
+    # Test that embargo setting for accessioned objects works fully
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    embargo_date = DateTime.now.to_date >> 6
+    expect(page).to have_content "This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}"
+
+    # check Argo facet field (indexed embargo date) with 6 month embargo
+    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{item_druid}"
+    click_button('Embargo Release Date')
+    within '#facet-embargo_release_date ul.facet-values' do
+      expect(page).not_to have_content('up to 7 days')
+    end
+    bare_druid = item_druid.split(':').last
+
+    # NOTE: for an embargo to appear on the purl page, the conditions are:
+    #  (Fedora)
+    #    - there must be contentMetadata
+    #    - there must be rightsMetadata
+    #    - there must be embargoMetadata
+    #
+    # ideally, would look for the following on purl page:
+    #   "Access is restricted until #{embargo_date.strftime('%d-%b-%Y')}"
+    # but this is in the embed file viewer within an iframe and I couldn't figure it out.
+
+    # check purl xml for embargo
+    visit "#{Settings.purl_url}/#{bare_druid}.xml"
+    expect_embargo_date_in_purl(embargo_date)
+
+    # change embargo date
+    new_embargo_date = Date.today + 3
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
+    find_link('Update embargo').click
+    within '#blacklight-modal' do
+      fill_in('embargo_date', with: new_embargo_date.strftime('%F'))
+      click_button 'Update Embargo'
+    end
+    reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
+                               with_reindex: true)
+
+    # check Argo facet field (indexed embargo date) with 3 day embargo
+    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{bare_druid}"
+    click_button('Embargo Release Date')
+    within '#facet-embargo_release_date ul.facet-values' do
+      find_link('up to 7 days')
+    end
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
+    # updates the purl XML but may require a hard refresh to update date in embed viewer
+    find_link('Republish').click
+
+    # check purl xml for 3 day embargo
+    visit "#{Settings.purl_url}/#{bare_druid}.xml"
+    expect_embargo_date_in_purl(new_embargo_date)
   end
 end
+
+# rubocop:disable Metrics/AbcSize
+def expect_embargo_date_in_purl(embargo_date)
+  Timeout.timeout(Settings.timeouts.workflow) do
+    loop do
+      page.driver.browser.navigate.refresh
+      break unless html.empty?
+
+      sleep 1
+    end
+  end
+
+  purl_ng_xml = Nokogiri::XML(html)
+  embargo_nodes = purl_ng_xml.xpath('//rightsMetadata/access[@type="read"]/machine/embargoReleaseDate')
+  expect(embargo_nodes.size).to eq 1
+  expect(embargo_nodes.first.content).to eq embargo_date.strftime('%FT%TZ')
+end
+# rubocop:enable Metrics/AbcSize

@@ -230,6 +230,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
       click_button 'Cancel'
     end
 
+    # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
     visit "#{Settings.argo_url}/catalog?search_field=text&q=#{prefixed_druid}"
     click_button('Embargo Release Date')
