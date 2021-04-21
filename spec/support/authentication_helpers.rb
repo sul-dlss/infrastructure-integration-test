@@ -23,7 +23,7 @@ module AuthenticationHelpers
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
-    return unless page.has_content?('SUNet ID')
+    return unless page.has_content?('SUNet ID', wait: 1)
 
     # We're at the Stanford login page
     fill_in 'SUNet ID', with: username
