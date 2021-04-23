@@ -95,25 +95,15 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
 
     # check Argo facet field (indexed embargo date) with 6 month embargo
     visit "#{Settings.argo_url}/catalog?search_field=text&q=#{item_druid}"
+    reload_page_until_timeout!(text: 'Embargo Release Date')
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       expect(page).not_to have_content('up to 7 days')
     end
     bare_druid = item_druid.split(':').last
 
-    # NOTE: for an embargo to appear on the purl page, the conditions are:
-    #  (Fedora)
-    #    - there must be contentMetadata
-    #    - there must be rightsMetadata
-    #    - there must be embargoMetadata
-    #
-    # ideally, would look for the following on purl page:
-    #   "Access is restricted until #{embargo_date.strftime('%d-%b-%Y')}"
-    # but this is in the embed file viewer within an iframe and I couldn't figure it out.
-
     # check purl xml for embargo
-    visit "#{Settings.purl_url}/#{bare_druid}.xml"
-    expect_embargo_date_in_purl(embargo_date)
+    expect_embargo_date_in_purl(bare_druid, embargo_date)
 
     # change embargo date
     new_embargo_date = Date.today + 3
@@ -128,34 +118,17 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
 
     # check Argo facet field (indexed embargo date) with 3 day embargo
     visit "#{Settings.argo_url}/catalog?search_field=text&q=#{bare_druid}"
+    reload_page_until_timeout!(text: 'Embargo Release Date')
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       find_link('up to 7 days')
     end
+
+    # update the purl XML
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    # updates the purl XML but may require a hard refresh to update date in embed viewer
     find_link('Republish').click
-
+    sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
-    visit "#{Settings.purl_url}/#{bare_druid}.xml"
-    expect_embargo_date_in_purl(new_embargo_date)
+    expect_embargo_date_in_purl(bare_druid, new_embargo_date)
   end
 end
-
-# rubocop:disable Metrics/AbcSize
-def expect_embargo_date_in_purl(embargo_date)
-  Timeout.timeout(Settings.timeouts.workflow) do
-    loop do
-      page.driver.browser.navigate.refresh
-      break unless html.empty?
-
-      sleep 1
-    end
-  end
-
-  purl_ng_xml = Nokogiri::XML(html)
-  embargo_nodes = purl_ng_xml.xpath('//rightsMetadata/access[@type="read"]/machine/embargoReleaseDate')
-  expect(embargo_nodes.size).to eq 1
-  expect(embargo_nodes.first.content).to eq embargo_date.strftime('%FT%TZ')
-end
-# rubocop:enable Metrics/AbcSize
