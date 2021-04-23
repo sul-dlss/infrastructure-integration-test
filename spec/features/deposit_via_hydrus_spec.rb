@@ -78,6 +78,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
 
     expect(find('dd.blacklight-tag_ssim').text).to include 'Project : Hydrus'
     expect(find('dd.blacklight-project_tag_ssim').text).to eq 'Hydrus'
+    expect(find('dd.blacklight-rights_descriptions_ssim').text).to eq 'world'
 
     visit "#{Settings.argo_url}/view/#{item_druid}"
 
