@@ -250,6 +250,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
                                with_reindex: true)
 
     # check Argo facet field with 3 day embargo
+    sleep 1 # Without this, skips the visit below. I have no idea why ...
     visit "#{Settings.argo_url}/catalog?search_field=text&q=#{prefixed_druid}"
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
