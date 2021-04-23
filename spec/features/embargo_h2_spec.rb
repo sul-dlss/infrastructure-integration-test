@@ -60,30 +60,34 @@ RSpec.describe 'H2 item created with embargo; change embargo in Argo',
     find_button('Deposit').click
 
     expect(page).to have_content(item_title)
+
+    # looking for purl on H2; this happens asynchronously, it might take a bit
     reload_page_until_timeout!(text: Settings.purl_url)
 
-    # check Argo facet field with 6 month embargo
     visit Settings.argo_url
     find('input#q').fill_in(with: item_title)
     click_button 'Search'
+    reload_page_until_timeout!(text: 'v1 Accessioned')
+
+    # check Argo facet field with 6 month embargo
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       expect(page).not_to have_content('up to 7 days')
     end
 
-    within '#documents' do
-      click_link item_title
+    # Click on link with the item's title in the search results
+    within '.document-title-heading' do
+      click_link
     end
-    embargo_date = DateTime.now.utc.to_date >> 6
+    # check embargo date
+    embargo_date = DateTime.now.to_date >> 6
     expect(page).to have_content("This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}")
-
-    # get druid
     druid = page.current_url.split(':').last
 
     # check purl xml for embargo
-    visit "#{Settings.purl_url}/#{druid}.xml"
-    expect_embargo_date_in_purl(embargo_date)
+    expect_embargo_date_in_purl(druid, embargo_date)
 
+    # change embargo date
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{druid}"
     find_link('Update embargo').click
@@ -96,35 +100,17 @@ RSpec.describe 'H2 item created with embargo; change embargo in Argo',
 
     # check Argo facet field with 3 day embargo
     visit "#{Settings.argo_url}/catalog?search_field=text&q=#{druid}"
+    reload_page_until_timeout!(text: 'Embargo Release Date')
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       find_link('up to 7 days')
     end
 
+    # update the purl XML
     visit "#{Settings.argo_url}/view/#{druid}"
-    # updates the purl XML but may require a hard refresh to update date in embed viewer
     find_link('Republish').click
-
+    sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
-    visit "#{Settings.purl_url}/#{druid}.xml"
-    expect_embargo_date_in_purl(new_embargo_date)
+    expect_embargo_date_in_purl(druid, new_embargo_date)
   end
 end
-
-# rubocop:disable Metrics/AbcSize
-def expect_embargo_date_in_purl(embargo_date)
-  Timeout.timeout(Settings.timeouts.workflow) do
-    loop do
-      page.driver.browser.navigate.refresh
-      break unless html.empty?
-
-      sleep 1
-    end
-  end
-
-  purl_ng_xml = Nokogiri::XML(html)
-  embargo_nodes = purl_ng_xml.xpath('//rightsMetadata/access[@type="read"]/machine/embargoReleaseDate')
-  expect(embargo_nodes.size).to eq 1
-  expect(embargo_nodes.first.content).to eq embargo_date.strftime('%FT%TZ')
-end
-# rubocop:enable Metrics/AbcSize

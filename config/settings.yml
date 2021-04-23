@@ -6,6 +6,7 @@ timeouts:
   capybara: 60
   workflow: 300
   bulk_action: 200
+  publish: 30
 
 sunet:
   id: ~ # NOTE: *without* @stanford.edu!
