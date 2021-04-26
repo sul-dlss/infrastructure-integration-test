@@ -102,7 +102,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     bare_druid = item_druid.split(':').last
 
     # check purl xml for embargo
-    expect_embargo_date_in_purl(bare_druid, embargo_date)
+    expect_embargo_date_in_public_xml(bare_druid, embargo_date)
 
     # change embargo date
     new_embargo_date = Date.today + 3
@@ -128,6 +128,6 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     find_link('Republish').click
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
-    expect_embargo_date_in_purl(bare_druid, new_embargo_date)
+    expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
   end
 end

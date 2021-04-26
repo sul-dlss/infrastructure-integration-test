@@ -69,6 +69,9 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # Checks if title is on resulting display
     expect(page).to have_content(item_title)
 
+    # This happens asynchronously, it might take a bit
+    expect(page).to have_content('https://purl-stage.stanford.edu')
+
     # Opens Argo and searches on title
     visit Settings.argo_url
     find('input#q').fill_in(with: item_title)
@@ -91,7 +94,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     bare_druid = page.current_url.split(':').last
 
     # check purl xml for embargo
-    expect_embargo_date_in_purl(bare_druid, embargo_date)
+    expect_embargo_date_in_public_xml(bare_druid, embargo_date)
 
     # change embargo date
     new_embargo_date = Date.today + 3
@@ -117,6 +120,6 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     find_link('Republish').click
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
-    expect_embargo_date_in_purl(bare_druid, new_embargo_date)
+    expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
   end
 end

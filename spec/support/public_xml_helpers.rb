@@ -2,7 +2,11 @@
 
 require 'dor/services/client'
 
-module PurlHelpers
+# This module allows us to inspect the "public XML" that would be published to
+# the purl service, without coupling the tests to the purl service itself, which
+# is valuable because we don't have a purl service in the QA environment and
+# it's not our service to create or maintain.
+module PublicXmlHelpers
   # NOTE: for an embargo to appear on the purl page, the conditions are:
   #  (Fedora)
   #    - there must be contentMetadata
@@ -11,7 +15,7 @@ module PurlHelpers
   #  (Cocina)
   #    - access data ... with the embargo in it as appropriate
   #    - access data correctly put in PURL xml
-  def expect_embargo_date_in_purl(druid, embargo_date)
+  def expect_embargo_date_in_public_xml(druid, embargo_date)
     Dor::Services::Client.configure(url: Settings.dor_services.url, token: Settings.dor_services.token)
     xml = Dor::Services::Client.object("druid:#{druid}").metadata.public_xml
     purl_ng_xml = Nokogiri::XML(xml)
