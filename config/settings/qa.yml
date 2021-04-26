@@ -6,3 +6,5 @@ preassembly_bundle_directory: '/dor/staging/integration-tests/image-test'
 preassembly_host: 'sul-preassembly-qa'
 preassembly_url: 'https://sul-preassembly-qa.stanford.edu'
 sdrapi_url: 'https://sdr-api-qa.stanford.edu'
+dor_services:
+  url: 'https://dor-services-qa.stanford.edu'

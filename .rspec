@@ -1,3 +1,2 @@
 --require spec_helper
 --tag ~indexing
---tag ~skip_for_default

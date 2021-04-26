@@ -73,6 +73,10 @@ If you find you need to modify the default window size for either browser---*e.g
 
 If you are experiencing timeout errors when running tests, you may override the default timeout values by adding `timeouts.capybara`, `timeouts.bulk_action`, and/or `timeouts.workflow` in `config/settings.local.yml` depending on where you see timeouts.
 
+### Set Dor-Services-App Tokens
+
+Some integration tests use the `dor-services-client` to interact with the `dor-services-app`. In order to successfully use the dor-services-app API, you must first have a token set. (To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication).) Note that you'll need to do this for each environment (currently: stage and QA). Place the value in `config/settings/{ENV}.local.yml`. See `config/settings.yml` for the expected YAML syntax.
+
 ### Set SUNet Credentials
 
 If you tire of typing in your SUNet credentials over and over, you may add them to `config/settings.local.yml` (ignored by git). Copy the dummy values from `config/settings.yml` to get started. Do *not* add this file to version control, if you do this!

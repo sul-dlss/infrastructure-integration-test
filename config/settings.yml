@@ -1,16 +1,7 @@
-etd:
-  username: ~
-  password: ~
-
 timeouts:
   capybara: 60
   workflow: 300
   bulk_action: 200
-  publish: 30
-
-sunet:
-  id: ~ # NOTE: *without* @stanford.edu!
-  password: ~
 
 browser:
   driver: firefox
@@ -22,3 +13,14 @@ default_collection: 'druid:bc778pm9866'
 
 automatic_authentication: false
 post_authentication_text_timeout: 5 # in seconds
+
+etd:
+  username: ~
+  password: ~
+
+dor_services:
+  token: ~
+
+sunet:
+  id: ~ # NOTE: *without* @stanford.edu!
+  password: ~
