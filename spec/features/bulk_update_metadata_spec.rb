@@ -28,6 +28,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     choose 'Spreadsheet input; load into objects'
     fill_in '3. Note', with: note
     click_button 'Submit'
+    expect(page).to have_content('Bulk processing started')
 
     reload_page_until_timeout!(text: note)
 
