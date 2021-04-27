@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-# NOTE: this can only be run on stage as there is no Solr collection for Hydrus qa
-# NOTE: this can only be run on stage as there is no purl page for qa
-RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true do
+RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
   let(:collection_title) { RandomWord.nouns.next }
   let(:item_title) { RandomWord.nouns.next }
   let(:start_url) { "#{Settings.hydrus_url}/webauth/login?referrer=/" }
@@ -104,7 +102,7 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
     bare_druid = item_druid.split(':').last
 
     # check purl xml for embargo
-    expect_embargo_date_in_purl(bare_druid, embargo_date)
+    expect_embargo_date_in_public_xml(bare_druid, embargo_date)
 
     # change embargo date
     new_embargo_date = Date.today + 3
@@ -130,6 +128,6 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature, stage_only: true
     find_link('Republish').click
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
-    expect_embargo_date_in_purl(bare_druid, new_embargo_date)
+    expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
   end
 end

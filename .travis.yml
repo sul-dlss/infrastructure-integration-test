@@ -8,3 +8,6 @@ script:
 
 notifications:
   email: false
+
+rvm:
+  - 2.7

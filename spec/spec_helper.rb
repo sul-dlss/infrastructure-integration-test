@@ -58,7 +58,7 @@ RSpec.configure do |config|
   config.include DepositHelpers
   config.include DownloadHelpers
   config.include PageHelpers
-  config.include PurlHelpers
+  config.include PublicXmlHelpers
   config.include XlsxHelpers
 
   # rspec-expectations config goes here. You can use an alternate

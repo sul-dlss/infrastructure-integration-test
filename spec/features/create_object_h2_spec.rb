@@ -21,6 +21,9 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Description', with: "Integration tests for #{collection_title}"
     fill_in 'Contact email', with: user_email
 
+    # set embargo for 6 months for collection members
+    choose 'Delay release'
+
     # Select license
     select 'CC0-1.0', from: 'collection_required_license'
 
@@ -71,17 +74,52 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-
     find('input#q').fill_in(with: item_title)
-
     click_button 'Search'
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
-    # Click on link with the item's title in the search results
-    within '#documents' do
-      click_link item_title
+    # check Argo facet field with 6 month embargo
+    click_button('Embargo Release Date')
+    within '#facet-embargo_release_date ul.facet-values' do
+      expect(page).not_to have_content('up to 7 days')
     end
 
-    # Should be on item view
-    find('h1', text: item_title)
+    # Click on link with the item's title in the search results
+    within '.document-title-heading' do
+      click_link
+    end
+    # check embargo date
+    embargo_date = DateTime.now.to_date >> 6
+    expect(page).to have_content("This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}")
+    bare_druid = page.current_url.split(':').last
+
+    # check purl xml for embargo
+    expect_embargo_date_in_public_xml(bare_druid, embargo_date)
+
+    # change embargo date
+    new_embargo_date = Date.today + 3
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
+    find_link('Update embargo').click
+    within '#blacklight-modal' do
+      fill_in('embargo_date', with: new_embargo_date.strftime('%F'))
+      click_button 'Update Embargo'
+    end
+    reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
+                               with_reindex: true)
+
+    # check Argo facet field with 3 day embargo
+    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{bare_druid}"
+    reload_page_until_timeout!(text: 'Embargo Release Date')
+    click_button('Embargo Release Date')
+    within '#facet-embargo_release_date ul.facet-values' do
+      find_link('up to 7 days')
+    end
+
+    # update the purl XML
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
+    find_link('Republish').click
+    sleep 1 # allow purl to get updated
+    # check purl xml for 3 day embargo
+    expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
   end
 end

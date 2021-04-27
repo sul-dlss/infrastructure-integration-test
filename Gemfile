@@ -8,6 +8,7 @@ gem 'byebug'
 gem 'capybara'
 gem 'capybara_table'
 gem 'config'
+gem 'dor-services-client', '~> 6.34'
 gem 'faraday' # etds require POST request from registrar
 gem 'pry-byebug'
 gem 'rake'
