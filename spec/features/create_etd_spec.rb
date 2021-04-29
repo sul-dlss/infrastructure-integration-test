@@ -238,13 +238,13 @@ RSpec.describe 'Create a new ETD', type: :feature do
       expect(page).not_to have_content('up to 7 days')
     end
 
-    # update embargo
+    # Manage embargo
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    find_link('Update embargo').click
+    find_link('Manage embargo').click
     within '#blacklight-modal' do
-      fill_in('embargo_date', with: new_embargo_date.strftime('%F'))
-      click_button 'Update Embargo'
+      fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
+      click_button 'Save'
     end
     reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
                                with_reindex: true)
