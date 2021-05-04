@@ -108,7 +108,8 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
                                with_reindex: true)
 
     # check Argo facet field with 3 day embargo
-    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{bare_druid}"
+    fill_in 'Search...', with: bare_druid
+    click_button 'Search'
     reload_page_until_timeout!(text: 'Embargo Release Date')
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do

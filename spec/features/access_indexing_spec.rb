@@ -73,7 +73,8 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
 end
 
 def find_access_rights_single_facet_value(druid, facet_value)
-  visit "#{Settings.argo_url}/catalog?search_field=text&q=#{druid}"
+  fill_in 'Search...', with: druid
+  click_button 'Search'
   click_button('Access Rights')
   within '#facet-rights_descriptions_ssim ul.facet-values' do
     within 'li' do

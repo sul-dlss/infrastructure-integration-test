@@ -93,7 +93,8 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
     expect(page).to have_content "This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}"
 
     # check Argo facet field (indexed embargo date) with 6 month embargo
-    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{item_druid}"
+    fill_in 'Search...', with: item_druid
+    click_button 'Search'
     reload_page_until_timeout!(text: 'Embargo Release Date')
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
@@ -116,7 +117,8 @@ RSpec.describe 'Use Hydrus to deposit an item', type: :feature do
                                with_reindex: true)
 
     # check Argo facet field (indexed embargo date) with 3 day embargo
-    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{bare_druid}"
+    fill_in 'Search...', with: bare_druid
+    click_button 'Search'
     reload_page_until_timeout!(text: 'Embargo Release Date')
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
