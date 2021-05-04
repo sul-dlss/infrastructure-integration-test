@@ -232,7 +232,8 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
     # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
-    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{prefixed_druid}"
+    fill_in 'Search...', with: prefixed_druid
+    click_button 'Search'
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       expect(page).not_to have_content('up to 7 days')
@@ -250,8 +251,8 @@ RSpec.describe 'Create a new ETD', type: :feature do
                                with_reindex: true)
 
     # check Argo facet field with 3 day embargo
-    sleep 1 # Without this, skips the visit below. I have no idea why ...
-    visit "#{Settings.argo_url}/catalog?search_field=text&q=#{prefixed_druid}"
+    fill_in 'Search...', with: prefixed_druid
+    click_button 'Search'
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       find_link('up to 7 days')
