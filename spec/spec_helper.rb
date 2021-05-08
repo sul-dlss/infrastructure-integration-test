@@ -57,6 +57,7 @@ RSpec.configure do |config|
   config.include AuthenticationHelpers
   config.include DepositHelpers
   config.include DownloadHelpers
+  config.include EventHelpers
   config.include PageHelpers
   config.include PublicXmlHelpers
   config.include XlsxHelpers

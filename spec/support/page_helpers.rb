@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 module PageHelpers
-  def reload_page_until_timeout!(text:, as_link: false, with_reindex: false)
+  def reload_page_until_timeout!(text:, as_link: false, with_reindex: false, with_events_expanded: false)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
+        if with_events_expanded
+          find('#document-events-head').click # expand the Events section
+        end
+
         if as_link
           break if page.has_link?(text, wait: 1)
         else

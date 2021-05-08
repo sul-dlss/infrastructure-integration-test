@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'druid-tools'
+
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
 RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature do
@@ -129,8 +131,40 @@ RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature 
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
 
-    visit "#{Settings.argo_url}/view/druid:#{yaml[:pid]}"
+    prefixed_druid = "druid:#{yaml[:pid]}"
+    latest_version = version + 1
 
-    reload_page_until_timeout!(text: "v#{version + 1} Accessioned", with_reindex: true)
+    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+    reload_page_until_timeout!(text: "v#{latest_version} Accessioned", with_reindex: true)
+
+    # The below confirms that preservation replication is working: we only replicate a
+    # Moab version once it's been written successfully to on prem storage roots, and
+    # we only log an event to dor-services-app after a version has successfully replicated
+    # to a cloud endpoint.  So, confirming that both versions of our test object have
+    # replication events logged for all three cloud endpoints is a good basic test of the
+    # entire preservation flow.
+
+    druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
+
+    latest_s3_key = "#{druid_tree_str}.v000#{latest_version}.zip"
+    reload_page_until_timeout!(text: latest_s3_key, with_events_expanded: true)
+
+    # the event log should eventually contain an event for replication of each version that
+    # this test created to every endpoint we archive to
+    poll_for_matching_events!(prefixed_druid) do |events|
+      (1..latest_version).all? do |cur_version|
+        cur_s3_key = "#{druid_tree_str}.v000#{cur_version}.zip"
+
+        %w[aws_s3_west_2 ibm_us_south aws_s3_east_1].all? do |endpoint_name|
+          events.any? do |event|
+            event[:event_type] == 'druid_version_replicated' &&
+              event[:data]['parts_info'] &&
+              event[:data]['parts_info'].size == 1 && # we only expect one part for this small object
+              event[:data]['parts_info'].first['s3_key'] == cur_s3_key &&
+              event[:data]['endpoint_name'] == endpoint_name
+          end
+        end
+      end
+    end
   end
 end
