@@ -9,7 +9,7 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
   let(:terms_of_use) { 'Some oddly specific terms of use.' }
   let(:copyright) { 'You may not do anything with my stuff.' }
   let(:license) { 'Attribution Non-Commercial 3.0 Unported' }
-  let(:license_uri) { 'https://creativecommons.org/licenses/by-nc/3.0/' }
+  let(:license_uri) { 'https://creativecommons.org/licenses/by-nc/3.0/legalcode' }
 
   before do
     expected_txt = 'The following defaults will apply to all newly registered objects.'
