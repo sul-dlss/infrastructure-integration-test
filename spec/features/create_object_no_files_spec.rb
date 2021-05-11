@@ -35,9 +35,9 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
 
     # add accessionWF
-    find_link('Add workflow').click
+    click_link 'Add workflow'
     select 'accessionWF', from: 'wf'
-    find_button('Add').click
+    click_button 'Add'
     expect(page).to have_text('Added accessionWF')
 
     # wait for accessioningWF to finish
