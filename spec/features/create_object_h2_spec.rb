@@ -58,19 +58,20 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'work_authors_attributes_0_first_name', with: 'Dana'
     fill_in 'work_authors_attributes_0_last_name', with: 'Scully'
     fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
-    fill_in 'Keywords', with: 'Integration test'
-    # Blur keywords field so the client completes validation
-    find_field('work_keywords').native.send_keys(:tab)
+    fill_in 'Keyword', with: 'Integration test'
 
     check('I agree to the SDR Terms of Deposit')
 
     find_button('Deposit').click
 
+    expect(page).to have_content 'You have successfully deposited your work'
+    click_link 'Return to dashboard'
+    click_link item_title
+
     # Checks if title is on resulting display
     expect(page).to have_content(item_title)
-
     # This happens asynchronously, it might take a bit
-    expect(page).to have_content('https://purl-stage.stanford.edu')
+    expect(page).to have_content('https://sul-purl-stage.stanford.edu')
 
     # Opens Argo and searches on title
     visit Settings.argo_url
