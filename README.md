@@ -75,7 +75,7 @@ If you are experiencing timeout errors when running tests, you may override the 
 
 ### Set Dor-Services-App Tokens
 
-Some integration tests use the `dor-services-client` to interact with the `dor-services-app`. In order to successfully use the dor-services-app API, you must first have a token set. (To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication).) Note that you'll need to do this for each environment (currently: stage and QA). Place the value in `config/settings/{ENV}.local.yml`. See `config/settings.yml` for the expected YAML syntax.
+Some integration tests use the `dor-services-client` to interact with the `dor-services-app`, others directly (or indirectly) use the `dor-services-app`.  In order to successfully use the dor-services-app API, you must first have a token set. (To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication).) Note that you'll need to do this for each environment (currently: staging and qa). Place the value in `config/settings/{ENV}.local.yml`. See `config/settings.yml` for the expected YAML syntax.
 
 ### Set SUNet Credentials
 
