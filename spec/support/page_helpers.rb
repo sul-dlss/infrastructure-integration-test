@@ -12,6 +12,8 @@ module PageHelpers
 
         if with_reindex
           click_link 'Reindex'
+          # ensure we see this message before we do the next thing
+          expect(page).to have_text('Successfully updated index for')
         else
           page.driver.browser.navigate.refresh
         end
