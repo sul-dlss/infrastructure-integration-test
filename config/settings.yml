@@ -18,6 +18,13 @@ etd:
   username: ~
   password: ~
 
+# for calls to dor-services-app (not using dor-services-client directly)
+# note that this token is the same as below ...
+dor_services_app:
+  token: ~
+
+# for direct use of dor-services-client (e.g. to get public_xml from dor-services-app)
+# note that this token is the same as above ...
 dor_services:
   token: ~
 
