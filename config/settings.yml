@@ -2,6 +2,10 @@ timeouts:
   capybara: 60
   workflow: 300
   bulk_action: 200
+  events:
+    poll_for: 240
+    poll_interval: 2
+
 
 browser:
   driver: firefox
