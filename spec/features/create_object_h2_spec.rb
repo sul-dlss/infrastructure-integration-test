@@ -33,11 +33,6 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     click_button 'Deposit'
     expect(page).to have_content(collection_title)
 
-    # Can't deposit to a collection until it's ready. Use the edit link as a
-    # signal that the background processes have finished before trying to
-    # deposit an item to a collection.
-    reload_page_until_timeout!(text: "Edit #{collection_title}", as_link: true)
-
     # Deposit an item to the collection
     click_button '+ Deposit to this collection'
 
