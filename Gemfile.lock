@@ -33,8 +33,7 @@ GEM
       thor
       zeitwerk (~> 2.1)
     coderay (1.1.3)
-    commonmarker (0.21.2)
-      ruby-enum (~> 0.5)
+    commonmarker (0.22.0)
     concurrent-ruby (1.1.9)
     config (3.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
@@ -181,8 +180,6 @@ GEM
     rubocop-rspec (1.44.1)
       rubocop (~> 0.87)
       rubocop-ast (>= 0.7.1)
-    ruby-enum (0.9.0)
-      i18n
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)
     rubyXL (3.4.17)
