@@ -118,5 +118,20 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
     expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
+
+    # create a new version
+    visit "#{Settings.h2_url}/dashboard"
+    find_link("Edit #{item_title}").click
+    fill_in 'What\'s changing?', with: 'abstract'
+    fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
+    find_button('Deposit').click
+
+    expect(page).to have_content 'You have successfully deposited your work'
+
+    # Opens Argo and searches on title
+    visit Settings.argo_url
+    find('input#q').fill_in(with: item_title)
+    click_button 'Search'
+    reload_page_until_timeout!(text: 'v2 Accessioned')
   end
 end
