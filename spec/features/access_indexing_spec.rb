@@ -90,7 +90,7 @@ def choose_rights(value)
     click_link
   end
 
-  find_link('Set rights').click
+  click_link 'Set rights'
   within '#blacklight-modal' do
     select(value)
     click_button 'Update'
