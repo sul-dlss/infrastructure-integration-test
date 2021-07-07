@@ -70,7 +70,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-    find('input#q').fill_in(with: item_title)
+    fill_in 'Search...', with: item_title
     click_button 'Search'
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
@@ -95,7 +95,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # change embargo date
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    find_link('Manage embargo').click
+    click_link 'Manage embargo'
     within '#blacklight-modal' do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
       click_button 'Save'
@@ -114,23 +114,23 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # update the purl XML
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    find_link('Republish').click
+    click_link 'Republish'
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
     expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
 
     # create a new version
     visit "#{Settings.h2_url}/dashboard"
-    find_link("Edit #{item_title}").click
+    click_link "Edit #{item_title}"
     fill_in 'What\'s changing?', with: 'abstract'
     fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
-    find_button('Deposit').click
+    click_button 'Deposit'
 
     expect(page).to have_content 'You have successfully deposited your work'
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-    find('input#q').fill_in(with: item_title)
+    fill_in 'Search...', with: item_title
     click_button 'Search'
     reload_page_until_timeout!(text: 'v2 Accessioned')
   end

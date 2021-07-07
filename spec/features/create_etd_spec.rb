@@ -242,7 +242,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     # Manage embargo
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    find_link('Manage embargo').click
+    click_link 'Manage embargo'
     within '#blacklight-modal' do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
       click_button 'Save'
