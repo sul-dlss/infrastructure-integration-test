@@ -8,7 +8,7 @@ gem 'byebug'
 gem 'capybara'
 gem 'capybara_table'
 gem 'config'
-gem 'dor-services-client', '~> 6.34'
+gem 'dor-services-client', '~> 7.0'
 gem 'druid-tools' # for constructing druid tree strings easily
 gem 'faraday' # etds require POST request from registrar
 gem 'pry-byebug'
@@ -19,5 +19,5 @@ gem 'rubocop', '~> 0.87'
 gem 'rubocop-rspec'
 gem 'rubyXL' # for updating Excel spreadsheets
 gem 'selenium-webdriver'
-gem 'sdr-client', '~> 0.43'
+gem 'sdr-client', '~> 0.58'
 gem 'webdrivers', '~> 4.0'
