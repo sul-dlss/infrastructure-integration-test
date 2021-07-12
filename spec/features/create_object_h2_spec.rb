@@ -32,9 +32,24 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     click_button 'Deposit'
     expect(page).to have_content(collection_title)
+    expect(page).to have_content('+ Deposit to this collection')
 
-    # Deposit an item to the collection
-    click_button '+ Deposit to this collection'
+    item_id = page.current_url.split('/').last
+
+    # Reserve a PURL
+    click_link 'Dashboard'
+    within "#summary_collection_#{item_id}" do
+      click_button 'Reserve a PURL'
+    end
+    fill_in 'Enter a title for this deposit', with: item_title
+    click_button 'Submit'
+
+    expect(page).to have_content(item_title)
+    # This happens asynchronously, it might take a bit
+    expect(page).to have_content('PURL Reserved')
+
+    # Edit the item
+    click_link "Choose Type and Edit #{item_title}"
 
     # Selects image type
     find('label', text: 'Image').click
@@ -43,7 +58,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     click_button 'Continue'
 
     # Work Deposit view
-    expect(page).to have_content('Deposit your content')
+    fill_in 'What\'s changing?', with: 'Initial metadata'
     attach_file('spec/fixtures/sul-logo.png') do
       find_button('Choose files').click
     end
