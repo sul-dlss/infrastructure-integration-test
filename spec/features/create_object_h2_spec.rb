@@ -28,7 +28,8 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     select 'CC0-1.0', from: 'collection_required_license'
 
     # Adds user to depositor field
-    fill_in 'Depositors', with: AuthenticationHelpers.username
+    click_button '+ Add another depositor'
+    fill_in 'lookup SunetID', with: AuthenticationHelpers.username
 
     click_button 'Deposit'
     expect(page).to have_content(collection_title)
