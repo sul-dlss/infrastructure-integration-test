@@ -56,7 +56,8 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
     fill_in 'Keyword', with: 'Integration test'
 
-    check('I agree to the SDR Terms of Deposit')
+    # if you have previously agree to the terms within the last year, there will be no checkbox
+    check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms', wait: 0)
 
     find_button('Deposit').click
 
