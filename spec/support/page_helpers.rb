@@ -14,6 +14,10 @@ module PageHelpers
           break if page.has_text?(text, wait: 1)
         end
 
+        # Check for workflow errors an bail out early. There is no recovering
+        # from a workflow error. This selector is found on the Argo item page.
+        expect(page).not_to have_css('.blacklight-wf_error_ssim', wait: 0)
+
         if with_reindex
           click_link 'Reindex'
           # ensure we see this message before we do the next thing

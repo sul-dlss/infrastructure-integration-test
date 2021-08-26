@@ -95,6 +95,9 @@ Lint/UselessMethodDefinition: # (new in 0.90)
 Lint/UselessTimes: # (new in 0.91)
   Enabled: true
 
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/BlockLength:
   ExcludedMethods:
     - describe
