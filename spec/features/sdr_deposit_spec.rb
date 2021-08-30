@@ -27,7 +27,7 @@ RSpec.describe 'SDR deposit', type: :feature do
     visit "#{start_url}/view/#{object_druid}?beta=true"
 
     # Wait for indexing and workflows to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     expect(page).to have_content 'The means to prosperity'
 
@@ -35,6 +35,6 @@ RSpec.describe 'SDR deposit', type: :feature do
     expect(page).to have_content 'Technical metadata'
     find('#document-techmd-head').click # expand the technical metadata accordion
     file_listing = find_all('#document-techmd-section > ul > li')
-    expect(file_listing.size).to eq 2
+    expect(file_listing.size).to eq 1
   end
 end
