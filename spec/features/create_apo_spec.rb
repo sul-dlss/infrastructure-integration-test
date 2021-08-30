@@ -33,7 +33,7 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
     expect(object_type_element.text).to eq('adminPolicy')
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # now register an object with this apo and verify default rights
     visit "#{Settings.argo_url}/registration"
@@ -56,7 +56,7 @@ RSpec.describe "Use Argo to create an APO and verify new objects inherit it's ri
     visit "#{Settings.argo_url}/view/#{object_druid}"
 
     # wait for registrationWF to finish and verify default access rights
-    reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Registered')
     expect(page).to have_content "Access Rights:\n#{rights.downcase}"
 
     # these are in the cocina model data, which is hidden by default
