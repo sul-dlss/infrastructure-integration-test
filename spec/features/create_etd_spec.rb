@@ -247,6 +247,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
       click_button 'Save'
     end
+    page.refresh # solves problem of update embargo modal re-appearing
     reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
                                with_reindex: true)
 
