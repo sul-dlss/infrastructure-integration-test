@@ -263,7 +263,7 @@ end
 
 def simulate_registrar_post(xml)
   conn = Faraday.new(url: "#{Settings.etd_url}/etds")
-  conn.basic_auth(Settings.etd.username, Settings.etd.password)
+  conn.request(:basic_auth, Settings.etd.username, Settings.etd.password)
   resp = conn.post do |req|
     req.options.timeout = 10
     req.options.open_timeout = 10
