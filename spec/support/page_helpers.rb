@@ -23,7 +23,7 @@ module PageHelpers
           # ensure we see this message before we do the next thing
           expect(page).to have_text('Successfully updated index for')
         end
-        page.driver.browser.navigate.refresh
+        page.refresh
       end
     end
   end
