@@ -5,7 +5,6 @@ etd_url: 'https://etd-qa.stanford.edu'
 h2_url: 'https://sul-h2-qa.stanford.edu'
 # for h2_purl_url: there is no purl for qa;  sul-h2-qa uses stage ...
 h2_purl_url: 'https://sul-purl-stage.stanford.edu'
-hydrus_url: 'https://sdr-qa.stanford.edu'
 preassembly_bundle_directory: '/dor/staging/integration-tests/image-test'
 preassembly_host: 'sul-preassembly-qa'
 preassembly_url: 'https://sul-preassembly-qa.stanford.edu'
