@@ -60,6 +60,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
       click_button 'Close Version'
     end
     expect(page).to have_text('closing version for integration testing')
+    page.refresh # solves problem of close version modal re-appearing
 
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v2 Accessioned', with_reindex: true)
