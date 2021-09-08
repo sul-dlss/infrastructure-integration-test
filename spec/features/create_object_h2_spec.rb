@@ -6,18 +6,19 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
 
   before do
-    authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: 'Create a new collection')
+    authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: 'Dashboard')
   end
 
   scenario do
+    # remove modal for deposit in progress, if present, waiting a bit for some rendering
     click_button 'No' if page.has_content?('Continue your deposit', wait: Settings.post_authentication_text_timeout)
 
     # CREATE COLLECTION
     click_link '+ Create a new collection'
-    # Checks for specific content on create collection view
+    # Checks for specific content in create collection view
     expect(page).to have_content('Manage release of deposits for discovery and download')
 
-    # Fills in basic collection information and saves
+    # basic collection information
     fill_in 'Collection name', with: collection_title
     fill_in 'Description', with: "Integration tests for #{collection_title}"
     fill_in 'Contact email', with: user_email
@@ -43,9 +44,10 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     within "#summary_collection_#{collection_id}" do
       click_button 'Reserve a PURL'
     end
-    fill_in 'Enter a title for this deposit', with: item_title
-    click_button 'Submit'
-
+    within '#purlReservationModal' do
+      fill_in 'Enter a title for this deposit', with: item_title
+      click_button 'Submit'
+    end
     expect(page).to have_content(item_title)
     # This happens asynchronously, it might take a bit
     expect(page).to have_content('PURL Reserved')
@@ -71,7 +73,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
     fill_in 'Keyword', with: 'Integration test'
 
-    # if you have previously agree to the terms within the last year, there will be no checkbox
+    # if you have previously agreed to the terms within the last year, there will be no checkbox
     check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms', wait: 0)
 
     find_button('Deposit').click
