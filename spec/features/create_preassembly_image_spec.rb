@@ -4,7 +4,7 @@ require 'druid-tools'
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
-RSpec.describe 'Create and reaccession object via Pre-assembly', type: :feature do
+RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature do
   druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
   let(:start_url) { "#{Settings.argo_url}/registration" }

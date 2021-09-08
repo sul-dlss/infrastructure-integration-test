@@ -14,7 +14,7 @@ module PageHelpers
           break if page.has_text?(text, wait: 1)
         end
 
-        # Check for workflow errors an bail out early. There is no recovering
+        # Check for workflow errors and bail out early. There is no recovering
         # from a workflow error. This selector is found on the Argo item page.
         expect(page).not_to have_css('.blacklight-wf_error_ssim', wait: 0)
 
@@ -23,7 +23,7 @@ module PageHelpers
           # ensure we see this message before we do the next thing
           expect(page).to have_text('Successfully updated index for')
         end
-        page.driver.browser.navigate.refresh
+        page.refresh
       end
     end
   end
