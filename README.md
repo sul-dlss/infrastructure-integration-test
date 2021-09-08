@@ -11,10 +11,6 @@ The tests depend on having Firefox (default) or Chrome downloaded.
 1. `bundle install`
 1. `bundle exec rake webdrivers:geckodriver:update`
 
-See the `Authentication Configuration` section below for
-- authentication token instructions (dor_services_app, dor_services, etd)
-- etd username instructions
-
 See the `Other Configuration` section below for
 - instructions on using Chrome
 - tweaking default selenium browser settings.
@@ -23,7 +19,9 @@ See the `Other Configuration` section below for
 
 1. Connect to Stanford VPN (full-tunnel or split-tunnel)
 1. Ensure you have a valid, non-expired Kerberos ticket (use `klist` to verify, or run `kinit` to refresh)
-1. See the `Authentication Configuration` section below for instructions on setting up necessary credentials.
+1. See the `Authentication Configuration` section below to set up necessary credentials:
+- dor_services_app credentials
+- etd credentials
 
 ## Run Tests
 
@@ -55,30 +53,28 @@ Configure your SSH client to allow delegation of Kerberos credentials (required 
 ```
 # Add to appropriate place, such as:
 Host *.stanford.edu
-    GSSAPIDelegateCredentials yes
+  GSSAPIDelegateCredentials yes
 ```
 
-### Set Dor-Services-App and Dor-Services Tokens
+### Staging Environment
 
-Some integration tests use the `dor-services-client` to interact with the `dor-services-app`, others directly (or indirectly) use the `dor-services-app`.  In order to successfully use the dor-services-app API, you must first have a token set. (To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication).)
-
-Place the value in `config/settings/{ENV}.local.yml`. See `config/settings.yml` for the expected YAML syntax. Note that you'll need to do this for each environment (currently: staging and qa), and you'll need top level keys of *both* `dor-services-app` and `dor-services` (same token). See `settings.yml` for explanation.
-
-### Set ETD Credentials
-
-In order to run `spec/features/create_etd_spec.rb`, you will need to specify credentials required to authenticate connections to the ETD application. This is environment-specific.
-
-#### Staging Environment
-
-For the staging environment, copy `config/settings.yml` to `config/settings/staging.local.yml` and set the ETD username and password to the [values expected in our staging environment](https://github.com/sul-dlss/shared_configs/blob/a90c636b968a1ede4886a61dadc799dd5d162fe1/config/settings/production.yml#L34-L35).
+For the staging environment, copy `config/settings.yml` to `config/settings/staging.local.yml`.  You will be adding staging environment specific settings here.
 
 **NOTE**: `config/settings/staging.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
 
-#### QA Environment
+### QA Environment
 
-For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml` and set the ETD username and password to the [values expected in our QA environment](https://github.com/sul-dlss/shared_configs/blob/59ead7acbdf351930ad45922fd44e0f45810bf37/config/settings/production.yml#L16-L17).
+For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml`.  You will be adding staging environment specific settings here.
 
 **NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
+
+### Set Dor-Services-App Credentials
+
+Some integration tests use the `dor-services-client` to interact with the `dor-services-app`. In order to successfully use the dor-services-client, you must first have a token. To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication). You'll need to generate separate tokens for each dor-services-app environment (stage, qa), and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml`.  See `config/settings.yml` for the expected YAML syntax.
+
+### Set ETD Credentials
+
+In order to run `spec/features/create_etd_spec.rb`, you will the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these valuse from shared_configs for the etd stage and qa branches, and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml`.  See `config/settings.yml` for the expected YAML syntax.
 
 ### Problems with Authentication?
 
