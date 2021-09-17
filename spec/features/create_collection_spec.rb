@@ -12,12 +12,9 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
 
   scenario do
     click_link 'Create Collection'
-
-    within('#blacklight-modal') do
-      fill_in 'Collection Title', with: collection_title
-      fill_in 'Collection Abstract', with: collection_abstract
-      click_button 'Register Collection'
-    end
+    fill_in 'Collection Title', with: collection_title
+    fill_in 'Collection Abstract', with: collection_abstract
+    click_button 'Register Collection'
 
     expect(page).to have_content 'Created collection'
 
