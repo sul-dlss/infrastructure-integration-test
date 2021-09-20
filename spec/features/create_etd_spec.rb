@@ -243,10 +243,9 @@ RSpec.describe 'Create a new ETD', type: :feature do
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     click_link 'Manage embargo'
-    within '#blacklight-modal' do
-      fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
-      click_button 'Save'
-    end
+    fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
+    click_button 'Save'
+
     page.refresh # solves problem of update embargo modal re-appearing
     reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
                                with_reindex: true)
