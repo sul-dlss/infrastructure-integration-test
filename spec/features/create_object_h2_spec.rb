@@ -49,8 +49,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
       click_button 'Submit'
     end
     expect(page).to have_content(item_title)
-    # This happens asynchronously, it might take a bit
-    expect(page).to have_content('PURL Reserved')
+    expect(page).to have_content('PURL Reserved') # async - it might take a bit
 
     # EDIT THE ITEM
     click_link "Choose Type and Edit #{item_title}"
@@ -84,8 +83,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # Checks if title is on resulting display
     expect(page).to have_content(item_title)
-    # This happens asynchronously, it might take a bit
-    expect(page).to have_content(Settings.h2_purl_url)
+    expect(page).to have_content(Settings.h2_purl_url) # async - it might take a bit
 
     # Opens Argo and searches on title
     visit Settings.argo_url
@@ -115,7 +113,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{bare_druid}"
     click_link 'Manage embargo'
-    within '#blacklight-modal' do
+    within '#modal-frame' do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
       click_button 'Save'
     end
