@@ -17,6 +17,10 @@ default_collection: 'druid:bc778pm9866'
 automatic_authentication: false
 post_authentication_text_timeout: 5 # in seconds
 
+supported_envs:
+  - qa
+  - staging
+
 etd:
   username: ~
   password: ~
