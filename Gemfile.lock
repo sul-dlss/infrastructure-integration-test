@@ -130,7 +130,7 @@ GEM
       psych (~> 3.1)
     openapi_parser (0.15.0)
     parallel (1.21.0)
-    parser (3.0.2.0)
+    parser (3.0.3.0)
       ast (~> 2.4.1)
     pry (0.13.1)
       coderay (~> 1.1)
@@ -187,7 +187,7 @@ GEM
       cocina-models (~> 0.62.0)
       dry-monads
       faraday (>= 0.16)
-    selenium-webdriver (4.0.3)
+    selenium-webdriver (4.1.0)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2)
