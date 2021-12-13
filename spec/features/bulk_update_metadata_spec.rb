@@ -33,7 +33,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     reload_page_until_timeout!(text: note)
 
     # Delete job run
-    row = page.find(:xpath, "//div[@id='bulk-upload-table']//tr[td/text()='#{note}']")
+    row = page.find(:xpath, "//table//tr[td/text()='#{note}']")
     tds = row.all('td')
     tds[9].find('form > button').click
     # Confirm delete in the popup
