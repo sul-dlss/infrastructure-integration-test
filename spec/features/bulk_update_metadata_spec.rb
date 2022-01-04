@@ -37,7 +37,9 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
     tds = row.all('td')
     tds[9].find('form > button').click
     # Confirm delete in the popup
-    click_link 'Delete'
+    within('#confirm-delete-modal') do
+      click_button 'Delete' # '#bulk-delete-confirm'
+    end
     expect(page).to have_content "Bulk job for APO (#{Settings.default_apo}) deleted."
 
     # Open druids and tests for titles
