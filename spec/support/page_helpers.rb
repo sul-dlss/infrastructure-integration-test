@@ -5,7 +5,7 @@ module PageHelpers
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         if with_events_expanded
-          find('#document-events-head').click # expand the Events section
+          click_button 'Events' # expand the Events section
         end
 
         if as_link

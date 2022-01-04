@@ -86,7 +86,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     # ensure Image files are all there, per pre-assembly, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
     reload_page_until_timeout!(text: 'Resource (1) image')
-    expect(page).to have_selector('#document-contents-section > .resource-list > li', text: 'Image 1')
+    expect(page).to have_selector('#document-contents-section > .accordion-body > .resource-list > li', text: 'Image 1')
     files = all('li.file')
     expect(files.size).to eq 2
     expect(files.first.text).to match(%r{(File image.jpg)\s\((image/jpeg, 28.)\d( KB, preserve)\)})
