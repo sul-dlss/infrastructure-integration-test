@@ -33,8 +33,10 @@ RSpec.describe 'SDR deposit', type: :feature do
 
     # Tests existence of technical metadata
     expect(page).to have_content 'Technical metadata'
-    find('#document-techmd-head').click # expand the technical metadata accordion
-    file_listing = find_all('#document-techmd-section > ul > li')
-    expect(file_listing.size).to eq 2
+    click_button 'Technical metadata'
+    within('#document-techmd-section') do
+      file_listing = find_all('.file')
+      expect(file_listing.size).to eq 2
+    end
   end
 end
