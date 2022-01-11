@@ -45,7 +45,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
 
     # open a new version
     click_link 'Open for modification'
-    within '.modal-dialog' do
+    within '.modal-body' do
       select 'Admin', from: 'Type'
       fill_in 'Version description', with: 'opening version for integration testing'
       click_button 'Open Version'
@@ -55,7 +55,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
 
     # close version
     click_link 'Close Version'
-    within '.modal-dialog' do
+    within '.modal-body' do
       fill_in 'Version description', with: 'closing version for integration testing'
       click_button 'Close Version'
     end
