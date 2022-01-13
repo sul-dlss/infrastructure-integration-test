@@ -101,3 +101,5 @@ If you find you need to modify the default window size for either browser---*e.g
 ### Increase Timeout Values
 
 If you are experiencing timeout errors when running tests, you may override the default timeout values by adding `timeouts.capybara`, `timeouts.bulk_action`, and/or `timeouts.workflow` in `config/settings.local.yml` depending on where you see timeouts.
+
+DO NOT MERGE: bogus commit to test merge script
