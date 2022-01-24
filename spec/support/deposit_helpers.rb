@@ -2,7 +2,7 @@
 
 module DepositHelpers
   def deposit(**kwargs)
-    job_id = SdrClient::Deposit.run(kwargs)
+    job_id = SdrClient::Deposit.run(**kwargs)
 
     # Wait for the deposit to be complete.
     object_druid = nil
