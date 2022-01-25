@@ -44,7 +44,7 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
     # open a new version
-    click_link 'Open for modification'
+    click_link 'Unlock to make changes to this object'
     within '.modal-dialog' do
       select 'Admin', from: 'Type'
       fill_in 'Version description', with: 'opening version for integration testing'

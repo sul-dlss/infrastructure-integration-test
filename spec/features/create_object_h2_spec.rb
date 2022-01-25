@@ -103,7 +103,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     end
     # check embargo date
     embargo_date = DateTime.now.to_date >> 6
-    expect(page).to have_content("This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}")
+    expect(page).to have_content("Embargoed until #{embargo_date.to_formatted_s(:long)}")
     bare_druid = page.current_url.split(':').last
 
     # check purl xml for embargo
@@ -117,7 +117,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
       click_button 'Save'
     end
-    reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
+    reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}",
                                with_reindex: true)
 
     # check Argo facet field with 3 day embargo
@@ -131,7 +131,8 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # update the purl XML
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    click_link 'Republish'
+    click_button 'Manage PURL'
+    click_link 'Publish'
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
     expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)

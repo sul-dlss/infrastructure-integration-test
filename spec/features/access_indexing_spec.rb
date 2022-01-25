@@ -91,7 +91,7 @@ def choose_rights(value)
   end
 
   click_link 'Set rights'
-  within '#blacklight-modal' do
+  within '#edit-modal' do
     select(value)
     click_button 'Update'
   end

@@ -60,6 +60,7 @@ RSpec.configure do |config|
   config.include EventHelpers
   config.include PageHelpers
   config.include PublicXmlHelpers
+  config.include TableHelpers
   config.include XlsxHelpers
 
   # rspec-expectations config goes here. You can use an alternate

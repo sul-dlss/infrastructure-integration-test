@@ -205,13 +205,13 @@ RSpec.describe 'Create a new ETD', type: :feature do
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-        break if page.has_text?("This item is embargoed until #{embargo_date.strftime('%F').tr('-', '.')}", wait: 1)
+        break if page.has_text?("Embargoed until #{embargo_date.to_formatted_s(:long)}", wait: 1)
       end
     end
     expect(page).to have_content(dissertation_title)
-    apo_element = first('dd.blacklight-is_governed_by_ssim > a')
-    expect(apo_element[:href]).to have_text('druid:bx911tp9024') # this is hardcoded in hydra_etd app
-    status_element = first('dd.blacklight-status_ssi')
+    apo_element = find_table_cell_following(header_text: 'Admin policy')
+    expect(apo_element.first('a')[:href]).to have_text('druid:bx911tp9024') # this is hardcoded in hydra_etd app
+    status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
     click_link('etdSubmitWF')
     within('#blacklight-modal') do
@@ -247,7 +247,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     click_button 'Save'
 
     page.refresh # solves problem of update embargo modal re-appearing
-    reload_page_until_timeout!(text: "This item is embargoed until #{new_embargo_date.strftime('%F').tr('-', '.')}",
+    reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}",
                                with_reindex: true)
 
     # check Argo facet field with 3 day embargo
