@@ -10,4 +10,4 @@ notifications:
   email: false
 
 rvm:
-  - 2.7
+  - 3.0
