@@ -7,6 +7,14 @@ app_root = Pathname.new(__dir__).parent.parent
 config_root = app_root.join('config')
 env = ENV.fetch('SDR_ENV', 'staging')
 
+Config.setup do |config|
+  config.const_name = 'Settings'
+  config.use_env = true
+  config.env_prefix = 'SETTINGS'
+  config.env_separator = '__'
+  config.env_converter = :downcase
+end
+
 Config.load_and_set_settings(
   Config.setting_files(config_root, env)
 )

@@ -5,7 +5,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
   let(:filename_group) { ['example.tiff', 'example.jp2'] }
   let(:csv_path) { File.join(DownloadHelpers::PATH, 'virtual-object.csv') }
   let(:virtual_objects_description) { RandomWord.phrases.next }
-  let(:num_constituents) { 11 }
+  let(:num_constituents) { Settings.number_of_constituents }
 
   before do
     authenticate!(start_url: start_url, expected_text: 'Welcome to Argo!')
@@ -26,9 +26,6 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
 
     # Create parent object
     parent_druid = deposit_object
-
-    # Avoid occasional errors with preservation workflow
-    sleep 2
 
     # Create CSV: parent_druid, object_druid, object_druid
     virtual_object_row = object_druids.clone
@@ -69,7 +66,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
       end
     end
 
-    visit "#{start_url}/view/#{parent_druid}?beta=true"
+    visit "#{start_url}/view/#{parent_druid}"
     reload_page_until_timeout!(text: 'v2 Accessioned', with_reindex: true)
 
     # Confirm constituent druids are listed in Content

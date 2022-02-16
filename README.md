@@ -37,6 +37,10 @@ SDR_ENV=qa bundle exec rspec
 
 No matter which environment you run tests in, you may be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push. If you tire of typing in your credentials, see the `Other Configuration` section below for help securely storing them.
 
+When running the create_virtual_object test, you can create more than two constituents by running as follows:
+
+`SETTINGS__NUMBER_OF_CONSTITUENTS=11 bundle exec rspec`
+
 ## Add New Tests
 
 Please use the integration-testing APO and collection when feasible:
