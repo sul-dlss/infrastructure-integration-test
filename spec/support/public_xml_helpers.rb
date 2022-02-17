@@ -23,4 +23,13 @@ module PublicXmlHelpers
     expect(embargo_nodes.size).to eq 1
     expect(embargo_nodes.first.content).to eq embargo_date.strftime('%FT%TZ')
   end
+
+  def expect_virtual_object_relationship_in_public_xml(constituent_druid, virtual_object_druid)
+    Dor::Services::Client.configure(url: Settings.dor_services.url, token: Settings.dor_services.token)
+    xml = Dor::Services::Client.object(constituent_druid).metadata.public_xml
+    virtual_object_purl = Nokogiri::XML(xml).xpath(
+      '/publicObject/mods:mods/mods:relatedItem[@displayLabel="Appears in"]/mods:location/mods:url', mods: 'http://www.loc.gov/mods/v3'
+    ).text
+    expect(virtual_object_purl).to end_with(virtual_object_druid.delete_prefix('druid:'))
+  end
 end
