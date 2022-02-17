@@ -28,7 +28,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
     virtual_object_druid = deposit_object
 
     # Create CSV: virtual_object_druid, constituent_druid, constituent_druid
-    virtual_object_row = object_druids.clone
+    virtual_object_row = constituent_druids.clone
     virtual_object_row.unshift(virtual_object_druid)
 
     CSV.open(csv_path, 'w') do |csv|
