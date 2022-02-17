@@ -27,9 +27,9 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     # make sure we're on an APO show view
     expect(page).to have_content apo_title
     # make sure APO is registered
-    apo_druid = find('dd.blacklight-id').text
+    apo_druid = find_table_cell_following(header_text: 'DRUID').text
     expect(page).to have_content "APO #{apo_druid} created."
-    object_type_element = find('dd.blacklight-objecttype_ssim')
+    object_type_element = find_table_cell_following(header_text: 'Object type')
     expect(object_type_element.text).to eq('adminPolicy')
 
     # wait for accessioningWF to finish
@@ -57,7 +57,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
 
     # wait for registrationWF to finish and verify default access rights
     reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
-    expect(page).to have_content "Access Rights:\n#{rights.downcase}"
+    expect(find_table_cell_following(header_text: 'Access rights').text).to eq(rights.downcase)
 
     # these are in the cocina model data, which is hidden by default
     expect(page).to have_content(:all, terms_of_use)

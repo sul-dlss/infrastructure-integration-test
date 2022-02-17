@@ -85,24 +85,25 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     # ensure Image files are all there, per pre-assembly, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
-    reload_page_until_timeout!(text: 'Resource (1) image')
-    expect(page).to have_selector('#document-contents-section > .accordion-body > .resource-list > li', text: 'Image 1')
-    files = all('li.file')
+
+    reload_page_until_timeout!(text: "Resource (1)\nimage\nLabel\nImage 1")
+    files = all('tr.file')
+
     expect(files.size).to eq 2
-    expect(files.first.text).to match(%r{(File image.jpg)\s\((image/jpeg, 28.)\d( KB, preserve)\)})
-    expect(files.last.text).to match(%r{(File image.jp2)\s\((image/jp2, 64.)\d( KB, publish/shelve)\)})
+    expect(files.first.text).to match(%r{image.jpg image/jpeg 28.\d KB})
+    expect(files.last.text).to match(%r{image.jp2 image/jp2 64.\d KB})
 
     # Wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
-    expect(page).to have_selector('.blacklight-content_type_ssim', text: 'image') # filled in by accessioning
+    expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 
     sleep 10 # let's wait a bit before trying the re-accession to avoid a possible race condition
 
     ### Re-accession
 
     # Get the original version from the page
-    elem = find('dd.blacklight-status_ssi', text: 'Accessioned')
+    elem = find_table_cell_following(header_text: 'Status')
     md = /^v(\d+) Accessioned/.match(elem.text)
     version = md[1].to_i
 

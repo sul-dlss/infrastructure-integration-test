@@ -23,11 +23,11 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
 
     expect(page).to have_content collection_title
 
-    object_type_element = find('dd.blacklight-objecttype_ssim')
+    object_type_element = find_table_cell_following(header_text: 'Object type')
     expect(object_type_element.text).to eq('collection')
 
-    apo_element = first('dd.blacklight-is_governed_by_ssim > a')
-    expect(apo_element[:href]).to end_with(Settings.default_apo)
+    apo_element = find_table_cell_following(header_text: 'Admin policy')
+    expect(apo_element.first('a')[:href]).to end_with(Settings.default_apo)
 
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)

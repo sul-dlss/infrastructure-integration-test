@@ -16,7 +16,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
 
     visit "#{Settings.argo_url}/view/#{Settings.default_apo}"
     # Open the MODS bulk jobs
-    click_link 'MODS bulk loads'
+    click_link 'Upload MODS'
     expect(page).to have_content 'Datastream spreadsheet bulk upload for APO'
 
     # Open the Submit new file modal
