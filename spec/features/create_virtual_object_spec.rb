@@ -15,21 +15,21 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
     ensure_token
 
     # Create constituent objects
-    object_druids = []
+    constituent_druids = []
 
     num_constituents.times do
-      object_druid = deposit_object(filenames: filename_group)
-      object_druids << object_druid
+      constituent_druid = deposit_object(filenames: filename_group)
+      constituent_druids << constituent_druid
     end
 
-    puts object_druids
+    puts constituent_druids
 
-    # Create parent object
-    parent_druid = deposit_object
+    # Create virtual object
+    virtual_object_druid = deposit_object
 
-    # Create CSV: parent_druid, object_druid, object_druid
+    # Create CSV: virtual_object_druid, constituent_druid, constituent_druid
     virtual_object_row = object_druids.clone
-    virtual_object_row.unshift(parent_druid)
+    virtual_object_row.unshift(virtual_object_druid)
 
     CSV.open(csv_path, 'w') do |csv|
       csv << virtual_object_row
@@ -66,12 +66,16 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
       end
     end
 
-    visit "#{start_url}/view/#{parent_druid}"
+    visit "#{start_url}/view/#{virtual_object_druid}"
     reload_page_until_timeout!(text: 'v2 Accessioned', with_reindex: true)
 
     # Confirm constituent druids are listed in Content
     resources_text = all('.external-file a').map(&:text)
 
-    expect(resources_text).to match_array(object_druids)
+    expect(resources_text).to match_array(constituent_druids)
+
+    constituent_druids.each do |constituent_druid|
+      expect_virtual_object_relationship_in_public_xml(constituent_druid, virtual_object_druid)
+    end
   end
 end
