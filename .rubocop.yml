@@ -105,6 +105,8 @@ Metrics/BlockLength:
     - it
     - context
     - scenario
+  Exclude:
+    - 'spec/features/create_preassembly_image_spec.rb'
 
 Metrics/MethodLength:
   Max: 20

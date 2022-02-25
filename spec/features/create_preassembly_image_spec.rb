@@ -4,7 +4,7 @@ require 'druid-tools'
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
-RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature do
+RSpec.describe 'Pre-assembly', type: :feature do
   druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -32,7 +32,89 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     clear_downloads
   end
 
-  scenario do
+  [
+    'World (APO default)',
+    'World (no-download)',
+    'Stanford',
+    'Stanford (no-download)',
+    'Controlled Digital Lending (no-download)',
+    'Location: Special Collections',
+    'Location: Music Library',
+    'Location: Archive of Recorded Sound',
+    'Location: Art Library',
+    'Location: Hoover Library',
+    'Location: Media & Microtext',
+    'Dark (Preserve Only)',
+    'Citation Only'
+  ].each do |access|
+    it "creates objects with #{access} access" do
+      # register new object
+      select 'integration-testing', from: 'Admin Policy'
+      select 'integration-testing', from: 'Collection'
+      select access, from: 'Rights'
+      select 'Image', from: 'Content Type'
+      fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
+      click_button 'Add Row'
+      td_list = all('td.invalidDisplay')
+      td_list[0].click
+      fill_in '1_source_id', with: source_id
+      td_list[1].click
+      fill_in '1_label', with: object_label
+      find_field('1_label').send_keys :enter
+      click_button 'Register'
+      # wait for object to be registered
+      find('td[aria-describedby=data_status][title=success]')
+      druid = find('td[aria-describedby=data_druid]').text
+
+      # create manifest.csv file and scp it to preassembly staging directory
+      File.write(local_manifest_location, preassembly_manifest_csv)
+      `scp #{local_manifest_location} #{remote_manifest_location}`
+      unless $CHILD_STATUS.success?
+        raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+      end
+
+      visit Settings.preassembly_url
+      expect(page).to have_selector('h3', text: 'Complete the form below')
+
+      fill_in 'Project name', with: preassembly_project_name
+      select 'Pre Assembly Run', from: 'Job type'
+      select 'Image', from: 'Content structure'
+      fill_in 'Bundle dir', with: preassembly_bundle_dir
+
+      click_button 'Submit'
+      exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      expect(page).to have_content exp_str
+
+      # go to job details page, download result
+      first('td > a').click
+      expect(page).to have_content preassembly_project_name
+
+      # wait for preassembly background job to finish
+      reload_page_until_timeout!(text: 'Download', as_link: true)
+
+      click_link 'Download'
+      wait_for_download
+      yaml = YAML.load_file(download)
+      expect(yaml[:status]).to eq 'success'
+
+      # ensure Image files are all there, per pre-assembly, organized into specified resources
+      visit "#{Settings.argo_url}/view/#{druid}"
+
+      reload_page_until_timeout!(text: "Resource (1)\nimage\nLabel\nImage 1")
+      files = all('tr.file')
+
+      expect(files.size).to eq 2
+      expect(files.first.text).to match(%r{image.jpg image/jpeg 28.\d KB})
+      expect(files.last.text).to match(%r{image.jp2 image/jp2 64.\d KB})
+
+      # Wait for accessioningWF to finish
+      reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+
+      expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
+    end
+  end
+
+  it 'can reaccession and preserve' do
     # register new object
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
@@ -50,7 +132,12 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     # wait for object to be registered
     find('td[aria-describedby=data_status][title=success]')
     druid = find('td[aria-describedby=data_druid]').text
-    # puts druid # useful for debugging
+
+    # Update the rights
+    visit "#{Settings.argo_url}/view/#{druid}"
+    click_link 'Set rights'
+    click_button 'Update'
+    expect(page).to have_content 'Rights updated!'
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
