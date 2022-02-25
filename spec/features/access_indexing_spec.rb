@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-# NOTE: this spec is intended for use testing changes to dor-services-app mappings to cocina and
-#  testing changes to dor_indexing_app to index access from cocina
-#  to run:  bundle exec rspec --tag indexing spec/features/access_indexing_spec.rb
-RSpec.describe 'Argo rights changes result in correct Access Rights facet value', type: :feature, indexing: true do
+# for testing changes to dor-services-app mappings to cocina and
+#   testing changes to dor_indexing_app to index access from cocina
+RSpec.describe 'Argo rights changes result in correct Access Rights facet value', type: :feature do
   let(:random_word) { RandomWord.phrases.next }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
