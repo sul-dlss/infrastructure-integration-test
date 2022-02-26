@@ -102,7 +102,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
       click_link
     end
     # check embargo date
-    embargo_date = DateTime.now.to_date >> 6
+    embargo_date = DateTime.now.getutc.to_date >> 6
     expect(page).to have_content("Embargoed until #{embargo_date.to_formatted_s(:long)}")
     bare_druid = page.current_url.split(':').last
 
