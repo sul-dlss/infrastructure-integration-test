@@ -29,8 +29,6 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     # make sure APO is registered
     apo_druid = find_table_cell_following(header_text: 'DRUID').text
     expect(page).to have_content "APO #{apo_druid} created."
-    object_type_element = find_table_cell_following(header_text: 'Object type')
-    expect(object_type_element.text).to eq('adminPolicy')
 
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
