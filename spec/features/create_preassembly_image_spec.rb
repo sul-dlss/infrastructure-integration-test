@@ -138,13 +138,25 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     reload_page_until_timeout!(text: "v#{latest_version} Accessioned", with_reindex: true)
 
+    # This section confirms the object has been published to PURL and has a
+    # valid IIIF manifest
+    visit "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
+    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
+    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
+    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
+    canvas = JSON.parse(Faraday.get(canvas_url).body)
+    image_url = canvas.dig('images', 0, 'resource', '@id')
+    image_response = Faraday.get(image_url)
+    expect(image_response.status).to eq(200)
+    expect(image_response.headers['content-type']).to include('image/jpeg')
+
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and
     # we only log an event to dor-services-app after a version has successfully replicated
     # to a cloud endpoint.  So, confirming that both versions of our test object have
     # replication events logged for all three cloud endpoints is a good basic test of the
     # entire preservation flow.
-
+    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
     latest_s3_key = "#{druid_tree_str}.v000#{latest_version}.zip"
