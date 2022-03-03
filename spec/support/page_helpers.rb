@@ -16,7 +16,7 @@ module PageHelpers
 
         # Check for workflow errors and bail out early. There is no recovering
         # from a workflow error. This selector is found on the Argo item page.
-        expect(page).not_to have_css('.blacklight-wf_error_ssim', wait: 0)
+        expect(page).not_to have_css('.alert-danger', wait: 0)
 
         if with_reindex
           click_link 'Reindex'
