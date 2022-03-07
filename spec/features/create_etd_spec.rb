@@ -261,8 +261,10 @@ RSpec.describe 'Create a new ETD', type: :feature do
 end
 
 def simulate_registrar_post(xml)
-  conn = Faraday.new(url: "#{Settings.etd_url}/etds")
-  conn.request(:basic_auth, Settings.etd.username, Settings.etd.password)
+  conn = Faraday.new(url: "#{Settings.etd_url}/etds") do |faraday|
+    faraday.request :authorization, :basic, Settings.etd.username, Settings.etd.password
+  end
+
   resp = conn.post do |req|
     req.options.timeout = 10
     req.options.open_timeout = 10
