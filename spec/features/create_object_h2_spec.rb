@@ -112,6 +112,13 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # change embargo date
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{bare_druid}"
+    # open a new version so we can manage embargo
+    click_link 'Unlock to make changes to this object'
+    within '.modal-dialog' do
+      select 'Admin', from: 'Type'
+      fill_in 'Version description', with: 'opening version for integration testing'
+      click_button 'Open Version'
+    end
     click_link 'Manage embargo'
     within '#modal-frame' do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
