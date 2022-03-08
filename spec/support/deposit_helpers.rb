@@ -39,7 +39,7 @@ module DepositHelpers
     object_druid = deposit(apo: Settings.default_apo,
                            collection: Settings.default_collection,
                            url: Settings.sdrapi_url,
-                           type: 'http://cocina.sul.stanford.edu/models/image.jsonld',
+                           type: Cocina::Models::Vocab.image,
                            source_id: "virtual-object-test:#{SecureRandom.uuid}",
                            accession: true,
                            access: 'world',
