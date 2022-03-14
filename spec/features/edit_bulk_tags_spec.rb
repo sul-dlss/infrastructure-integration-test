@@ -23,7 +23,6 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
     bulk_druids = all('dd.blacklight-id').take(number_of_druids).map(&:text)
 
     click_link 'Bulk Edits'
-    click_link 'Bulk Actions (asynchronous)'
     expect(page).to have_content 'Bulk Actions'
 
     click_link 'New Bulk Action'
