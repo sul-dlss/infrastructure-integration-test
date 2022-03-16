@@ -3,7 +3,7 @@
 # for testing changes to dor-services-app mappings to cocina and
 #   testing changes to dor_indexing_app to index access from cocina
 RSpec.describe 'Argo rights changes result in correct Access Rights facet value', type: :feature do
-  let(:random_word) { RandomWord.phrases.next }
+  let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:source_id) { "access-rights-test:#{random_word}" }

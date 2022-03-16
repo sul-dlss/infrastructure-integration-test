@@ -11,10 +11,10 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
   let(:preassembly_bundle_dir) { Settings.preassembly_bundle_directory }
   let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
-  let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{RandomWord.nouns.next}" }
-  let(:source_id_random_word) { "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}" }
+  let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{random_noun}" }
+  let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
   let(:source_id) { "image-integration-test:#{source_id_random_word}" }
-  let(:label_random_words) { "#{RandomWord.adjs.next} #{RandomWord.nouns.next}" }
+  let(:label_random_words) { random_phrase }
   let(:object_label) { "image integration test #{label_random_words}" }
   let(:preassembly_manifest_csv) do
     <<~CSV
@@ -111,7 +111,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     expect(page).to have_content 'Complete the form below'
 
-    fill_in 'Project name', with: "#{RandomWord.adjs.next}-#{RandomWord.nouns.next}"
+    fill_in 'Project name', with: random_noun
     select 'Pre Assembly Run', from: 'Job type'
     fill_in 'Bundle dir', with: preassembly_bundle_dir
     select 'Filename', from: 'Content metadata creation'

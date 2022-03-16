@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to create an object without any files', type: :feature do
-  let(:random_word) { RandomWord.phrases.next }
+  let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:source_id) { "create-obj-no-files-test:#{random_word}" }
+  let(:source_id) { "create-obj-no-files-test:#{random_alpha}" }
 
   before do
     authenticate!(start_url: start_url,

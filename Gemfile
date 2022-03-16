@@ -10,10 +10,10 @@ gem 'capybara_table'
 gem 'config'
 gem 'dor-services-client', '~> 8.0'
 gem 'druid-tools' # for constructing druid tree strings easily
+gem 'faker'
 gem 'faraday' # etds require POST request from registrar
 gem 'pry-byebug'
 gem 'rake'
-gem 'random-word'
 gem 'rspec'
 gem 'rubocop', '~> 1.24'
 gem 'rubocop-rake'

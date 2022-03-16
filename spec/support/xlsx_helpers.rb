@@ -4,8 +4,8 @@ require 'rubyXL/convenience_methods/cell' # for rubyXL change_contents method
 
 module XlsxHelpers
   def create_druid
-    source_id = "spreadsheet-druid:#{RandomWord.phrases.next}"
-    object_label = "Object Label for #{RandomWord.phrases.next}"
+    source_id = "spreadsheet-druid:#{random_phrase}"
+    object_label = "Object Label for #{random_phrase}"
 
     ensure_token
     deposit(

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to create a collection from APO page', type: :feature do
-  let(:collection_title) { RandomWord.phrases.next }
+  let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
   let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
 

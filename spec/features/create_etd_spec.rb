@@ -5,10 +5,10 @@ RSpec.describe 'Create a new ETD', type: :feature do
 
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
   let(:dissertation_id) { format('%10d', Kernel.rand(1..9_999_999_999)) }
-  let(:random_title_word) { RandomWord.nouns.next }
-  let(:dissertation_title) { "Integration Testing of ETD Processing - #{random_title_word}" }
-  let(:random_author_word) { RandomWord.nouns.next }
-  let(:dissertation_author) { "Kelly, DeForest #{random_author_word}" }
+  let(:random_title_words) { random_phrase }
+  let(:dissertation_title) { "Integration Testing of ETD Processing - #{random_title_words}" }
+  let(:random_author_word) { random_noun }
+  let(:dissertation_author) { "Kelly, DeForest #{random_author_word}".capitalize }
   let(:dissertation_type) { 'Dissertation' }
   let(:initial_xml_from_registrar) do
     # see https://github.com/sul-dlss/hydra_etd/wiki/Data-Creation-and-Interaction#creating-new-etd-records
