@@ -42,7 +42,7 @@ module DepositHelpers
                            type: Cocina::Models::ObjectType.image,
                            source_id: "virtual-object-test:#{SecureRandom.uuid}",
                            accession: true,
-                           access: 'world',
+                           view: 'world',
                            label: RandomWord.phrases.next,
                            grouping_strategy: grouping_strategy,
                            file_set_type_strategy: file_set_type_strategy,
