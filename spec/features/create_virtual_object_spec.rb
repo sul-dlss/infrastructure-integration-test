@@ -4,7 +4,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
   let(:start_url) { Settings.argo_url }
   let(:filename_group) { ['example.tiff', 'example.jp2'] }
   let(:csv_path) { File.join(DownloadHelpers::PATH, 'virtual-object.csv') }
-  let(:virtual_objects_description) { RandomWord.phrases.next }
+  let(:virtual_objects_description) { random_phrase }
   let(:num_constituents) { Settings.number_of_constituents }
 
   before do

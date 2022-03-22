@@ -2,8 +2,8 @@
 
 RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
   let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_tag_ssim%5D%5B%5D=Registered+By" }
-  let(:export_tag_description) { RandomWord.phrases.next }
-  let(:import_tag_description) { RandomWord.phrases.next }
+  let(:export_tag_description) { random_phrase }
+  let(:import_tag_description) { random_phrase }
   let(:number_of_druids) { 3 }
   let(:druid_regex) { /^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}/ }
   let(:tag_regex) { /^.+( : .+)+$/ }
@@ -67,13 +67,13 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
     end
 
     druid_with_added_tag, druid_with_removed_tag, druid_with_changed_tag = druids_with_tags
-    added_tag = RandomWord.nouns.take(3).join(tag_delimiter)
+    added_tag = random_nouns_array.join(tag_delimiter)
 
     druid_with_added_tag << added_tag
     removed_tag = druid_with_removed_tag.pop
 
     replaced_tag = druid_with_changed_tag.pop
-    edited_tag = RandomWord.nouns.take(3).join(tag_delimiter)
+    edited_tag = random_nouns_array.join(tag_delimiter)
     druid_with_changed_tag << edited_tag
 
     CSV.open(upload_csv_path, 'w') do |csv|

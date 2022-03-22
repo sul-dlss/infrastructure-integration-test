@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights', type: :feature do
-  let(:apo_title) { RandomWord.phrases.next }
+  let(:apo_title) { random_phrase }
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
   let(:object_label) { "Object Label for APO #{apo_title}" }
   let(:source_id) { "apo-rights-test:#{apo_title}" }

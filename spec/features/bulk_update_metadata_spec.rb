@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
-  let(:title1) { RandomWord.phrases.next }
-  let(:title2) { RandomWord.phrases.next }
-  let(:note) { RandomWord.phrases.next }
+  let(:title1) { random_phrase }
+  let(:title2) { random_phrase }
+  let(:note) { random_phrase }
 
   before do
     authenticate!(start_url: Settings.argo_url, expected_text: 'Welcome to Argo!')

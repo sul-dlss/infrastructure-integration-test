@@ -43,7 +43,7 @@ module DepositHelpers
                            source_id: "virtual-object-test:#{SecureRandom.uuid}",
                            accession: true,
                            view: 'world',
-                           label: RandomWord.phrases.next,
+                           label: random_phrase,
                            grouping_strategy: grouping_strategy,
                            file_set_type_strategy: file_set_type_strategy,
                            files: filenames,

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use H2 to create an object', type: :feature do
-  let(:collection_title) { RandomWord.nouns.next }
+  let(:collection_title) { random_phrase }
   let(:item_title) { "SUL Logo for #{collection_title}" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
 

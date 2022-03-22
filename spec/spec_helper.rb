@@ -4,9 +4,9 @@ require 'byebug'
 require 'capybara/rspec'
 require 'capybara_table/rspec'
 require 'csv'
+require 'faker'
 require 'io/console'
 require 'pry-byebug'
-require 'random_word'
 require 'rubyXL'
 require 'sdr-client'
 require 'selenium-webdriver'
@@ -60,6 +60,7 @@ RSpec.configure do |config|
   config.include EventHelpers
   config.include PageHelpers
   config.include PublicXmlHelpers
+  config.include RandomPhraseHelpers
   config.include TableHelpers
   config.include XlsxHelpers
 

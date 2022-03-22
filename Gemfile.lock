@@ -92,6 +92,8 @@ GEM
       dry-core (~> 0.5, >= 0.5)
       dry-initializer (~> 3.0)
       dry-schema (~> 1.9, >= 1.9.1)
+    faker (2.20.0)
+      i18n (>= 1.8.11, < 2)
     faraday (2.2.0)
       faraday-net_http (~> 2.0)
       ruby2_keywords (>= 0.0.4)
@@ -134,7 +136,6 @@ GEM
       rack (>= 1.0, < 3)
     rainbow (3.1.1)
     rake (13.0.6)
-    random-word (2.1.1)
     regexp_parser (2.2.1)
     rexml (3.2.5)
     rspec (3.11.0)
@@ -211,10 +212,10 @@ DEPENDENCIES
   config
   dor-services-client (~> 8.0)
   druid-tools
+  faker
   faraday
   pry-byebug
   rake
-  random-word
   rspec
   rubocop (~> 1.24)
   rubocop-rake
