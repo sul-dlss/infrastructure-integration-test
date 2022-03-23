@@ -201,7 +201,7 @@ RSpec.describe 'Create a new ETD', type: :feature do
     expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
 
     # check Argo for object (wait for embargo info)
-    embargo_date = DateTime.now.to_date >> 6
+    embargo_date = DateTime.now.utc.to_date >> 6
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         visit "#{Settings.argo_url}/view/#{prefixed_druid}"
