@@ -38,26 +38,27 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
 
     find_access_rights_single_facet_value(object_druid, 'world')
 
-    choose_rights('Stanford')
+    choose_rights(view: 'Stanford', download: 'Stanford')
     find_access_rights_single_facet_value(object_druid, 'stanford')
 
-    choose_rights('Location: Music Library')
-    find_access_rights_single_facet_value(object_druid, 'location: music')
-
-    choose_rights('Citation Only')
+    choose_rights(view: 'Citation only')
     find_access_rights_single_facet_value(object_druid, 'citation')
 
-    choose_rights('Dark (Preserve Only)')
+    choose_rights(view: 'Dark')
     find_access_rights_single_facet_value(object_druid, 'dark')
 
-    choose_rights('Controlled Digital Lending (no-download)')
+    choose_rights(view: 'Stanford', download: 'None', cdl: true)
     find_access_rights_single_facet_value(object_druid, 'controlled digital lending')
 
-    choose_rights('World (no-download)')
+    choose_rights(view: 'World', download: 'None')
     find_access_rights_single_facet_value(object_druid, 'world (no-download)')
 
-    choose_rights('Stanford (no-download)')
+    choose_rights(view: 'Stanford', download: 'None')
     find_access_rights_single_facet_value(object_druid, 'stanford (no-download)')
+
+    # NOTE: For some reason, moving this test down helped it pass. :shrug:
+    choose_rights(view: 'Location based', download: 'Location based', location: 'music')
+    find_access_rights_single_facet_value(object_druid, 'location: music')
 
     # FIXME: in this context, we don't have a no-download option for location specific, but we need it.
 
@@ -75,6 +76,7 @@ def find_access_rights_single_facet_value(druid, facet_value)
   fill_in 'Search...', with: druid
   click_button 'Search'
   click_button('Access Rights')
+
   within '#facet-rights_descriptions_ssim ul.facet-values' do
     within 'li' do
       find_link(facet_value)
@@ -83,15 +85,29 @@ def find_access_rights_single_facet_value(druid, facet_value)
   end
 end
 
-def choose_rights(value)
+def choose_rights(view:, download: nil, location: nil, cdl: false)
   # go to record view
   within '.index_title' do
     click_link
   end
 
-  click_link 'Set rights'
-  within '#edit-modal' do
-    select(value)
-    click_button 'Update'
+  click_link 'Edit rights'
+  within '#access-rights' do
+    select view, from: 'item_view_access'
+    select download, from: 'item_download_access' if download
+    select location, from: 'item_access_location' if location
+    check 'Controlled digital lending' if cdl
+    click_button 'Save'
   end
+
+  # It takes a few milliseconds for the rights update to take
+  expect(page).to have_content(view_label(view: view, location: location, cdl: cdl))
+end
+
+def view_label(view:, location:, cdl:)
+  return 'CDL' if cdl
+  return "View: Location: #{location}" if location
+  return 'View: Citation-only' if view == 'Citation only'
+
+  "View: #{view}"
 end

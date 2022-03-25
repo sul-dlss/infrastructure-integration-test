@@ -55,7 +55,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
 
     # wait for registrationWF to finish and verify default access rights
     reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
-    expect(find_table_cell_following(header_text: 'Access rights').text).to eq(rights.downcase)
+    expect(find_table_cell_following(header_text: 'Access rights').text).to eq("View: #{rights}, Download: #{rights}")
 
     # these are in the cocina model data, which is hidden by default
     expect(page).to have_content(:all, terms_of_use)

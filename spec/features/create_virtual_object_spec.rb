@@ -40,13 +40,13 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
     expect(page).to have_content 'Bulk Actions'
     click_link 'New Bulk Action'
     expect(page).to have_content 'New Bulk Action'
-    select 'Create virtual object(s)', from: 'bulk_action_action_type'
+    select 'Create virtual object(s)', from: 'action_type'
     expect(page).to have_content 'Create one or more virtual objects'
-    find('input#bulk_action_create_virtual_objects_csv_file').attach_file(csv_path)
-    find('textarea#bulk_action_description').fill_in(with: virtual_objects_description)
+    find('input#csv_file').attach_file(csv_path)
+    find('textarea#description').fill_in(with: virtual_objects_description)
     click_button 'Submit'
 
-    expect(page).to have_content 'Bulk action was successfully created.'
+    expect(page).to have_content 'Create virtual objects job was successfully created.'
 
     Timeout.timeout(Settings.timeouts.bulk_action) do
       loop do
