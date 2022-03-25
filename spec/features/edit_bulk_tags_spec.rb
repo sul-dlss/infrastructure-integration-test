@@ -27,13 +27,12 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
 
     click_link 'New Bulk Action'
     expect(page).to have_content 'New Bulk Action'
-    select 'Export tags to CSV', from: 'bulk_action_action_type'
+    select 'Export tags to CSV', from: 'action_type'
     expect(page).to have_content 'Download tags as CSV (comma-separated values) for druids specified below'
-    find('textarea#pids').fill_in(with: bulk_druids.join("\n"))
-    find('textarea#bulk_action_description').fill_in(with: export_tag_description)
+    find('textarea#druids').fill_in(with: bulk_druids.join("\n"))
+    find('textarea#description').fill_in(with: export_tag_description)
     click_button 'Submit'
-
-    expect(page).to have_content 'Bulk action was successfully created.'
+    expect(page).to have_content 'Export tags job was successfully created.'
 
     druids_with_tags = []
 
@@ -84,13 +83,13 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
 
     click_link 'New Bulk Action'
     expect(page).to have_content 'New Bulk Action'
-    select 'Import tags from CSV', from: 'bulk_action_action_type'
+    select 'Import tags from CSV', from: 'action_type'
     expect(page).to have_content 'Upload tags as CSV (comma-separated values)'
-    find('input#bulk_action_import_tags_csv_file').attach_file(upload_csv_path)
-    find('textarea#bulk_action_description').fill_in(with: import_tag_description)
+    find('input#csv_file').attach_file(upload_csv_path)
+    find('textarea#description').fill_in(with: import_tag_description)
     click_button 'Submit'
 
-    expect(page).to have_content 'Bulk action was successfully created.'
+    expect(page).to have_content 'Import tags job was successfully created.'
 
     # wait for bulk action to complete (runs asynchronously)
     Timeout.timeout(Settings.timeouts.bulk_action) do
