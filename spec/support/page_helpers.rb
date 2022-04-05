@@ -6,12 +6,18 @@ module PageHelpers
       loop do
         if with_events_expanded
           click_button 'Events' # expand the Events section
+
+          # this is a hack that forces the event section to scroll into view; the section
+          # is lazily loaded, and won't actually be requested otherwise, even if the button
+          # is clicked to expand the event section.
+          page.execute_script 'window.scrollBy(0,100);'
         end
 
+        wait_time = with_events_expanded ? 3 : 1 # events are loaded lazily, give the network a few moments
         if as_link
-          break if page.has_link?(text, wait: 1)
+          break if page.has_link?(text, wait: wait_time)
         else
-          break if page.has_text?(text, wait: 1)
+          break if page.has_text?(text, wait: wait_time)
         end
 
         # Check for workflow errors and bail out early. There is no recovering
