@@ -34,6 +34,12 @@ RSpec.describe 'SDR deposit', type: :feature do
     # Tests existence of technical metadata
     expect(page).to have_content 'Technical metadata'
     click_button 'Technical metadata'
+
+    # this is a hack that forces the techMD section to scroll into view; the section
+    # is lazily loaded, and won't actually be requested otherwise, even if the button
+    # is clicked to expand the technical metadata section.
+    page.execute_script 'window.scrollBy(0,100);'
+
     within('#document-techmd-section') do
       file_listing = find_all('.file')
       expect(file_listing.size).to eq 2
