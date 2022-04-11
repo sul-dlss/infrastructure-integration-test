@@ -78,7 +78,7 @@ Some integration tests use the `dor-services-client` to interact with the `dor-s
 
 ### Set ETD Credentials
 
-In order to run `spec/features/create_etd_spec.rb`, you will the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these valuse from shared_configs for the etd stage and qa branches, and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml`.  See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/create_etd_spec.rb`, you will the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these values from the `sul-hydra-etd-stage` and `sul-hydra-etd-qa` branches of sul-dlss/shared_configs, and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
 
 ### Problems with Authentication?
 
