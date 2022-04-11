@@ -6,6 +6,6 @@ h2_url: 'https://sul-h2-qa.stanford.edu'
 # for purl_url: there is no purl for qa;  sul-h2-qa uses stage ...
 purl_url: 'https://sul-purl-stage.stanford.edu'
 preassembly_bundle_directory: '/dor/staging/integration-tests/image-test'
-preassembly_host: 'sul-preassembly-qa'
+preassembly_host: 'sul-preassembly-qa.stanford.edu'
 preassembly_url: 'https://sul-preassembly-qa.stanford.edu'
 sdrapi_url: 'https://sdr-api-qa.stanford.edu'
