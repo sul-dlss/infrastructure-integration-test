@@ -18,7 +18,8 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
 
   scenario do
     fill_in 'Title', with: apo_title
-    select rights, from: 'Default Object Rights'
+    select rights, from: 'View access'
+    select rights, from: 'Download access'
     select license, from: 'Default use license'
     fill_in 'Default Use and Reproduction statement', with: terms_of_use
     fill_in 'Default Copyright statement', with: copyright
