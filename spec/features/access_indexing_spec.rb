@@ -17,7 +17,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     # fill in registration form
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
-    click_button 'Add Row'
+    click_button 'Add another row'
     td_list = all('td.invalidDisplay')
     td_list[0].click
     fill_in '1_source_id', with: source_id
