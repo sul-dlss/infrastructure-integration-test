@@ -45,7 +45,7 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.5.0)
-    dor-services-client (9.0.0)
+    dor-services-client (10.0.0)
       activesupport (>= 4.2, < 8)
       cocina-models (~> 0.75.0)
       deprecation
@@ -211,7 +211,7 @@ DEPENDENCIES
   capybara
   capybara_table
   config
-  dor-services-client (~> 9.0)
+  dor-services-client (~> 10.0)
   druid-tools
   faker
   faraday
