@@ -36,7 +36,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     # register new object
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
-    select 'Image', from: 'Content Type'
+    select 'image', from: 'Content Type'
     fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
     click_button 'Add another row'
     td_list = all('td.invalidDisplay')
