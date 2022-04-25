@@ -139,6 +139,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     # This section confirms the object has been published to PURL and has a
     # valid IIIF manifest
+    sleep 1 # noticed the PURL page took a bit longer to be ready
     visit "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
