@@ -110,7 +110,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     expect(page).to have_content 'Complete the form below'
 
-    fill_in 'Project name', with: random_noun
+    fill_in 'Project name', with: random_project_name
     select 'Pre Assembly Run', from: 'Job type'
     fill_in 'Bundle dir', with: preassembly_bundle_dir
     select 'Filename', from: 'Content metadata creation'
