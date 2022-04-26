@@ -67,8 +67,8 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     fill_in 'Bundle dir', with: preassembly_bundle_dir
 
     click_button 'Submit'
-    exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+    expect(page).to have_content 'Success! Your job is queued. ' \
+                                 'A link to job output will be emailed to you upon completion.'
 
     # go to job details page, download result
     first('td > a').click
@@ -117,8 +117,8 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     click_button 'Submit'
 
-    exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+    expect(page).to have_content 'Success! Your job is queued. ' \
+                                 'A link to job output will be emailed to you upon completion.'
 
     first('td > a').click # Click to the job details page
 
