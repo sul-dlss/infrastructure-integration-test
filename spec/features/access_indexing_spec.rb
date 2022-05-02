@@ -47,9 +47,6 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     choose_rights(view: 'Dark')
     find_access_rights_single_facet_value(object_druid, 'dark')
 
-    choose_rights(view: 'Stanford', download: 'None', cdl: true)
-    find_access_rights_single_facet_value(object_druid, 'controlled digital lending')
-
     choose_rights(view: 'World', download: 'None')
     find_access_rights_single_facet_value(object_druid, 'world (no-download)')
 
@@ -61,14 +58,17 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     find_access_rights_single_facet_value(object_druid, 'location: music')
 
     # FIXME: in this context, we don't have a no-download option for location specific, but we need it.
-
     # this isn't in the pull down; discussed with Andrew:
     #  "the rights menu is definitely in my domain. I’ll talk with Astrid.
     #   For the current UI, as long as XML is editable, it’s going to stay as is"
     # choose_rights('Location: Music Library (no-download)')
     # find_access_rights_single_facet_value(object_druid, 'location: music (no-download)')
 
-    # add file level tests
+    # this is last as choose_rights doesn't have a handy way to turn controlled digital lending off.
+    choose_rights(view: 'Stanford', download: 'None', cdl: true)
+    find_access_rights_single_facet_value(object_druid, 'controlled digital lending')
+
+    # TODO: add file level tests
   end
 end
 
@@ -96,7 +96,7 @@ def choose_rights(view:, download: nil, location: nil, cdl: false)
     select view, from: 'item_view_access'
     select download, from: 'item_download_access' if download
     select location, from: 'item_access_location' if location
-    check 'Controlled digital lending' if cdl
+    select 'Yes', from: 'Controlled digital lending' if cdl
     click_button 'Save'
   end
 
