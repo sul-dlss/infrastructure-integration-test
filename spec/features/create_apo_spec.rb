@@ -61,6 +61,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     # these are in the cocina model data, which is hidden by default
     expect(page).to have_content(:all, terms_of_use)
     expect(page).to have_content(:all, copyright)
+    click_button('Cocina Model')
     expect(page).to have_content(:all, license_uri)
   end
 end
