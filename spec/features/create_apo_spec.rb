@@ -9,7 +9,6 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
   let(:terms_of_use) { 'Some oddly specific terms of use.' }
   let(:copyright) { 'You may not do anything with my stuff.' }
   let(:license) { 'Attribution Non-Commercial 3.0 Unported' }
-  let(:license_uri) { 'https://creativecommons.org/licenses/by-nc/3.0/legalcode' }
 
   before do
     expected_txt = 'The following defaults will apply to all newly registered objects.'
@@ -58,10 +57,8 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
     expect(find_table_cell_following(header_text: 'Access rights').text).to eq("View: #{rights}, Download: #{rights}")
 
-    # these are in the cocina model data, which is hidden by default
-    expect(page).to have_content(:all, terms_of_use)
-    expect(page).to have_content(:all, copyright)
-    click_button('Cocina Model')
-    expect(page).to have_content(:all, license_uri)
+    expect(page).to have_content(terms_of_use)
+    expect(page).to have_content(copyright)
+    expect(page).to have_content(license)
   end
 end
