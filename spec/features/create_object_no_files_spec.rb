@@ -5,6 +5,8 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:source_id) { "create-obj-no-files-test:#{random_alpha}" }
+  let(:user_tag) { 'Some : UniqueTagValue' }
+  let(:project) { 'Awesome Project' }
 
   before do
     authenticate!(start_url: start_url,
@@ -15,6 +17,9 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     # fill in registration form
     select 'integration-testing', from: 'Admin Policy'
     select 'integration-testing', from: 'Collection'
+    select 'book', from: 'Content Type'
+    fill_in 'tags_0', with: user_tag
+    fill_in 'project', with: project
     click_button 'Add another row'
     td_list = all('td.invalidDisplay')
     td_list[0].click
@@ -39,6 +44,12 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     select 'accessionWF', from: 'wf'
     click_button 'Add'
     expect(page).to have_text('Added accessionWF')
+
+    # look for tags
+    expect(page).to have_text(user_tag)
+    expect(page).to have_text("Project : #{project}")
+    expect(page).to have_text('Process : Content Type : Book (ltr)')
+    expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
