@@ -31,6 +31,10 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     expect(page).to have_content "APO #{apo_druid} created."
 
     # wait for accessioningWF to finish
+    # Without this page.refresh, selenium webdriver complained:
+    #  Element <a class="btn button btn-primary " href="/dor/reindex/druid:bc123df4567"> could not be scrolled into view
+    # Explicitly trying to scroll up via "page.execute_script 'window.scrollTo(0,0);'" did not seem to work.
+    page.refresh
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
     # now register an object with this apo and verify default rights
