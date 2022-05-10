@@ -8,7 +8,7 @@ gem 'byebug'
 gem 'capybara'
 gem 'capybara_table'
 gem 'config'
-gem 'dor-services-client', '~> 11.0'
+gem 'dor-services-client', '~> 12.0'
 gem 'druid-tools' # for constructing druid tree strings easily
 gem 'faker'
 gem 'faraday' # etds require POST request from registrar
