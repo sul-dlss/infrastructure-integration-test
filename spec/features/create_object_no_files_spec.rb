@@ -48,7 +48,6 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     # look for tags
     expect(page).to have_text(user_tag)
     expect(page).to have_text("Project : #{project}")
-    expect(page).to have_text('Process : Content Type : Book (ltr)')
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
     # wait for accessioningWF to finish
