@@ -16,6 +16,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
   let(:source_id) { "image-integration-test:#{source_id_random_word}" }
   let(:label_random_words) { random_phrase }
   let(:object_label) { "image integration test #{label_random_words}" }
+  let(:collection_name) { 'integration-testing' }
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
@@ -35,7 +36,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
   scenario do
     # register new object
     select 'integration-testing', from: 'Admin Policy'
-    select 'integration-testing', from: 'Collection'
+    select collection_name, from: 'Collection'
     select 'image', from: 'Content Type'
     fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
     click_button 'Add another row'
@@ -139,8 +140,9 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     # This section confirms the object has been published to PURL and has a
     # valid IIIF manifest
-    sleep 1 # noticed the PURL page took a bit longer to be ready
     visit "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
+    # wait for the PURL name to be published by checking for collection name
+    reload_page_until_timeout!(text: collection_name)
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
     canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
