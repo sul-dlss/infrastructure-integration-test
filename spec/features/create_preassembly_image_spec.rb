@@ -86,15 +86,14 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     # ensure Image files are all there, per pre-assembly, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
 
-    reload_page_until_timeout!(text: "Resource (1)\nimage\nLabel\nImage 1")
+    # Wait for accessioningWF to finish
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+
     files = all('tr.file')
 
     expect(files.size).to eq 2
     expect(files.first.text).to match(%r{image.jpg image/jpeg 28.\d KB})
     expect(files.last.text).to match(%r{image.jp2 image/jp2 64.\d KB})
-
-    # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 
