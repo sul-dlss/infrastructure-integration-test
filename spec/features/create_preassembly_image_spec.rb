@@ -65,7 +65,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
-    fill_in 'Bundle dir', with: preassembly_bundle_dir
+    fill_in 'Staging location', with: preassembly_bundle_dir
 
     click_button 'Submit'
     expect(page).to have_content 'Success! Your job is queued. ' \
@@ -112,7 +112,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     fill_in 'Project name', with: random_project_name
     select 'Pre Assembly Run', from: 'Job type'
-    fill_in 'Bundle dir', with: preassembly_bundle_dir
+    fill_in 'Staging location', with: preassembly_bundle_dir
     select 'Filename', from: 'Content metadata creation'
 
     click_button 'Submit'
