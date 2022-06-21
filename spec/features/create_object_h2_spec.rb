@@ -87,8 +87,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-    fill_in 'Search...', with: item_title
-    click_button 'Search'
+    find_field('Search...').send_keys(item_title, :enter)
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # check Argo facet field with 6 month embargo
@@ -155,8 +154,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-    fill_in 'Search...', with: item_title
-    click_button 'Search'
+    find_field('Search...').send_keys(item_title, :enter)
     reload_page_until_timeout!(text: 'v2 Accessioned')
   end
 end
