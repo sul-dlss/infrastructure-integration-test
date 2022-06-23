@@ -25,7 +25,7 @@ Layout/BeginEndAlignment: # (new in 0.91)
   Enabled: true
 
 Layout/LineLength:
-  Max: 120
+  Max: 125
 
 Lint/BinaryOperatorWithIdenticalOperands:
   Enabled: true
