@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module PageHelpers
-  def reload_page_until_timeout!(text:, as_link: false, with_reindex: false, with_events_expanded: false)
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/PerceivedComplexity
+  def reload_page_until_timeout!(text:, as_link: false, table: nil, with_reindex: false, with_events_expanded: false)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         if with_events_expanded
@@ -16,6 +19,8 @@ module PageHelpers
         wait_time = with_events_expanded ? 3 : 1 # events are loaded lazily, give the network a few moments
         if as_link
           break if page.has_link?(text, wait: wait_time)
+        elsif table
+          break if page.find(:table_row, table).text.match?(text)
         else
           break if page.has_text?(text, wait: wait_time)
         end
@@ -33,4 +38,7 @@ module PageHelpers
       end
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/PerceivedComplexity
 end
