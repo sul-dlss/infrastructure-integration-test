@@ -131,7 +131,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
 
-    prefixed_druid = "druid:#{yaml[:pid]}"
+    prefixed_druid = yaml[:pid]
     latest_version = version + 1
 
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
