@@ -39,17 +39,17 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     select collection_name, from: 'Collection'
     select 'image', from: 'Content Type'
     fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
-    click_button 'Add another row'
-    td_list = all('td.invalidDisplay')
-    td_list[0].click
-    fill_in '1_source_id', with: source_id
-    td_list[1].click
-    fill_in '1_label', with: object_label
-    find_field('1_label').send_keys :enter
-    click_button('Register')
+
+    fill_in 'Source ID', with: source_id
+    fill_in 'Label', with: object_label
+
+    click_button 'Register'
+
     # wait for object to be registered
-    find('td[aria-describedby=data_status][title=success]')
-    druid = find('td[aria-describedby=data_druid]').text
+    expect(page).to have_text 'Items successfully registered.'
+
+    druid = find('table a').text
+
     # puts druid # useful for debugging
 
     # create manifest.csv file and scp it to preassembly staging directory
@@ -93,7 +93,7 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
 
     expect(files.size).to eq 2
     expect(files.first.text).to match(%r{image.jpg image/jpeg 28.\d KB})
-    expect(files.last.text).to match(%r{image.jp2 image/jp2 64.\d KB})
+    expect(files.last.text).to match(%r{image.jp2 image/jp2 137 KB})
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 

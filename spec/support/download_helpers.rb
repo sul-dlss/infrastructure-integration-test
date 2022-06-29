@@ -11,7 +11,7 @@ module DownloadHelpers
   end
 
   def download
-    downloads.first
+    downloads.delete_if { |path| /Argo_files\z/.match?(path) }.first
   end
 
   def download_content

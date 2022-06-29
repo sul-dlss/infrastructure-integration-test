@@ -8,4 +8,4 @@ tmp/*.csv
 downloads
 
 # configs to hold sensitive values
-*.local.yml
+config/**/*.local.yml

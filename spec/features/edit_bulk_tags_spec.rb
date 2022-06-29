@@ -54,7 +54,6 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
 
           click_link 'Download Exported Tags (CSV)'
           wait_for_download
-
           druids_with_tags = CSV.parse(File.read(download))
           expect(druids_with_tags.count).to eq(number_of_druids)
           druids_with_tags.each do |druid, *tags|
