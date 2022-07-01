@@ -48,7 +48,8 @@ RSpec.describe 'Create and re-accession object via Pre-assembly', type: :feature
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
 
-    druid = find('table a').text
+    bare_object_druid = find('table a').text
+    druid = "druid:#{bare_object_druid}"
 
     # puts druid # useful for debugging
 
