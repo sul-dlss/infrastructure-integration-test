@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archives are accessioning', type: :feature do
+RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive crawl and seed accession', type: :feature do
   let(:job_specific_directory) { start_time.to_i.to_s }
   let(:remote_path) do
     "#{Settings.was_registrar.username}@#{Settings.was_registrar.host}:#{Settings.was_registrar.jobs_directory}/" \
       "#{job_specific_directory}/"
   end
-  let(:source_id) { "test:#{start_time.to_i}" }
+  let(:collection_name) { 'Test Pywb Web Archive' }
   let(:start_time) { Time.now }
+  let(:source_id) { "test:#{start_time.to_i}" }
   let(:start_url) { "#{Settings.was_registrar.url}/registration_jobs/new" }
+  let(:warc_path) { 'spec/fixtures/data.warc' }
   let(:updated_warc) do
     Tempfile.new([job_specific_directory, '.warc']).tap do |file|
       original_warc = File.read(warc_path)
@@ -20,7 +22,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archives are
       file.close
     end
   end
-  let(:warc_path) { 'spec/fixtures/data.warc' }
+  let(:url_in_wayback) { 'https://library.stanford.edu/department/digital-library-systems-and-services-dlss/about-us' }
 
   before do
     `ssh #{Settings.was_registrar.username}@#{Settings.was_registrar.host} mkdir -p \
@@ -34,6 +36,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archives are
   end
 
   scenario do
+    # Crawl
     fill_in 'Job directory', with: job_specific_directory
     fill_in 'Collection Druid', with: Settings.default_collection
     fill_in 'Source ID', with: source_id
@@ -44,8 +47,8 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archives are
     # wait for registration to complete
     reload_page_until_timeout!(text: 'success: Created', table: { 'Job directory' => job_specific_directory })
 
-    item_druid = find(:table_row, { 'Job directory' => job_specific_directory }).text.split.last
-    visit "#{Settings.argo_url}/view/#{item_druid}"
+    crawl_druid = find(:table_row, { 'Job directory' => job_specific_directory }).text.split.last
+    visit "#{Settings.argo_url}/view/#{crawl_druid}"
 
     expect(page).to have_content(job_specific_directory)
 
@@ -55,8 +58,35 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archives are
     # wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
-    visit "#{Settings.was_playback_url}/was/#{start_time.strftime('%Y%m%d%H%M%S')}/" \
-          'https://library.stanford.edu/department/digital-library-systems-and-services-dlss/about-us'
+    expect(page).to have_link('wasCrawlPreas')
+
+    visit "#{Settings.was_playback_url}/was/#{start_time.strftime('%Y%m%d%H%M%S')}/#{url_in_wayback}"
     expect(page).to have_content('About us | Stanford Libraries')
+
+    # Seed
+    visit "#{Settings.argo_url}/registration"
+    select 'Web Archive Seed Object APO', from: 'Admin Policy'
+    select collection_name, from: 'Collection'
+    select 'wasSeedPreassemblyWF', from: 'Initial Workflow'
+    select 'webarchive-seed', from: 'Content Type'
+    fill_in 'Source ID', with: "seed-#{source_id}"
+    fill_in 'Label', with: url_in_wayback
+    fill_in 'Tags', with: 'webarchive : seed'
+    click_button 'Register'
+
+    expect(page).to have_text 'Items successfully registered.'
+
+    seed_druid = find('table a').text
+
+    visit "#{Settings.argo_url}/view/#{seed_druid}"
+    content_type_element = find_table_cell_following(header_text: 'Content type')
+    expect(content_type_element.text).to eq('webarchive-seed')
+
+    # wait for accessioningWF to finish
+    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+
+    expect(page).to have_link('thumbnail.jp2')
+    expect(page).to have_content('image/jp2')
+    expect(page).to have_content('400 px')
   end
 end
