@@ -32,4 +32,13 @@ module PublicXmlHelpers
     ).text
     expect(virtual_object_purl).to end_with(virtual_object_druid.delete_prefix('druid:'))
   end
+
+  def expect_seed_url_in_public_xml(druid, seed_url)
+    Dor::Services::Client.configure(url: Settings.dor_services.url, token: Settings.dor_services.token)
+    xml = Dor::Services::Client.object(druid).metadata.public_xml
+    archived_website_url = Nokogiri::XML(xml).xpath(
+      '/publicObject/mods:mods/mods:location/mods:url[@displayLabel="Archived website"]', mods: 'http://www.loc.gov/mods/v3'
+    ).text
+    expect(archived_website_url).to eq seed_url
+  end
 end
