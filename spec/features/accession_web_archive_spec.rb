@@ -23,6 +23,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     end
   end
   let(:url_in_wayback) { 'https://library.stanford.edu/department/digital-library-systems-and-services-dlss/about-us' }
+  let(:archived_url) { "#{Settings.was_playback_url}/*/#{url_in_wayback}" }
 
   before do
     `ssh #{Settings.was_registrar.username}@#{Settings.was_registrar.host} mkdir -p \
@@ -88,5 +89,8 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_link('thumbnail.jp2')
     expect(page).to have_content('image/jp2')
     expect(page).to have_content('400 px')
+
+    # Verify that the purl XML includes the proper archived website URL
+    expect_seed_url_in_public_xml("druid:#{seed_druid}", archived_url)
   end
 end
