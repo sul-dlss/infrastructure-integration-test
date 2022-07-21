@@ -36,3 +36,9 @@ dor_services:
 sunet:
   id: ~ # NOTE: *without* @stanford.edu!
   password: ~
+
+# the URL and username/password used to login to goobi (applicable to stage only)
+goobi:
+  url: https://goobi-stage.stanford.edu/goobi
+  username: ~
+  password: ~
