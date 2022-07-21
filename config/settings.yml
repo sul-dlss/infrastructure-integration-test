@@ -36,3 +36,8 @@ dor_services:
 sunet:
   id: ~ # NOTE: *without* @stanford.edu!
   password: ~
+
+# the URL and username/password used to login to goobi (stored in vault)
+goobi:
+  username: ~
+  password: ~
