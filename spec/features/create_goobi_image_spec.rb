@@ -60,7 +60,7 @@ RSpec.describe 'Create and accession object via Goobi', type: :feature,
     click_button 'Log in'
 
     # find the new object
-    expect(page).to have_selector('h2', text: 'Home page')
+    expect(page).to have_text('Home page')
     click_link 'My tasks'
     fill_in 'searchform:sub1:searchField', with: druid
     click_button 'Search'
@@ -68,6 +68,11 @@ RSpec.describe 'Create and accession object via Goobi', type: :feature,
     # upload the test image
     click_button 'Accept editing of this task'
     attach_file('fileInput', 'spec/fixtures/stanford-logo.tiff', make_visible: true)
+    # when the image finishes uploading, the "Select files" input will re-appear
+    #  and we can continue with the test
+    expect(page).to have_text('Select files')
+    click_link 'Overview'
+    expect(page).to have_text('stanford-logo.tiff')
     click_button 'Finish the edition of this task'
 
     # wait for goobi to do some back-end processing of the uploaded image
