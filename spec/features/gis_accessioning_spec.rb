@@ -4,7 +4,7 @@
 RSpec.describe 'Create and accession GIS object', type: :feature,
                                                   if: ENV.fetch('SDR_ENV', 'staging') == 'staging' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:project_name) { 'GIS Integration Test' }
+  let(:project_name) { 'Integration Test - GIS' }
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
   let(:source_id) { "gis-integration-test:#{source_id_random_word}" }
   let(:label_random_words) { random_phrase }
