@@ -37,7 +37,7 @@ SDR_ENV=qa bundle exec rspec
 
 No matter which environment you run tests in, you may be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push. If you tire of typing in your credentials, see the `Other Configuration` section below for help securely storing them.
 
-When running the create_virtual_object test, you can create more than two constituents by running as follows:
+When running the virtual_object_creation test, you can create more than two constituents by running as follows:
 
 `SETTINGS__NUMBER_OF_CONSTITUENTS=11 bundle exec rspec`
 
@@ -78,11 +78,11 @@ Some integration tests use the `dor-services-client` to interact with the `dor-s
 
 ### Set ETD Credentials
 
-In order to run `spec/features/create_etd_spec.rb`, you need the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these values from the `sul-hydra-etd-stage` and `sul-hydra-etd-qa` branches of sul-dlss/shared_configs, and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/etd_creation_spec.rb`, you need the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these values from the `sul-hydra-etd-stage` and `sul-hydra-etd-qa` branches of sul-dlss/shared_configs, and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
 
 ### Set Goobi Credentials
 
-In order to run `spec/features/create_goobi_image_spec.rb`, you need the Goobi application's integration username and password to login to the UI. Get these values from https://github.com/sul-dlss/shared_configs/tree/infrastructure-team-secrets, and add them to `config/settings/staging.local.yml`.  Note that this test cannot be run in QA (since there is no Goobi QA), so this config is relevant only to staging. See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/goobi_accessioning_spec.rb`, you need the Goobi application's integration username and password to login to the UI. Get these values from https://github.com/sul-dlss/shared_configs/tree/infrastructure-team-secrets, and add them to `config/settings/staging.local.yml`.  Note that this test cannot be run in QA (since there is no Goobi QA), so this config is relevant only to staging. See `config/settings.yml` for the expected YAML syntax.
 
 ### Problems with Authentication?
 

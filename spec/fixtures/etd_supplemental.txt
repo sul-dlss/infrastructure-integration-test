@@ -1,1 +1,1 @@
-A supplemental file to be uploaded for the create_etd_spec
+A supplemental file to be uploaded for the etd_creation_spec
