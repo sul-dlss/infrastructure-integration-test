@@ -42,3 +42,7 @@ goobi:
   url: https://goobi-stage.stanford.edu/goobi
   username: ~
   password: ~
+
+gis:
+  robots_content_root: '/var/geomdtk/current/stage'
+  username: 'lyberadmin'

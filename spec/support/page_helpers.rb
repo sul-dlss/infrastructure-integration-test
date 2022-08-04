@@ -4,7 +4,9 @@ module PageHelpers
   # rubocop:disable Metrics/CyclomaticComplexity
   # rubocop:disable Metrics/MethodLength
   # rubocop:disable Metrics/PerceivedComplexity
-  def reload_page_until_timeout!(text:, as_link: false, table: nil, with_reindex: false, with_events_expanded: false)
+  # rubocop:disable Metrics/ParameterLists
+  def reload_page_until_timeout!(text:, as_link: false, table: nil, with_reindex: false, with_events_expanded: false,
+                                 selector: nil)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         if with_events_expanded
@@ -21,6 +23,8 @@ module PageHelpers
           break if page.has_link?(text, wait: wait_time)
         elsif table
           break if page.find(:table_row, table).text.match?(text)
+        elsif selector
+          break if page.has_selector?(selector, text: text, wait: wait_time)
         else
           break if page.has_text?(text, wait: wait_time)
         end
@@ -41,4 +45,5 @@ module PageHelpers
   # rubocop:enable Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/MethodLength
   # rubocop:enable Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/ParameterLists
 end
