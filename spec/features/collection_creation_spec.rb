@@ -19,6 +19,7 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     expect(page).to have_content 'Created collection'
 
     collection_druid = find('.alert-info').text.split[2]
+    puts " *** collection creation druid: #{collection_druid} ***" # useful for debugging
     visit "#{Settings.argo_url}/view/#{collection_druid}"
 
     expect(page).to have_content collection_title

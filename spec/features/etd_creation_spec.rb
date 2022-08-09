@@ -77,8 +77,8 @@ RSpec.describe 'Create a new ETD', type: :feature do
     resp_body = simulate_registrar_post(initial_xml_from_registrar)
     prefixed_druid = resp_body.split.first
     expect(prefixed_druid).to start_with('druid:')
-    # puts "dissertation id is #{dissertation_id}" # helpful for debugging
-    # puts "druid is #{prefixed_druid}" # helpful for debugging
+    puts " *** ETD creation druid: #{prefixed_druid} ***" # useful for debugging
+    # puts "   *** dissertation id is #{dissertation_id} ***" # helpful for debugging
 
     etd_submit_url = "#{Settings.etd_url}/submit/#{prefixed_druid}"
     # puts "etd submit url: #{etd_submit_url}" # helpful for debugging

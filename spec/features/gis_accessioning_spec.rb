@@ -33,9 +33,8 @@ RSpec.describe 'Create and accession GIS object', type: :feature,
     expect(page).to have_text 'Items successfully registered.'
 
     bare_object_druid = find('table a').text
+    puts " *** GIS accessioning druid: #{bare_object_druid} ***" # useful for debugging
     druid = "druid:#{bare_object_druid}"
-
-    # # puts druid # useful for debugging
 
     # Go to kurma server and copy test content to the druid folder so it can be accessioned
     test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data')

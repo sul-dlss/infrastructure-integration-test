@@ -21,6 +21,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
   scenario 'exports tags to CSV and then imports them' do
     # Grab top three druids for testing bulk tag operation
     bulk_druids = all('dd.blacklight-id').take(number_of_druids).map(&:text)
+    puts " *** bulk tags edit druids: #{bulk_druids.join(', ')} ***" # useful for debugging
 
     within('.search-widgets') do
       click_link 'Bulk Actions'

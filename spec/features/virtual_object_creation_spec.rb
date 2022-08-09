@@ -16,6 +16,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
 
     # Create virtual object
     virtual_object_druid = deposit_object
+    puts " *** virtual object druid: #{virtual_object_druid} ***" # useful for debugging
 
     # Create constituent objects
     constituent_druids = []
@@ -26,6 +27,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
     end
 
     puts constituent_druids
+    puts "   *** constituent object druids: #{constituent_druids.join(', ')} ***" # useful for debugging
 
     # Create CSV: virtual_object_druid, constituent_druid, constituent_druid
     virtual_object_row = constituent_druids.clone
