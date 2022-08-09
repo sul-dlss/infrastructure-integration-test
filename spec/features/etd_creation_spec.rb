@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Create a new ETD', type: :feature do
+RSpec.describe 'Create a new ETD with embargo, and then update the embargo date', type: :feature do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
   # dissertation id must be unique; D followed by 9 digits, e.g. D123456789

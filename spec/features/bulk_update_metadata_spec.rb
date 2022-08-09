@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
+RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :feature do
   let(:title1) { random_phrase }
   let(:title2) { random_phrase }
   let(:note) { random_phrase }
