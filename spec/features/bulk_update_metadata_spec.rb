@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
+RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :feature do
   let(:title1) { random_phrase }
   let(:title2) { random_phrase }
   let(:note) { random_phrase }
@@ -12,6 +12,7 @@ RSpec.describe 'Use Argo to upload metadata in a spreadsheet', type: :feature do
   scenario do
     druid1 = create_druid
     druid2 = create_druid
+    puts " *** bulk update metadata druids: #{druid1}, #{druid2} ***" # useful for debugging
     temp_xlsx = update_xlsx(druid1, title1, druid2, title2)
 
     visit "#{Settings.argo_url}/view/#{Settings.default_apo}"

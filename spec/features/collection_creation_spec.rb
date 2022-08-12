@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create a collection from APO page', type: :feature do
+RSpec.describe 'Use Argo to create a collection', type: :feature do
   let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
   let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
@@ -19,6 +19,7 @@ RSpec.describe 'Use Argo to create a collection from APO page', type: :feature d
     expect(page).to have_content 'Created collection'
 
     collection_druid = find('.alert-info').text.split[2]
+    puts " *** collection creation druid: #{collection_druid} ***" # useful for debugging
     visit "#{Settings.argo_url}/view/#{collection_druid}"
 
     expect(page).to have_content collection_title

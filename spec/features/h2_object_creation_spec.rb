@@ -104,6 +104,7 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     embargo_date = DateTime.now.getutc.to_date >> 6
     expect(page).to have_content("Embargoed until #{embargo_date.to_formatted_s(:long)}")
     bare_druid = page.current_url.split(':').last
+    puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
 
     # check purl xml for embargo
     expect_embargo_date_in_public_xml(bare_druid, embargo_date)
