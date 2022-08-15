@@ -27,8 +27,8 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     expect(page).to have_text 'Items successfully registered.'
 
     bare_object_druid = find('table a').text
-    puts " *** access indexing druid: #{bare_object_druid} ***" # useful for debugging
     object_druid = "druid:#{bare_object_druid}"
+    puts " *** access indexing druid: #{object_druid} ***" # useful for debugging
 
     visit "#{Settings.argo_url}/view/#{object_druid}"
 

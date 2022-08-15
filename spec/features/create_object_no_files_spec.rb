@@ -30,8 +30,8 @@ RSpec.describe 'Use Argo to create an object without any files', type: :feature 
     expect(page).to have_text 'Items successfully registered.'
 
     bare_object_druid = find('table a').text
-    puts " *** create object no files druid: #{bare_object_druid} ***" # useful for debugging
     object_druid = "druid:#{bare_object_druid}"
+    puts " *** create object no files druid: #{object_druid} ***" # useful for debugging
 
     visit "#{Settings.argo_url}/view/#{object_druid}"
 

@@ -23,7 +23,7 @@ RSpec.describe 'SDR deposit', type: :feature do
                              'Gemfile' => { 'preserve' => true },
                              'Gemfile.lock' => { 'preserve' => true }
                            })
-    puts " *** sdr deposit druid: #{druid} ***" # useful for debugging
+    puts " *** sdr deposit druid: #{object_druid} ***" # useful for debugging
 
     visit "#{start_url}/view/#{object_druid}?beta=true"
 

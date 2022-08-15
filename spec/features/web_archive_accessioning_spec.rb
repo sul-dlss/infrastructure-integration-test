@@ -79,9 +79,10 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_text 'Items successfully registered.'
 
     seed_druid = find('table a').text
-    puts " *** was seed druid: #{seed_druid} ***" # useful for debugging
+    full_seed_druid = "druid:#{seed_druid}"
+    puts " *** was seed druid: #{full_seed_druid} ***" # useful for debugging
 
-    visit "#{Settings.argo_url}/view/#{seed_druid}"
+    visit "#{Settings.argo_url}/view/#{full_seed_druid}"
     content_type_element = find_table_cell_following(header_text: 'Content type')
     expect(content_type_element.text).to eq('webarchive-seed')
 
@@ -93,6 +94,6 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_content('400 px')
 
     # Verify that the purl XML includes the proper archived website URL
-    expect_seed_url_in_public_xml("druid:#{seed_druid}", archived_url)
+    expect_seed_url_in_public_xml(full_seed_druid, archived_url)
   end
 end
