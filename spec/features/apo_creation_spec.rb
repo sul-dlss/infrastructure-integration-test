@@ -51,8 +51,8 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     expect(page).to have_text 'Items successfully registered.'
 
     bare_object_druid = find('table a').text
-    puts " *** APO creation druid: #{bare_object_druid} ***" # useful for debugging
     object_druid = "druid:#{bare_object_druid}"
+    puts " *** APO creation druid: #{object_druid} ***" # useful for debugging
 
     visit "#{Settings.argo_url}/view/#{object_druid}"
 

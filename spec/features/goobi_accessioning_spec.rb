@@ -43,8 +43,8 @@ RSpec.describe 'Create and accession object via Goobi', type: :feature,
     expect(page).to have_text 'Items successfully registered.'
 
     bare_object_druid = find('table a').text
-    puts " *** goobi accessioning druid: #{bare_object_druid} ***" # useful for debugging
     druid = "druid:#{bare_object_druid}"
+    puts " *** goobi accessioning druid: #{druid} ***" # useful for debugging
 
     # wait to be sure goobiWF has finished running and goobi has time to process the incoming object
     sleep 2
