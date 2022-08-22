@@ -32,6 +32,9 @@ RSpec.describe 'Use H2 to create an object', type: :feature do
     # Adds user to depositor field
     click_button '+ Add another depositor'
     fill_in 'lookup SunetID', with: AuthenticationHelpers.username
+    within '.participant-overlay' do
+      click_button 'Add'
+    end
 
     click_button 'Deposit'
     expect(page).to have_content(collection_title)
