@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
-  let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_tag_ssim%5D%5B%5D=Registered+By" }
+  let(:start_url) { "#{Settings.argo_url}/catalog?f[nonhydrus_collection_title_ssim][]=integration-testing" }
   let(:export_tag_description) { random_phrase }
   let(:import_tag_description) { random_phrase }
   let(:number_of_druids) { 3 }
