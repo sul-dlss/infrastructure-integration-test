@@ -126,7 +126,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
 
     # indicate copyrighted material
     expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
-    expect(find('#pbPermissionsProvided')['style']).to eq '' # rights not yet selected
+    expect(find_by_id('pbPermissionsProvided')['style']).to eq '' # rights not yet selected
     select 'Yes', from: "My #{dissertation_type.downcase} contains copyright material"
 
     # provide copyright permissions letters/files
@@ -141,7 +141,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
 
     # apply licenses
     expect(page).to have_selector('#pbRightsSelected', text: "License terms applied\n- Not done")
-    expect(page.find('#pbRightsSelected')['style']).to eq '' # rights not applied yet
+    expect(page.find_by_id('pbRightsSelected')['style']).to eq '' # rights not applied yet
     click_link 'View Stanford University publication license'
     check 'I have read and agree to the terms of the Stanford University license.'
     within('#lb_stanfordLicense') do
