@@ -50,7 +50,7 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.5.0)
-    dor-services-client (12.9.0)
+    dor-services-client (12.9.1)
       activesupport (>= 4.2, < 8)
       cocina-models (~> 0.86.0)
       deprecation
@@ -58,9 +58,9 @@ GEM
       faraday-retry
       zeitwerk (~> 2.1)
     druid-tools (3.0.0)
-    dry-configurable (0.15.0)
-      concurrent-ruby (~> 1.0)
+    dry-configurable (0.16.0)
       dry-core (~> 0.6)
+      zeitwerk (~> 2.6)
     dry-container (0.11.0)
       concurrent-ruby (~> 1.0)
     dry-core (0.8.1)
@@ -102,10 +102,10 @@ GEM
       nokogiri (>= 1.4.3)
     faker (2.23.0)
       i18n (>= 1.8.11, < 2)
-    faraday (2.5.2)
+    faraday (2.6.0)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
-    faraday-net_http (3.0.0)
+    faraday-net_http (3.0.1)
     faraday-retry (2.0.0)
       faraday (~> 2.0)
     i18n (1.12.0)
