@@ -18,14 +18,15 @@ RSpec.describe 'SDR deposit', type: :feature do
                            catkey: catkey,
                            accession: true,
                            view: 'world',
-                           files: ['Gemfile', 'Gemfile.lock'],
+                           files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
                            files_metadata: {
                              'Gemfile' => { 'preserve' => true },
-                             'Gemfile.lock' => { 'preserve' => true }
+                             'Gemfile.lock' => { 'preserve' => true },
+                             'config/settings.yml' => { 'preserve' => true }
                            })
     puts " *** sdr deposit druid: #{object_druid} ***" # useful for debugging
 
-    visit "#{start_url}/view/#{object_druid}?beta=true"
+    visit "#{start_url}/view/#{object_druid}"
 
     # Wait for indexing and workflows to finish
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
@@ -43,7 +44,7 @@ RSpec.describe 'SDR deposit', type: :feature do
 
     within('#document-techmd-section') do
       file_listing = find_all('.file')
-      expect(file_listing.size).to eq 2
+      expect(file_listing.size).to eq 3
     end
   end
 end
