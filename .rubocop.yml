@@ -100,7 +100,7 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/BlockLength:
-  IgnoredMethods:
+  AllowedMethods:
     - describe
     - it
     - context
