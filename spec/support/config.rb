@@ -5,7 +5,7 @@ require 'config'
 # NOTE: For some reason `File.expand_path(__dir__, '../..')` did not do the right thing.
 app_root = Pathname.new(__dir__).parent.parent
 config_root = app_root.join('config')
-env = ENV.fetch('SDR_ENV', 'staging')
+env = ENV.fetch('SDR_ENV', 'stage')
 
 Config.setup do |config|
   config.const_name = 'Settings'
