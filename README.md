@@ -2,7 +2,7 @@
 
 # SDR Integration Tests
 
-A set of Capybara tests that drive a browser to do inter-system integration testing of SDR in the staging or QA environment.
+A set of Capybara tests that drive a browser to do inter-system integration testing of SDR in the stage or QA environment.
 
 ## Installation
 
@@ -25,7 +25,7 @@ See the `Other Configuration` section below for
 
 ## Run Tests
 
-By default, the integration tests run in the SDR staging environment:
+By default, the integration tests run in the SDR stage environment:
 
 `bundle exec rspec`
 
@@ -60,29 +60,29 @@ Host *.stanford.edu
   GSSAPIDelegateCredentials yes
 ```
 
-### Staging Environment
+### Stage Environment
 
-For the staging environment, copy `config/settings.yml` to `config/settings/staging.local.yml`.  You will be adding staging environment specific settings here.
+For the stage environment, copy `config/settings.yml` to `config/settings/stage.local.yml`.  You will be adding stage environment specific settings here.
 
-**NOTE**: `config/settings/staging.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
+**NOTE**: `config/settings/stage.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
 
 ### QA Environment
 
-For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml`.  You will be adding staging environment specific settings here.
+For the QA environment, copy `config/settings.yml` to `config/settings/qa.local.yml`.  You will be adding stage environment specific settings here.
 
 **NOTE**: `config/settings/qa.local.yml` is ignored by git and should remain so. Please do not add this file to version control.
 
 ### Set Dor-Services-App Credentials
 
-Some integration tests use the `dor-services-client` to interact with the `dor-services-app`. In order to successfully use the dor-services-client, you must first have a token. To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication). You'll need to generate separate tokens for each dor-services-app environment (stage, qa), and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml`.  See `config/settings.yml` for the expected YAML syntax.
+Some integration tests use the `dor-services-client` to interact with the `dor-services-app`. In order to successfully use the dor-services-client, you must first have a token. To generate dor-services-app tokens, see the [dor-services-app README](https://github.com/sul-dlss/dor-services-app#authentication). You'll need to generate separate tokens for each dor-services-app environment (stage, qa), and add them to `config/settings/stage.local.yml` and `config/settings/qa.local.yml`.  See `config/settings.yml` for the expected YAML syntax.
 
 ### Set ETD Credentials
 
-In order to run `spec/features/etd_creation_spec.rb`, you need the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these values from the `sul-hydra-etd-stage` and `sul-hydra-etd-qa` branches of sul-dlss/shared_configs, and add them to `config/settings/staging.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/etd_creation_spec.rb`, you need the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these values from the `sul-hydra-etd-stage` and `sul-hydra-etd-qa` branches of sul-dlss/shared_configs, and add them to `config/settings/stage.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
 
 ### Set Goobi Credentials
 
-In order to run `spec/features/goobi_accessioning_spec.rb`, you need the Goobi application's integration username and password to login to the UI. Get these values from https://github.com/sul-dlss/shared_configs/tree/infrastructure-team-secrets, and add them to `config/settings/staging.local.yml`.  Note that this test cannot be run in QA (since there is no Goobi QA), so this config is relevant only to staging. See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/goobi_accessioning_spec.rb`, you need the Goobi application's integration username and password to login to the UI. Get these values from https://github.com/sul-dlss/shared_configs/tree/infrastructure-team-secrets, and add them to `config/settings/stage.local.yml`.  Note that this test cannot be run in QA (since there is no Goobi QA), so this config is relevant only to stage. See `config/settings.yml` for the expected YAML syntax.
 
 ### Problems with Authentication?
 

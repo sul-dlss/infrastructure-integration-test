@@ -2,7 +2,7 @@
 
 # NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
 RSpec.describe 'Create and accession GIS item object', type: :feature,
-                                                       if: ENV.fetch('SDR_ENV', 'staging') == 'staging' do
+                                                       if: ENV.fetch('SDR_ENV', 'stage') == 'stage' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:project_name) { 'Integration Test - GIS' }
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }

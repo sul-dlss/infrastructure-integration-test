@@ -22,7 +22,7 @@ post_authentication_text_timeout: 5 # in seconds
 
 supported_envs:
   - qa
-  - staging
+  - stage
 
 etd:
   username: ~
