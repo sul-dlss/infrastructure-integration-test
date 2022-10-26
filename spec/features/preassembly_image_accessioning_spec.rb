@@ -84,6 +84,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     wait_for_download
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
+    # delete the downloaded YAML file, so we don't pick it up by mistake during the re-accession
+    delete_download(download)
 
     # ensure Image files are all there, per pre-assembly, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"

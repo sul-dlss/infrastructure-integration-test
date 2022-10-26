@@ -5,10 +5,10 @@ require 'druid-tools'
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
 RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :feature do
-  druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
+  druid = ''
 
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:preassembly_bundle_dir) { Settings.preassembly_hfs_bundle_directory }
+  let(:preassembly_hfs_bundle_dir) { Settings.preassembly_hfs_bundle_directory }
   let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_hfs_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-hsf-#{random_noun}" }
@@ -65,7 +65,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'File', from: 'Content structure'
-    fill_in 'Staging location', with: preassembly_bundle_dir
+    fill_in 'Staging location', with: preassembly_hfs_bundle_dir
 
     click_button 'Submit'
     expect(page).to have_content 'Success! Your job is queued. ' \
@@ -82,6 +82,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
     wait_for_download
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
+    # delete the downloaded YAML file, so we don't pick it up by mistake during the re-accession
+    delete_download(download)
 
     # ensure files are all there, per pre-assembly, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
@@ -91,9 +93,15 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
 
     files = all('tr.file')
 
-    expect(files.size).to eq 2
-    expect(files.first.text).to match(%r{image.jpg image/jpeg 28.\d KB})
-    expect(files.last.text).to match(%r{image.jp2 image/jp2 137 KB})
+    # verify we have all of the files and that the paths match the incoming hierarchy
+    expect(files.size).to eq 7
+    expect(files[0].text).to match(%r{README.md text/plain 5.\d\d KB})
+    expect(files[1].text).to match(%r{config/settings.yml text/plain 886 Bytes})
+    expect(files[2].text).to match(%r{config/settings/qa.yml text/plain 900 Bytes})
+    expect(files[3].text).to match(%r{config/settings/settings.yml text/plain 886 Bytes})
+    expect(files[4].text).to match(%r{config/settings/staging.yml text/plain 905 Bytes})
+    expect(files[5].text).to match(%r{images/image.jpg image/jpeg 28.\d KB})
+    expect(files[6].text).to match(%r{images/subdir/image.jpg image/jpeg 28.\d KB})
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
@@ -112,8 +120,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
 
     fill_in 'Project name', with: random_project_name
     select 'Pre Assembly Run', from: 'Job type'
-    fill_in 'Staging location', with: preassembly_bundle_dir
-    select 'Filename', from: 'Content metadata creation'
+    fill_in 'Staging location', with: preassembly_hfs_bundle_dir
+    select 'File', from: 'Content structure'
+    select 'Default', from: 'Content metadata creation'
 
     click_button 'Submit'
 
@@ -137,19 +146,22 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     reload_page_until_timeout!(text: "v#{latest_version} Accessioned", with_reindex: true)
 
-    # This section confirms the object has been published to PURL and has a
-    # valid IIIF manifest
-    visit "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
+    # ensure we still have the 7 files
+    expect(files.size).to eq 7
+    expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
+
+    # This section confirms the object has been published to PURL and has filenames in the json
+    purl_url = "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
+    visit purl_url
     # wait for the PURL name to be published by checking for collection name
     reload_page_until_timeout!(text: collection_name)
-    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
-    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
-    canvas = JSON.parse(Faraday.get(canvas_url).body)
-    image_url = canvas.dig('images', 0, 'resource', '@id')
-    image_response = Faraday.get(image_url)
-    expect(image_response.status).to eq(200)
-    expect(image_response.headers['content-type']).to include('image/jpeg')
+
+    # verify the cocina json has the filenames with paths
+    cocina_json = JSON.parse(Faraday.get("#{purl_url}.json").body)
+    expect(cocina_json['structural']['contains'].size).to eq 5 #  5 resources are shelved
+    filenames = cocina_json['structural']['contains'].map { |node| node['structural']['contains'].first['filename'] }
+    expect(filenames).to eq ['README.md', 'config/settings.yml', 'config/settings/qa.yml',
+                             'config/settings/settings.yml', 'config/settings/staging.yml']
 
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and
