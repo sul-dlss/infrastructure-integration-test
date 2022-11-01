@@ -93,6 +93,20 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     find_field('Search...').send_keys(item_title, :enter)
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
+    # create a new version
+    visit "#{Settings.h2_url}/dashboard"
+    click_link "Edit #{item_title}"
+    fill_in 'What\'s changing?', with: 'abstract'
+    fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
+    click_button 'Deposit'
+
+    expect(page).to have_content 'You have successfully deposited your work'
+
+    # Opens Argo and searches on title
+    visit Settings.argo_url
+    find_field('Search...').send_keys(item_title, :enter)
+    reload_page_until_timeout!(text: 'v2 Accessioned')
+
     # check Argo facet field with 6 month embargo
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
@@ -146,19 +160,5 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     sleep 1 # allow purl to get updated
     # check purl xml for 3 day embargo
     expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
-
-    # create a new version
-    visit "#{Settings.h2_url}/dashboard"
-    click_link "Edit #{item_title}"
-    fill_in 'What\'s changing?', with: 'abstract'
-    fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
-    click_button 'Deposit'
-
-    expect(page).to have_content 'You have successfully deposited your work'
-
-    # Opens Argo and searches on title
-    visit Settings.argo_url
-    find_field('Search...').send_keys(item_title, :enter)
-    reload_page_until_timeout!(text: 'v2 Accessioned')
   end
 end
