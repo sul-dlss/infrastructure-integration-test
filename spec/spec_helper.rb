@@ -26,6 +26,11 @@ Capybara.register_driver :my_firefox_driver do |app|
     # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
     profile['browser.download.folderList'] = 2
     profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml;text/csv'
+    # these two have been proven to be needed to prevent cardinalkey from
+    # constantly prompting to confirm certificate
+    # https://uit.stanford.edu/service/cardinalkey/known-issues
+    profile['security.default_personal_cert'] = 'Select Automatically'
+    profile['security.enterprise_roots.enabled'] = 'true'
   end
   # NOTE: You might think the `--window-size` arg would work here. Not for me, it didn't.
   options.add_argument("--width=#{Settings.browser.width}")
