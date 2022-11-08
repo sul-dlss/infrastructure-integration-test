@@ -27,7 +27,7 @@ module AuthenticationHelpers
     # We're at the Stanford login page
     fill_in 'SUNet ID', with: username
     fill_in 'Password', with: password
-    sleep 1
+    # sleep 1 # mjgiarlo found he didn't need this on 2022/11/07 so commenting out
     click_button 'Login'
 
     if Settings.automatic_authentication
@@ -48,6 +48,8 @@ module AuthenticationHelpers
         click_button 'Send Me a Push'
       end
     end
+
+    click_button 'Yes, trust browser'
   end
   # rubocop:enable Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/MethodLength
