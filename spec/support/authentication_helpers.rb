@@ -19,12 +19,16 @@ module AuthenticationHelpers
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
-    return unless page.has_content?('SUNet ID', wait: 1)
+    has_sunet = page.has_content?('SUNet ID', wait: 5)
+    return unless has_sunet || page.has_content?('Use your security key', wait: 5)
+
+    if has_sunet
+      fill_in 'SUNet ID', with: username
+      fill_in 'Password', with: password
+      click_button 'Login'
+    end
 
     # We're at the Stanford login page
-    fill_in 'SUNet ID', with: username
-    fill_in 'Password', with: password
-    click_button 'Login'
     click_button 'Yes, trust browser'
   end
 
