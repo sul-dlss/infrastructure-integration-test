@@ -17,7 +17,6 @@ default_collection: 'druid:bc778pm9866'
 # For virtual object testing
 number_of_constituents: 2
 
-automatic_authentication: false
 post_authentication_text_timeout: 5 # in seconds
 
 supported_envs:

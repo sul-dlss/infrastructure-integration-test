@@ -7,7 +7,7 @@ module AuthenticationHelpers
     # View the specified starting URL
     visit start_url
 
-    submit_credentials(expected_text)
+    submit_credentials
 
     using_wait_time 100 do
       # Once we see this we know the log in succeeded.
@@ -15,10 +15,7 @@ module AuthenticationHelpers
     end
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/PerceivedComplexity
-  def submit_credentials(expected_text = '')
+  def submit_credentials
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
@@ -27,33 +24,9 @@ module AuthenticationHelpers
     # We're at the Stanford login page
     fill_in 'SUNet ID', with: username
     fill_in 'Password', with: password
-    # sleep 1 # mjgiarlo found he didn't need this on 2022/11/07 so commenting out
     click_button 'Login'
-
-    if Settings.automatic_authentication
-      # did we already get authenticated?
-      return if expected_text.present? && page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout)
-
-      # did we already push, but not authenticated?
-      begin
-        page.has_text?('Pushed a login request to your device', wait: Settings.post_authentication_text_timeout)
-      rescue Capybara::ElementNotFound
-        # the app uses an explicit push
-        within_frame('duo_iframe') do
-          click_button 'Send Me a Push'
-        end
-      end
-    else
-      within_frame('duo_iframe') do
-        click_button 'Send Me a Push'
-      end
-    end
-
     click_button 'Yes, trust browser'
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/PerceivedComplexity
 
   def ensure_token
     @@token ||= begin
