@@ -19,16 +19,13 @@ module AuthenticationHelpers
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
-    # NOTE: The absent `else` clause means "do nothing," which is what we want,
-    #       and why the "trust browser" click is not outside the conditional.
     if page.has_content?('SUNet ID', wait: Settings.post_authentication_text_timeout)
       fill_in 'SUNet ID', with: username
       fill_in 'Password', with: password
       click_button 'Login'
-      click_button 'Yes, trust browser'
-    elsif page.has_content?('Use your security key', wait: Settings.post_authentication_text_timeout)
-      click_button 'Yes, trust browser'
     end
+
+    click_button 'Yes, trust browser'
   end
 
   def ensure_token
