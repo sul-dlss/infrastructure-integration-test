@@ -59,6 +59,7 @@ Capybara.default_max_wait_time = Settings.timeouts.capybara
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  config.include Capybara::DSL
   config.include AuthenticationHelpers
   config.include DepositHelpers
   config.include DownloadHelpers

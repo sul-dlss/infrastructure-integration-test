@@ -5,7 +5,7 @@ require:
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.1
   DisplayCopNames: true
   Include:
     - './Rakefile'
@@ -377,4 +377,22 @@ RSpec/ClassCheck: # new in 2.13
 RSpec/NoExpectationExample: # new in 2.13
   Enabled: true
 RSpec/Capybara/SpecificFinders: # new in 2.13
+  Enabled: true
+Lint/DuplicateMagicComment: # new in 1.37
+  Enabled: true
+Style/OperatorMethodCall: # new in 1.37
+  Enabled: true
+Style/RedundantEach: # new in 1.38
+  Enabled: true
+Style/RedundantStringEscape: # new in 1.37
+  Enabled: true
+RSpec/SortMetadata: # new in 2.14
+  Enabled: true
+RSpec/Capybara/NegationMatcher: # new in 2.14
+  Enabled: true
+RSpec/Capybara/SpecificActions: # new in 2.14
+  Enabled: true
+RSpec/FactoryBot/ConsistentParenthesesStyle: # new in 2.14
+  Enabled: true
+RSpec/Rails/InferredSpecType: # new in 2.14
   Enabled: true

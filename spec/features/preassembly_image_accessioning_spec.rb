@@ -4,7 +4,7 @@ require 'druid-tools'
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
-RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :feature do
+RSpec.describe 'Create and re-accession image object via Pre-assembly' do
   druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
 
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -25,7 +25,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
   end
 
   before do
-    authenticate!(start_url: start_url,
+    authenticate!(start_url:,
                   expected_text: 'Register DOR Items')
   end
 
@@ -68,12 +68,12 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
     fill_in 'Staging location', with: preassembly_bundle_dir
 
     click_button 'Submit'
-    expect(page).to have_content 'Success! Your job is queued. ' \
-                                 'A link to job output will be emailed to you upon completion.'
+    expect(page).to have_text 'Success! Your job is queued. ' \
+                              'A link to job output will be emailed to you upon completion.'
 
     # go to job details page, download result
     first('td > a').click
-    expect(page).to have_content preassembly_project_name
+    expect(page).to have_text preassembly_project_name
 
     # wait for preassembly background job to finish
     reload_page_until_timeout!(text: 'Download', as_link: true)
@@ -108,7 +108,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
 
     visit Settings.preassembly_url
 
-    expect(page).to have_content 'Complete the form below'
+    expect(page).to have_text 'Complete the form below'
 
     fill_in 'Project name', with: random_project_name
     select 'Pre Assembly Run', from: 'Job type'
@@ -117,8 +117,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :f
 
     click_button 'Submit'
 
-    expect(page).to have_content 'Success! Your job is queued. ' \
-                                 'A link to job output will be emailed to you upon completion.'
+    expect(page).to have_text 'Success! Your job is queued. ' \
+                              'A link to job output will be emailed to you upon completion.'
 
     first('td > a').click # Click to the job details page
 

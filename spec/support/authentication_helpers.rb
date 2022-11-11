@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AuthenticationHelpers
-  mattr_accessor :username, :password
+  mattr_accessor :username, :password, :token
 
   def authenticate!(start_url:, expected_text:)
     # View the specified starting URL
@@ -13,7 +13,7 @@ module AuthenticationHelpers
 
     using_wait_time(Settings.timeouts.capybara) do
       # Once we see this we know the log in succeeded.
-      expect(page).to have_content expected_text
+      expect(page).to have_text(expected_text)
     end
   end
 
@@ -21,7 +21,7 @@ module AuthenticationHelpers
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
-    if page.has_content?('SUNet ID', wait: Settings.post_authentication_text_timeout)
+    if page.has_text?('SUNet ID', wait: Settings.post_authentication_text_timeout)
       fill_in 'SUNet ID', with: username
       fill_in 'Password', with: password
       click_button 'Login'
@@ -31,7 +31,7 @@ module AuthenticationHelpers
   end
 
   def ensure_token
-    @@token ||= begin
+    self.token ||= begin
       visit "#{Settings.argo_url}/settings/tokens"
       click_button 'Generate new token'
       find_field('Token').value.tap do |token|

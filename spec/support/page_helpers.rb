@@ -24,7 +24,7 @@ module PageHelpers
         elsif table
           break if page.find(:table_row, table).text.match?(text)
         elsif selector
-          break if page.has_selector?(selector, text: text, wait: wait_time)
+          break if page.has_selector?(selector, text:, wait: wait_time)
         else
           break if page.has_text?(text, wait: wait_time)
         end

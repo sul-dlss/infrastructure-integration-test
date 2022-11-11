@@ -10,7 +10,7 @@ module XlsxHelpers
     ensure_token
     deposit(
       apo: Settings.default_apo,
-      source_id: source_id,
+      source_id:,
       label: object_label,
       collection: Settings.default_collection,
       url: Settings.sdrapi_url

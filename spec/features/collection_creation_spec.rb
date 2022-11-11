@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create a collection', type: :feature do
+RSpec.describe 'Use Argo to create a collection' do
   let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
   let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
 
   before do
-    authenticate!(start_url: start_url,
+    authenticate!(start_url:,
                   expected_text: 'integration-testing')
   end
 
@@ -16,13 +16,13 @@ RSpec.describe 'Use Argo to create a collection', type: :feature do
     fill_in 'Collection Abstract', with: collection_abstract
     click_button 'Register Collection'
 
-    expect(page).to have_content 'Created collection'
+    expect(page).to have_text 'Created collection'
 
     collection_druid = find('.alert-info').text.split[2]
     puts " *** collection creation druid: #{collection_druid} ***" # useful for debugging
     visit "#{Settings.argo_url}/view/#{collection_druid}"
 
-    expect(page).to have_content collection_title
+    expect(page).to have_text collection_title
 
     object_type_element = find_table_cell_following(header_text: 'Object type')
     expect(object_type_element.text).to eq('collection')

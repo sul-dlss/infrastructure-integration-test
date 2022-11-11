@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create a virtual object with constituent objects', type: :feature do
+RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
   let(:start_url) { Settings.argo_url }
   let(:filename_group) { ['example.tiff', 'example.jp2'] }
   let(:csv_path) { File.join(DownloadHelpers::PATH, 'virtual-object.csv') }
@@ -8,7 +8,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
   let(:num_constituents) { Settings.number_of_constituents }
 
   before do
-    authenticate!(start_url: start_url, expected_text: 'Welcome to Argo!')
+    authenticate!(start_url:, expected_text: 'Welcome to Argo!')
   end
 
   scenario do
@@ -39,16 +39,16 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
 
     # Use Bulk Actions to upload CSV
     click_link 'Bulk Actions'
-    expect(page).to have_content 'Bulk Actions'
+    expect(page).to have_text 'Bulk Actions'
     click_link 'New Bulk Action'
-    expect(page).to have_content 'New Bulk Action'
+    expect(page).to have_text 'New Bulk Action'
     select 'Create virtual object(s)', from: 'action_type'
-    expect(page).to have_content 'Create one or more virtual objects'
+    expect(page).to have_text 'Create one or more virtual objects'
     find('input#csv_file').attach_file(csv_path)
     find('textarea#description').fill_in(with: virtual_objects_description)
     click_button 'Submit'
 
-    expect(page).to have_content 'Create virtual objects job was successfully created.'
+    expect(page).to have_text 'Create virtual objects job was successfully created.'
 
     Timeout.timeout(Settings.timeouts.bulk_action) do
       loop do

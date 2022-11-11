@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
+RSpec.describe 'Use Argo to edit administrative tags in bulk' do
   let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_tag_ssim%5D%5B%5D=Registered+By" }
   let(:export_tag_description) { random_phrase }
   let(:import_tag_description) { random_phrase }
@@ -11,7 +11,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
   let(:upload_csv_path) { File.join(DownloadHelpers::PATH, 'edited.csv') }
 
   before do
-    authenticate!(start_url: start_url, expected_text: 'You searched for:')
+    authenticate!(start_url:, expected_text: 'You searched for:')
   end
 
   after do
@@ -29,13 +29,13 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
     expect(page).to have_selector 'h1', text: 'Bulk Actions'
 
     click_link 'New Bulk Action'
-    expect(page).to have_content 'New Bulk Action'
+    expect(page).to have_text 'New Bulk Action'
     select 'Export tags to CSV', from: 'action_type'
-    expect(page).to have_content 'Download tags as CSV (comma-separated values) for druids specified below'
+    expect(page).to have_text 'Download tags as CSV (comma-separated values) for druids specified below'
     find('textarea#druids').fill_in(with: bulk_druids.join("\n"))
     find('textarea#description').fill_in(with: export_tag_description)
     click_button 'Submit'
-    expect(page).to have_content 'Export tags job was successfully created.'
+    expect(page).to have_text 'Export tags job was successfully created.'
 
     druids_with_tags = []
 
@@ -84,14 +84,14 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
     end
 
     click_link 'New Bulk Action'
-    expect(page).to have_content 'New Bulk Action'
+    expect(page).to have_text 'New Bulk Action'
     select 'Import tags from CSV', from: 'action_type'
-    expect(page).to have_content 'Upload tags as CSV (comma-separated values)'
+    expect(page).to have_text 'Upload tags as CSV (comma-separated values)'
     find('input#csv_file').attach_file(upload_csv_path)
     find('textarea#description').fill_in(with: import_tag_description)
     click_button 'Submit'
 
-    expect(page).to have_content 'Import tags job was successfully created.'
+    expect(page).to have_text 'Import tags job was successfully created.'
 
     # wait for bulk action to complete (runs asynchronously)
     Timeout.timeout(Settings.timeouts.bulk_action) do
@@ -117,9 +117,9 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :feature do
 
     visit "#{Settings.argo_url}/view/#{druid_with_changed_tag.first}"
     reload_page_until_timeout!(text: edited_tag)
-    expect(page).not_to have_content(replaced_tag)
+    expect(page).not_to have_text(replaced_tag)
 
     visit "#{Settings.argo_url}/view/#{druid_with_removed_tag.first}"
-    expect(page).not_to have_content(removed_tag)
+    expect(page).not_to have_text(removed_tag)
   end
 end

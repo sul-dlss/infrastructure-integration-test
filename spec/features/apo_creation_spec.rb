@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights', type: :feature do
+RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights' do
   let(:apo_title) { "ZZZ Create APO test #{random_phrase}" }
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
   let(:object_label) { "Object Label for APO #{apo_title}" }
@@ -12,7 +12,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
 
   before do
     expected_txt = 'The following defaults will apply to all newly registered objects.'
-    authenticate!(start_url: start_url, expected_text: expected_txt)
+    authenticate!(start_url:, expected_text: expected_txt)
   end
 
   scenario do
@@ -25,10 +25,10 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     click_button 'Register APO'
 
     # make sure we're on an APO show view
-    expect(page).to have_content apo_title
+    expect(page).to have_text apo_title
     # make sure APO is registered
     apo_druid = find_table_cell_following(header_text: 'DRUID').text
-    expect(page).to have_content "APO #{apo_druid} created."
+    expect(page).to have_text "APO #{apo_druid} created."
 
     # wait for accessioningWF to finish
     # Without this page.refresh, selenium webdriver complained:
@@ -60,8 +60,8 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
     expect(find_table_cell_following(header_text: 'Access rights').text).to eq("View: #{rights}, Download: #{rights}")
 
-    expect(page).to have_content(terms_of_use)
-    expect(page).to have_content(copyright)
-    expect(page).to have_content(license)
+    expect(page).to have_text(terms_of_use)
+    expect(page).to have_text(copyright)
+    expect(page).to have_text(license)
   end
 end

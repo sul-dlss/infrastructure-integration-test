@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use H2 to create a collection and an item object belonging to it', type: :feature do
+RSpec.describe 'Use H2 to create a collection and an item object belonging to it' do
   let(:collection_title) { random_phrase }
   let(:item_title) { "SUL Logo for #{collection_title}" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
@@ -11,12 +11,12 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
-    click_button 'No' if page.has_content?('Continue your deposit', wait: Settings.post_authentication_text_timeout)
+    click_button 'No' if page.has_text?('Continue your deposit', wait: Settings.post_authentication_text_timeout)
 
     # CREATE COLLECTION
     click_link '+ Create a new collection'
     # Checks for specific content in create collection view
-    expect(page).to have_content('Manage release of deposits for discovery and download')
+    expect(page).to have_text('Manage release of deposits for discovery and download')
 
     # basic collection information
     fill_in 'Collection name', with: collection_title
@@ -37,8 +37,8 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     end
 
     click_button 'Deposit'
-    expect(page).to have_content(collection_title)
-    expect(page).to have_content('+ Deposit to this collection')
+    expect(page).to have_text(collection_title)
+    expect(page).to have_text('+ Deposit to this collection')
 
     collection_id = page.current_url.split('/').last
 
@@ -51,8 +51,8 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
       fill_in 'Enter a title for this deposit', with: item_title
       click_button 'Submit'
     end
-    expect(page).to have_content(item_title)
-    expect(page).to have_content('PURL Reserved') # async - it might take a bit
+    expect(page).to have_text(item_title)
+    expect(page).to have_text('PURL Reserved') # async - it might take a bit
 
     # EDIT THE ITEM
     click_link "Choose Type and Edit #{item_title}"
@@ -67,7 +67,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     attach_file('spec/fixtures/sul-logo.png') do
       find_button('Choose files').click
     end
-    expect(page).to have_content('sul-logo.png')
+    expect(page).to have_text('sul-logo.png')
     fill_in 'Title of deposit', with: item_title
     fill_in 'Contact email', with: user_email
     fill_in 'work_authors_attributes_0_first_name', with: 'Dana'
@@ -80,13 +80,13 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     find_button('Deposit').click
 
-    expect(page).to have_content 'You have successfully deposited your work'
+    expect(page).to have_text 'You have successfully deposited your work'
     click_link 'Return to dashboard'
     click_link item_title
 
     # Checks if title is on resulting display
-    expect(page).to have_content(item_title)
-    expect(page).to have_content(Settings.purl_url) # async - it might take a bit
+    expect(page).to have_text(item_title)
+    expect(page).to have_text(Settings.purl_url) # async - it might take a bit
 
     # Opens Argo and searches on title
     visit Settings.argo_url
@@ -100,7 +100,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
     click_button 'Deposit'
 
-    expect(page).to have_content 'You have successfully deposited your work'
+    expect(page).to have_text 'You have successfully deposited your work'
 
     # Opens Argo and searches on title
     visit Settings.argo_url
@@ -110,7 +110,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # check Argo facet field with 6 month embargo
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
-      expect(page).not_to have_content('up to 7 days')
+      expect(page).not_to have_text('up to 7 days')
     end
 
     # Click on link with the item's title in the search results
@@ -119,7 +119,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     end
     # check embargo date
     embargo_date = DateTime.now.getutc.to_date >> 6
-    expect(page).to have_content("Embargoed until #{embargo_date.to_formatted_s(:long)}")
+    expect(page).to have_text("Embargoed until #{embargo_date.to_formatted_s(:long)}")
     bare_druid = page.current_url.split(':').last
     puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
 
