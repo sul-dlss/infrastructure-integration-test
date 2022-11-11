@@ -7,6 +7,8 @@ module AuthenticationHelpers
     # View the specified starting URL
     visit start_url
 
+    return if page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout)
+
     submit_credentials
 
     using_wait_time(Settings.timeouts.capybara) do
