@@ -58,7 +58,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(content_type_element.text).to eq('webarchive-binary')
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     expect(page).to have_link('wasCrawlPreas')
 
@@ -87,7 +87,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(content_type_element.text).to eq('webarchive-seed')
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     expect(page).to have_link('thumbnail.jp2')
     expect(page).to have_text('image/jp2')

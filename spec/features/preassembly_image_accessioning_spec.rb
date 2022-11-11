@@ -87,7 +87,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     files = all('tr.file')
 
@@ -135,7 +135,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     latest_version = version + 1
 
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    reload_page_until_timeout!(text: "v#{latest_version} Accessioned", with_reindex: true)
+    reload_page_until_timeout!(text: "v#{latest_version} Accessioned")
 
     # This section confirms the object has been published to PURL and has a
     # valid IIIF manifest

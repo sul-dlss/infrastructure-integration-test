@@ -249,8 +249,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     click_button 'Save'
 
     page.refresh # solves problem of update embargo modal re-appearing
-    reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}",
-                               with_reindex: true)
+    reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}")
 
     # check Argo facet field with 3 day embargo
     fill_in 'Search...', with: prefixed_druid

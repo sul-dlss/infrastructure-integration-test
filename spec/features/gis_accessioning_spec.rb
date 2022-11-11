@@ -52,7 +52,7 @@ RSpec.describe 'Create and accession GIS item object', if: ENV.fetch('SDR_ENV', 
     click_button 'Add'
     expect(page).to have_text('Added gisAssemblyWF')
     # verify the workflow completes
-    reload_page_until_timeout!(text: 'completed', selector: '#workflow-details-status-gisAssemblyWF', with_reindex: true)
+    reload_page_until_timeout!(text: 'completed', selector: '#workflow-details-status-gisAssemblyWF')
 
     # add gisDeliveryWF
     click_link 'Add workflow'
@@ -65,7 +65,7 @@ RSpec.describe 'Create and accession GIS item object', if: ENV.fetch('SDR_ENV', 
     click_link 'gisDeliveryWF'
     click_button 'workflow-status-set-reset-geowebcache-completed'
     # verify the workflow completes
-    reload_page_until_timeout!(text: 'completed', selector: '#workflow-details-status-gisDeliveryWF', with_reindex: true)
+    reload_page_until_timeout!(text: 'completed', selector: '#workflow-details-status-gisDeliveryWF')
 
     # add accessionWF
     click_link 'Add workflow'
@@ -73,7 +73,7 @@ RSpec.describe 'Create and accession GIS item object', if: ENV.fetch('SDR_ENV', 
     click_button 'Add'
     expect(page).to have_text('Added accessionWF')
     # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # look for expected files produced by GIS workflows
     files = all('tr.file')

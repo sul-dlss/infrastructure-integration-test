@@ -5,8 +5,7 @@ module PageHelpers
   # rubocop:disable Metrics/MethodLength
   # rubocop:disable Metrics/PerceivedComplexity
   # rubocop:disable Metrics/ParameterLists
-  def reload_page_until_timeout!(text:, as_link: false, table: nil, with_reindex: false, with_events_expanded: false,
-                                 selector: nil)
+  def reload_page_until_timeout!(text:, as_link: false, table: nil, with_events_expanded: false, selector: nil)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         if with_events_expanded
@@ -33,11 +32,6 @@ module PageHelpers
         # from a workflow error. This selector is found on the Argo item page.
         expect(page).not_to have_css('.alert-danger', wait: 0)
 
-        if with_reindex
-          click_link 'Reindex'
-          # ensure we see this message before we do the next thing
-          expect(page).to have_text('Successfully updated index for')
-        end
         page.refresh
       end
     end
