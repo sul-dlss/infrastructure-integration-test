@@ -9,7 +9,7 @@ module DepositHelpers
 
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
-        result = SdrClient::BackgroundJobResults.show(url: Settings.sdrapi_url, job_id: job_id)
+        result = SdrClient::BackgroundJobResults.show(url: Settings.sdrapi_url, job_id:)
         raise result[:output][:errors] if result[:output][:errors].present?
 
         object_druid = result[:output][:druid]
@@ -44,10 +44,10 @@ module DepositHelpers
                            accession: true,
                            view: 'world',
                            label: random_phrase,
-                           grouping_strategy: grouping_strategy,
-                           file_set_type_strategy: file_set_type_strategy,
+                           grouping_strategy:,
+                           file_set_type_strategy:,
                            files: filenames,
-                           files_metadata: files_metadata)
+                           files_metadata:)
 
     visit "#{start_url}/view/#{object_druid}"
 

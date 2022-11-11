@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create an item object without any files', type: :feature do
+RSpec.describe 'Use Argo to create an item object without any files' do
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -9,7 +9,7 @@ RSpec.describe 'Use Argo to create an item object without any files', type: :fea
   let(:project) { 'Awesome Project' }
 
   before do
-    authenticate!(start_url: start_url,
+    authenticate!(start_url:,
                   expected_text: 'Register DOR Items')
   end
 

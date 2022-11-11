@@ -15,10 +15,10 @@ gem 'faraday' # etds require POST request from registrar
 gem 'pry-byebug'
 gem 'rake'
 gem 'rspec'
-gem 'rubocop', '~> 1.24'
+gem 'rubocop'
 gem 'rubocop-rake'
-gem 'rubocop-rspec', '~> 2.1'
+gem 'rubocop-rspec'
 gem 'rubyXL' # for updating Excel spreadsheets
 gem 'sdr-client', '~> 0.97'
 gem 'selenium-webdriver'
-gem 'webdrivers', '~> 4.0'
+gem 'webdrivers'

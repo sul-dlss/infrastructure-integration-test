@@ -2,14 +2,14 @@
 
 # for testing changes to dor-services-app mappings to cocina and
 #   testing changes to dor_indexing_app to index access from cocina
-RSpec.describe 'Argo rights changes result in correct Access Rights facet value', type: :feature do
+RSpec.describe 'Argo rights changes result in correct Access Rights facet value' do
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:source_id) { "access-rights-test:#{random_word}" }
 
   before do
-    authenticate!(start_url: start_url,
+    authenticate!(start_url:,
                   expected_text: 'Register DOR Items')
   end
 
@@ -100,7 +100,7 @@ def choose_rights(view:, download: nil, location: nil, cdl: false)
   end
 
   # It takes a few milliseconds for the rights update to take
-  expect(page).to have_content(view_label(view: view, location: location, cdl: cdl))
+  expect(page).to have_text(view_label(view:, location:, cdl:))
 end
 
 def view_label(view:, location:, cdl:)

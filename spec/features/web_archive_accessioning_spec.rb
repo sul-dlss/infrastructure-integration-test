@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive crawl and seed accession', type: :feature do
+RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive crawl and seed accession' do
   let(:job_specific_directory) { start_time.to_i.to_s }
   let(:remote_path) do
     "#{Settings.was_registrar.username}@#{Settings.was_registrar.host}:#{Settings.was_registrar.jobs_directory}/" \
@@ -33,7 +33,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     `scp #{updated_warc.path} #{remote_path}`
     raise("unable to scp #{updated_warc_path} to #{remote_path}: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
 
-    authenticate!(start_url: start_url, expected_text: 'New one-time registration')
+    authenticate!(start_url:, expected_text: 'New one-time registration')
   end
 
   scenario do
@@ -43,7 +43,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     fill_in 'Source ID', with: source_id
     click_button 'Create Registration job'
 
-    expect(page).to have_content('Queueing one-time registration.')
+    expect(page).to have_text('Queueing one-time registration.')
 
     # wait for registration to complete
     reload_page_until_timeout!(text: 'success: Created', table: { 'Job directory' => job_specific_directory })
@@ -52,7 +52,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     puts " *** was crawl druid: #{crawl_druid} ***" # useful for debugging
     visit "#{Settings.argo_url}/view/#{crawl_druid}"
 
-    expect(page).to have_content(job_specific_directory)
+    expect(page).to have_text(job_specific_directory)
 
     content_type_element = find_table_cell_following(header_text: 'Content type')
     expect(content_type_element.text).to eq('webarchive-binary')
@@ -63,7 +63,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_link('wasCrawlPreas')
 
     visit "#{Settings.was_playback_url}/was/#{start_time.strftime('%Y%m%d%H%M%S')}/#{url_in_wayback}"
-    expect(page).to have_content('About us | Stanford Libraries')
+    expect(page).to have_text('About us | Stanford Libraries')
 
     # Seed
     visit "#{Settings.argo_url}/registration"
@@ -90,8 +90,8 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
 
     expect(page).to have_link('thumbnail.jp2')
-    expect(page).to have_content('image/jp2')
-    expect(page).to have_content('400 px')
+    expect(page).to have_text('image/jp2')
+    expect(page).to have_text('400 px')
 
     # Verify that the purl XML includes the proper archived website URL
     expect_seed_url_in_public_xml(full_seed_druid, archived_url)

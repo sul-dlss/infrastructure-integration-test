@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :feature do
+RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)' do
   let(:title1) { random_phrase }
   let(:title2) { random_phrase }
   let(:note) { random_phrase }
@@ -18,18 +18,18 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
     visit "#{Settings.argo_url}/view/#{Settings.default_apo}"
     # Open the MODS bulk jobs
     click_link 'Upload MODS'
-    expect(page).to have_content 'Spreadsheet bulk upload for APO'
+    expect(page).to have_text 'Spreadsheet bulk upload for APO'
 
     # Open the Submit new file modal
     click_link 'Submit new file ...'
-    expect(page).to have_content 'Submit MODS descriptive metadata for bulk processing'
+    expect(page).to have_text 'Submit MODS descriptive metadata for bulk processing'
 
     # Attach spreadsheet fixture, select spreadsheet input, and add note
     attach_file('Select', temp_xlsx.path)
     choose 'Spreadsheet input; load into objects'
     fill_in '3. Note', with: note
     click_button 'Submit'
-    expect(page).to have_content('Bulk processing started')
+    expect(page).to have_text('Bulk processing started')
 
     reload_page_until_timeout!(text: note)
 
@@ -41,7 +41,7 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
     within('#confirm-delete-modal') do
       click_button 'Delete' # '#bulk-delete-confirm'
     end
-    expect(page).to have_content "Bulk job for APO (#{Settings.default_apo}) deleted."
+    expect(page).to have_text "Bulk job for APO (#{Settings.default_apo}) deleted."
 
     # Open druids and tests for titles
     visit "#{Settings.argo_url}/view/#{druid1}"
