@@ -52,7 +52,9 @@ RSpec.describe 'Create and accession GIS item object', if: ENV.fetch('SDR_ENV', 
     click_button 'Add'
     expect(page).to have_text('Added gisAssemblyWF')
     # verify the workflow completes
-    reload_page_until_timeout!(text: 'completed', selector: '#workflow-details-status-gisAssemblyWF')
+    reload_page_until_timeout! do
+      page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
+    end
 
     # add gisDeliveryWF
     click_link 'Add workflow'
@@ -65,7 +67,9 @@ RSpec.describe 'Create and accession GIS item object', if: ENV.fetch('SDR_ENV', 
     click_link 'gisDeliveryWF'
     click_button 'workflow-status-set-reset-geowebcache-completed'
     # verify the workflow completes
-    reload_page_until_timeout!(text: 'completed', selector: '#workflow-details-status-gisDeliveryWF')
+    reload_page_until_timeout! do
+      page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
+    end
 
     # add accessionWF
     click_link 'Add workflow'

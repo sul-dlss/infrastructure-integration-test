@@ -46,7 +46,12 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_text('Queueing one-time registration.')
 
     # wait for registration to complete
-    reload_page_until_timeout!(text: 'success: Created', table: { 'Job directory' => job_specific_directory })
+    reload_page_until_timeout! do
+      page
+        .find(:table_row, { 'Job directory' => job_specific_directory })
+        .text
+        .match?('success: Created')
+    end
 
     crawl_druid = find(:table_row, { 'Job directory' => job_specific_directory }).text.split.last
     puts " *** was crawl druid: #{crawl_druid} ***" # useful for debugging
