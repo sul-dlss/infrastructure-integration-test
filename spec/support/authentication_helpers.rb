@@ -7,7 +7,7 @@ module AuthenticationHelpers
     # View the specified starting URL
     visit start_url
 
-    return if page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout)
+    return if page.has_text?(expected_text, wait: Settings.timeouts.post_authentication_text)
 
     submit_credentials
 
@@ -21,7 +21,7 @@ module AuthenticationHelpers
     self.username ||= username_from_config_or_prompt
     self.password ||= password_from_config_or_prompt
 
-    if page.has_text?('SUNet ID', wait: Settings.post_authentication_text_timeout)
+    if page.has_text?('SUNet ID', wait: Settings.timeouts.post_authentication_text)
       fill_in 'SUNet ID', with: username
       fill_in 'Password', with: password
       click_button 'Login'
