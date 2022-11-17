@@ -93,7 +93,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
-    # give perservation a chance to catch up before we create a new version
+    # give preservation a chance to catch up before we create a new version
     #  since the shelving step does diffs that depend on files being visible in preservation
     sleep 5
 
