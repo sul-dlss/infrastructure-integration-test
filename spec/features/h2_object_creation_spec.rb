@@ -6,7 +6,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
 
   before do
-    authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: 'Dashboard')
+    authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: /Dashboard|Continue your deposit/)
   end
 
   scenario do
