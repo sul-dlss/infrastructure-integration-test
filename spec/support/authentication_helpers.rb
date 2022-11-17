@@ -4,30 +4,20 @@ module AuthenticationHelpers
   mattr_accessor :username, :password, :token
 
   def authenticate!(start_url:, expected_text:)
+    ensure_username! # sunet is needed by some tests, even if the user doesn't have to enter user/pass for Stanford web authN
+
     # View the specified starting URL
     visit start_url
+    click_through_trust_browser_if_needed # for cardinal key users, straight to 2FA prompt, no login form
 
-    return if page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout)
+    submit_credentials_if_needed
+    click_through_trust_browser_if_needed # for people who hit the login form, 2FA prompt comes after it's submitted
 
-    submit_credentials
-
-    using_wait_time(Settings.timeouts.capybara) do
-      # Once we see this we know the log in succeeded.
-      expect(page).to have_text(expected_text)
+    if page.has_text?(expected_text, wait: Settings.post_authentication_text_timeout)
+      puts " > logged in, found expected post-login String/Regex: #{expected_text}"
+    else
+      puts " ! WARNING: logged in, but no match for expected post-login String/Regex: #{expected_text}"
     end
-  end
-
-  def submit_credentials
-    self.username ||= username_from_config_or_prompt
-    self.password ||= password_from_config_or_prompt
-
-    if page.has_text?('SUNet ID', wait: Settings.post_authentication_text_timeout)
-      fill_in 'SUNet ID', with: username
-      fill_in 'Password', with: password
-      click_button 'Login'
-    end
-
-    click_button 'Yes, trust browser'
   end
 
   def ensure_token
@@ -58,5 +48,30 @@ module AuthenticationHelpers
       puts
       password.strip
     end
+  end
+
+  def ensure_username!
+    self.username ||= username_from_config_or_prompt
+  end
+
+  def ensure_password!
+    self.password ||= password_from_config_or_prompt
+  end
+
+  def submit_credentials_if_needed
+    return unless page.has_text?('SUNet ID', wait: Settings.post_authentication_text_timeout)
+
+    ensure_password!
+    fill_in 'SUNet ID', with: username
+    fill_in 'Password', with: password
+    click_button 'Login'
+  end
+
+  # cardinal key users won't get prompted with login form, but may need to click through this prompt, hence
+  # splitting this method from login form submission
+  def click_through_trust_browser_if_needed
+    return unless page.has_text?('Yes, trust browser', wait: Settings.post_authentication_text_timeout)
+
+    click_button 'Yes, trust browser'
   end
 end
