@@ -90,7 +90,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-    find_field('Search...').send_keys(item_title, :enter)
+    find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # create a new version
@@ -104,7 +104,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # Opens Argo and searches on title
     visit Settings.argo_url
-    find_field('Search...').send_keys(item_title, :enter)
+    find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     reload_page_until_timeout!(text: 'v2 Accessioned')
 
     # check Argo facet field with 6 month embargo
