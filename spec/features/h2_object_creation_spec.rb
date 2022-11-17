@@ -93,6 +93,10 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
+    # give perservation a chance to catch up before we create a new version
+    #  since the shelving step does diffs that depend on files being visible in preservation
+    sleep 5
+
     # create a new version
     visit "#{Settings.h2_url}/dashboard"
     click_link "Edit #{item_title}"
@@ -110,7 +114,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # check Argo facet field with 6 month embargo
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
-      expect(page).not_to have_text('up to 7 days')
+      expect(page).not_to have_text('up to 7 days', wait: 0)
     end
 
     # Click on link with the item's title in the search results
