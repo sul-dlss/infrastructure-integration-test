@@ -207,12 +207,13 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
         visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-        break if page.has_text?("Embargoed until #{embargo_date.to_formatted_s(:long)}", wait: 1)
+        break if page.has_text?("Embargoed until #{embargo_date.to_formatted_s(:long)}",
+                                wait: Settings.timeouts.etd.embargo_poll_interval)
       end
     end
     expect(page).to have_text(dissertation_title)
     apo_element = find_table_cell_following(header_text: 'Admin policy')
-    expect(apo_element.first('a')[:href]).to have_text('druid:bx911tp9024') # this is hardcoded in hydra_etd app
+    expect(apo_element.first('a')[:href]).to include('druid:bx911tp9024') # this is hardcoded in hydra_etd app
     status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
     click_link('etdSubmitWF')

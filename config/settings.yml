@@ -5,6 +5,8 @@ timeouts:
   events:
     poll_for: 240
     poll_interval: 2
+  etd:
+    embargo_poll_interval: 1
 
 browser:
   driver: firefox
