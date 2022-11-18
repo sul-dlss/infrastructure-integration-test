@@ -68,7 +68,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     end
 
     visit "#{start_url}/view/#{virtual_object_druid}"
-    reload_page_until_timeout!(text: 'v2 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v2 Accessioned')
 
     # Confirm constituent druids are listed in Content
     resources_text = all('.external-file a').map(&:text)

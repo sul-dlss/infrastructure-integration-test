@@ -36,7 +36,7 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     visit "#{Settings.argo_url}/view/#{object_druid}"
 
     # wait for registrationWF to finish
-    reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Registered')
 
     # add accessionWF
     click_link 'Add workflow'
@@ -50,7 +50,7 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # open a new version
     click_link 'Unlock to make changes to this object'
@@ -72,6 +72,6 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     page.refresh # solves problem of close version modal re-appearing
 
     # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v2 Accessioned')
   end
 end

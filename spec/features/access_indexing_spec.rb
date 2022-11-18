@@ -33,7 +33,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     visit "#{Settings.argo_url}/view/#{object_druid}"
 
     # wait for registrationWF to finish
-    reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Registered')
 
     find_access_rights_single_facet_value(object_druid, 'world')
 

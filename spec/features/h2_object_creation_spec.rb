@@ -11,7 +11,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
-    click_button 'No' if page.has_text?('Continue your deposit', wait: Settings.post_authentication_text_timeout)
+    click_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
 
     # CREATE COLLECTION
     click_link '+ Create a new collection'
@@ -145,8 +145,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
       click_button 'Save'
     end
-    reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}",
-                               with_reindex: true)
+    reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}")
 
     # check Argo facet field with 3 day embargo
     fill_in 'Search...', with: bare_druid

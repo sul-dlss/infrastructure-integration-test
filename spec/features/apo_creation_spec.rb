@@ -35,7 +35,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     #  Element <a class="btn button btn-primary " href="/dor/reindex/druid:bc123df4567"> could not be scrolled into view
     # Explicitly trying to scroll up via "page.execute_script 'window.scrollTo(0,0);'" did not seem to work.
     page.refresh
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # now register an object with this apo and verify default rights
     visit "#{Settings.argo_url}/registration"
@@ -57,7 +57,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     visit "#{Settings.argo_url}/view/#{object_druid}"
 
     # wait for registrationWF to finish and verify default access rights
-    reload_page_until_timeout!(text: 'v1 Registered', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Registered')
     expect(find_table_cell_following(header_text: 'Access rights').text).to eq("View: #{rights}, Download: #{rights}")
 
     expect(page).to have_text(terms_of_use)

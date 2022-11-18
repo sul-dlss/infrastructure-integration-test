@@ -76,7 +76,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(page).to have_text preassembly_project_name
 
     # wait for preassembly background job to finish
-    reload_page_until_timeout!(text: 'Download', as_link: true)
+    reload_page_until_timeout! do
+      page.has_link?('Download', wait: 1)
+    end
 
     click_link 'Download'
     wait_for_download
@@ -87,7 +89,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     files = all('tr.file')
 
@@ -122,7 +124,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     first('td > a').click # Click to the job details page
 
-    reload_page_until_timeout!(text: 'Download', as_link: true)
+    reload_page_until_timeout! do
+      page.has_link?('Download', wait: 1)
+    end
 
     click_link 'Download'
 
@@ -135,7 +139,17 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     latest_version = version + 1
 
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    reload_page_until_timeout!(text: "v#{latest_version} Accessioned", with_reindex: true)
+    reload_page_until_timeout! do
+      click_button 'Events' # expand the Events section
+
+      # this is a hack that forces the event section to scroll into view; the section
+      # is lazily loaded, and won't actually be requested otherwise, even if the button
+      # is clicked to expand the event section.
+      page.execute_script 'window.scrollBy(0,100);'
+
+      # events are loaded lazily, give the network a few moments
+      page.has_text?("v#{latest_version} Accessioned", wait: 3)
+    end
 
     # This section confirms the object has been published to PURL and has a
     # valid IIIF manifest
@@ -161,7 +175,17 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
     latest_s3_key = "#{druid_tree_str}.v000#{latest_version}.zip"
-    reload_page_until_timeout!(text: latest_s3_key, with_events_expanded: true)
+    reload_page_until_timeout! do
+      click_button 'Events' # expand the Events section
+
+      # this is a hack that forces the event section to scroll into view; the section
+      # is lazily loaded, and won't actually be requested otherwise, even if the button
+      # is clicked to expand the event section.
+      page.execute_script 'window.scrollBy(0,100);'
+
+      # events are loaded lazily, give the network a few moments
+      page.has_text?(latest_s3_key, wait: 3)
+    end
 
     # the event log should eventually contain an event for replication of each version that
     # this test created to every endpoint we archive to

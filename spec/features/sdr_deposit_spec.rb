@@ -29,7 +29,7 @@ RSpec.describe 'SDR deposit' do
     visit "#{start_url}/view/#{object_druid}"
 
     # Wait for indexing and workflows to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     expect(page).to have_text 'The means to prosperity'
 

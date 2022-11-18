@@ -88,7 +88,7 @@ In order to run `spec/features/goobi_accessioning_spec.rb`, you need the Goobi a
 
 ### Problems with Authentication?
 
-You may want to lower the timeout value of `post_authentication_text_timeout` in `config/settings.local.yml`.
+You may want to lower the timeout value of `Settings.timeouts.post_authentication_text` in `config/settings.local.yml`.
 
 ## Other Configuration
 

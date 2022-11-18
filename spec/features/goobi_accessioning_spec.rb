@@ -88,7 +88,7 @@ RSpec.describe 'Create and accession object via Goobi', if: ENV.fetch('SDR_ENV',
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned', with_reindex: true)
+    reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # look for expected files
     files = all('tr.file')
