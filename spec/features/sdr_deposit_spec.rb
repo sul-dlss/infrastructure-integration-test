@@ -13,6 +13,7 @@ RSpec.describe 'SDR deposit' do
     ensure_token
     object_druid = deposit(apo: Settings.default_apo,
                            collection: Settings.default_collection,
+                           type: Cocina::Models::ObjectType.object,
                            url: Settings.sdrapi_url,
                            source_id:,
                            catkey:,
