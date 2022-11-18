@@ -206,9 +206,11 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     authenticate!(start_url: "#{Settings.argo_url}/view/#{prefixed_druid}",
                   expected_text: 'Embargoed until ')
 
-    # NOTE: temporarily commenting out the specific embargo date check since sometimes this is off by a day
-    # embargo_date = DateTime.now.utc.to_date >> 6
-    # reload_page_until_timeout!(text: "Embargoed until #{embargo_date.to_formatted_s(:long)}")
+    embargo_date = DateTime.now.utc.to_date >> 6
+    embargo_date_plus1 = embargo_date + 1
+    # now + 6 months is sometimes off by a day, maybe something timezone/utc/daylight savings related?
+    embargo_date_regex_str = "[#{embargo_date.to_formatted_s(:long)}|#{embargo_date_plus1.to_formatted_s(:long)}]"
+    reload_page_until_timeout!(text: /Embargoed until #{embargo_date_regex_str}/)
     expect(page).to have_text(dissertation_title)
     apo_element = find_table_cell_following(header_text: 'Admin policy')
     expect(apo_element.first('a')[:href]).to end_with('druid:bx911tp9024') # this is hardcoded in hydra_etd app
