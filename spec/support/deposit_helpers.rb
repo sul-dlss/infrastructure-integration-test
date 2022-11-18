@@ -32,7 +32,6 @@ module DepositHelpers
         filenames.first => { 'preserve' => true, 'publish' => false, 'shelve' => false },
         filenames.last => { 'preserve' => false, 'publish' => true, 'shelve' => true }
       }
-      filenames = filenames.map { |file| "spec/fixtures/#{file}" }
       file_set_type_strategy = SdrClient::Deposit::ImageFileSetStrategy
     end
 
@@ -47,6 +46,7 @@ module DepositHelpers
                            grouping_strategy:,
                            file_set_type_strategy:,
                            files: filenames,
+                           basepath: 'spec/fixtures',
                            files_metadata:)
 
     visit "#{start_url}/view/#{object_druid}"
