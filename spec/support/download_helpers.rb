@@ -36,4 +36,8 @@ module DownloadHelpers
   def clear_downloads
     FileUtils.rm_f(downloads)
   end
+
+  def delete_download(download)
+    FileUtils.rm_f(download)
+  end
 end
