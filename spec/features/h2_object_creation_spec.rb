@@ -65,6 +65,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # Work Deposit view
     attach_file('spec/fixtures/sul-logo.png') do
+      find_by_id('work_upload_type_browser').click
       find_button('Choose files').click
     end
     expect(page).to have_text('sul-logo.png')
