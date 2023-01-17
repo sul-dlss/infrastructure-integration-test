@@ -92,6 +92,12 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # Opens Argo and searches on title
     visit Settings.argo_url
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
+    # Click on link with the item's title in the search results
+    within '.document-title-heading' do
+      click_link
+    end
+    bare_druid = page.current_url.split(':').last
+    puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
     # give preservation a chance to catch up before we create a new version
@@ -125,8 +131,6 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # check embargo date
     embargo_date = DateTime.now.getutc.to_date >> 6
     expect(page).to have_text("Embargoed until #{embargo_date.to_formatted_s(:long)}")
-    bare_druid = page.current_url.split(':').last
-    puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
 
     # check purl xml for embargo
     expect_embargo_date_in_public_xml(bare_druid, embargo_date)
