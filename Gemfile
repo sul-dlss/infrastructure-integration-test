@@ -16,6 +16,7 @@ gem 'pry-byebug'
 gem 'rake'
 gem 'rspec'
 gem 'rubocop'
+gem 'rubocop-capybara'
 gem 'rubocop-rake'
 gem 'rubocop-rspec'
 gem 'rubyXL' # for updating Excel spreadsheets
