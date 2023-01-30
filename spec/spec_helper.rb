@@ -36,7 +36,7 @@ Capybara.register_driver :my_firefox_driver do |app|
   options.add_argument("--width=#{Settings.browser.width}")
   options.add_argument("--height=#{Settings.browser.height}")
 
-  Capybara::Selenium::Driver.new(app, browser: :firefox, capabilities: [options])
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options:)
 end
 
 Capybara.register_driver :my_chrome_driver do |app|
@@ -44,7 +44,7 @@ Capybara.register_driver :my_chrome_driver do |app|
     args: ["window-size=#{Settings.browser.width},#{Settings.browser.height}"]
   )
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: [options]).tap do |driver|
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options:).tap do |driver|
     driver.browser.download_path = DownloadHelpers::PATH.to_s
   end
 end
