@@ -24,7 +24,7 @@ GEM
       capybara (>= 3.31)
       terminal-table
       xpath (>= 2.1)
-    cocina-models (0.87.0)
+    cocina-models (0.87.1)
       activesupport
       deprecation
       dry-struct (~> 1.0)
