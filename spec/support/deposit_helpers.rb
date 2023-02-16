@@ -24,7 +24,7 @@ module DepositHelpers
   end
 
   # rubocop:disable Metrics/MethodLength
-  def deposit_object(filenames: [])
+  def deposit_object(filenames: [], **kwargs)
     files_metadata = {}
     grouping_strategy = SdrClient::Deposit::SingleFileGroupingStrategy
     if filenames.any?
@@ -48,7 +48,8 @@ module DepositHelpers
                            file_set_type_strategy:,
                            files: filenames,
                            basepath: 'spec/fixtures',
-                           files_metadata:)
+                           files_metadata:,
+                           **kwargs)
 
     visit "#{start_url}/view/#{object_druid}"
 
