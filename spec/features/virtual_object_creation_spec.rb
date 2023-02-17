@@ -15,7 +15,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     ensure_token
 
     # Create virtual object
-    virtual_object_druid = deposit_object
+    virtual_object_druid = deposit_object(viewing_direction: 'left-to-right')
     puts " *** virtual object druid: #{virtual_object_druid} ***" # useful for debugging
 
     # Create constituent objects
