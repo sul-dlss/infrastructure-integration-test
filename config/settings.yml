@@ -44,3 +44,6 @@ goobi:
 gis:
   robots_content_root: '/var/geomdtk/current/stage'
   username: 'lyberadmin'
+
+folio:
+  enabled: false

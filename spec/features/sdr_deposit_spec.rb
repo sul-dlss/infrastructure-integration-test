@@ -4,6 +4,7 @@ RSpec.describe 'SDR deposit' do
   let(:start_url) { Settings.argo_url }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
   let(:catkey) { '10065784' }
+  let(:folio_instance_hrid) { 'a10065784' }
 
   before do
     authenticate!(start_url:, expected_text: 'Welcome to Argo!')
@@ -16,7 +17,8 @@ RSpec.describe 'SDR deposit' do
                            type: Cocina::Models::ObjectType.object,
                            url: Settings.sdrapi_url,
                            source_id:,
-                           catkey:,
+                           catkey: Settings.folio.enabled ? nil : catkey,
+                           folio_instance_hrid: Settings.folio.enabled ? folio_instance_hrid : nil,
                            accession: true,
                            view: 'world',
                            files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
