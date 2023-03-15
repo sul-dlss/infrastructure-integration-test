@@ -4,7 +4,7 @@ RSpec.describe 'SDR deposit' do
   let(:start_url) { Settings.argo_url }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
   let(:catkey) { '10065784' }
-  let(:folio_instance_hrid) { 'a10065784' }
+  let(:folio_instance_hrid) { Settings.test_folio_instance_hrid }
 
   before do
     authenticate!(start_url:, expected_text: 'Welcome to Argo!')
