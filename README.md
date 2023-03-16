@@ -109,3 +109,7 @@ If you find you need to modify the default window size for either browser---*e.g
 ### Increase Timeout Values
 
 If you are experiencing timeout errors when running tests, you may override the default timeout values by adding `timeouts.capybara`, `timeouts.bulk_action`, and/or `timeouts.workflow` in `config/settings.local.yml` depending on where you see timeouts.
+
+### Folio Integration
+
+Some specs may only work if the environment being tested has Folio enabled.  You can tell the integration tests if folio is enabled in a given environment via the `Settings.folio.enabled` setting.

@@ -45,5 +45,7 @@ gis:
   robots_content_root: '/var/geomdtk/current/stage'
   username: 'lyberadmin'
 
+test_folio_instance_hrid: 'a10065784'
+
 folio:
   enabled: false
