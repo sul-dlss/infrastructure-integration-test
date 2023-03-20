@@ -13,7 +13,7 @@ RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
   let(:project) { 'Awesome Folio Project' }
 
   before do
-    skip("SKIPPING: Folio not enabled in #{ENV.fetch('SDR_ENV')}") unless Settings.folio.enabled
+    skip("SKIPPING: Folio not enabled in #{ENV.fetch('SDR_ENV', 'stage')}") unless Settings.folio.enabled
     authenticate!(start_url:,
                   expected_text: 'Register DOR Items')
   end
