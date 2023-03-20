@@ -113,12 +113,30 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     expect(page).to have_text 'You have successfully deposited your work'
 
-    # Opens Argo and searches on title
-    visit Settings.argo_url
-    find_field('Search...').send_keys("\"#{item_title}\"", :enter)
-    reload_page_until_timeout!(text: 'v2 Accessioned')
+    # Opens Argo detail page
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
+    reload_page_until_timeout! do
+      # NOTE: This is here to work around a persistent, not easily
+      #       reproducible race condition that is occasionally seen in Argo,
+      #       causing integration tests to fail. This work-around mimics the
+      #       steps that developers tend to perform manually.
+      if page.has_text?('Error: shelve : problem with shelve', wait: 0)
+        click_link 'accessionWF'
+        select 'Rerun', from: 'status'
+        confirm_message = 'You have selected to manually change the status. '
+        confirm_message += 'This could result in processing errors. Are you sure you want to proceed?'
+        accept_confirm(confirm_message) do
+          click_button 'Save'
+        end
+        sleep 3
+      end
+
+      page.has_text?('v2 Accessioned', wait: 3)
+    end
 
     # check Argo facet field with 6 month embargo
+    visit Settings.argo_url
+    find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       expect(page).not_to have_text('up to 7 days', wait: 0)
