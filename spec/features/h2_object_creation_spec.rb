@@ -115,7 +115,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # Opens Argo detail page
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    reload_page_until_timeout! do
+    reload_page_until_timeout!(check_wf_error: false) do
       # NOTE: This is here to work around a persistent, not easily
       #       reproducible race condition that is occasionally seen in Argo,
       #       causing integration tests to fail. This work-around mimics the
