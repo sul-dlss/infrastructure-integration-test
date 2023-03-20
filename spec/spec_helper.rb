@@ -60,15 +60,6 @@ Capybara.default_max_wait_time = Settings.timeouts.capybara
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.include Capybara::DSL # required without `type: :feature` spec metadata, which RSpec infers
-  config.include AuthenticationHelpers
-  config.include DepositHelpers
-  config.include DownloadHelpers
-  config.include EventHelpers
-  config.include PageHelpers
-  config.include PublicXmlHelpers
-  config.include RandomPhraseHelpers
-  config.include TableHelpers
-  config.include XlsxHelpers
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

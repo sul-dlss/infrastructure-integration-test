@@ -60,3 +60,5 @@ module DepositHelpers
   end
   # rubocop:enable Metrics/MethodLength
 end
+
+RSpec.configure { |config| config.include DepositHelpers }

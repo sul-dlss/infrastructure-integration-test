@@ -15,3 +15,5 @@ module PageHelpers
     end
   end
 end
+
+RSpec.configure { |config| config.include PageHelpers }
