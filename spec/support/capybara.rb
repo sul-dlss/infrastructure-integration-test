@@ -1,0 +1,47 @@
+# frozen_string_literal: true
+
+require 'capybara/rspec'
+require 'capybara_table/rspec'
+
+Capybara.enable_aria_label = true
+
+Capybara.run_server = false
+
+Capybara.register_driver :my_firefox_driver do |app|
+  options = Selenium::WebDriver::Firefox::Options.new
+  options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
+    profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
+    # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
+    profile['browser.download.folderList'] = 2
+    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml;text/csv'
+    # these two have been proven to be needed to prevent cardinalkey from
+    # constantly prompting to confirm certificate
+    # https://uit.stanford.edu/service/cardinalkey/known-issues
+    profile['security.default_personal_cert'] = 'Select Automatically'
+    profile['security.enterprise_roots.enabled'] = 'true'
+  end
+  # NOTE: You might think the `--window-size` arg would work here. Not for me, it didn't.
+  options.add_argument("--width=#{Settings.browser.width}")
+  options.add_argument("--height=#{Settings.browser.height}")
+
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options:)
+end
+
+Capybara.register_driver :my_chrome_driver do |app|
+  options = Selenium::WebDriver::Chrome::Options.new(
+    args: ["window-size=#{Settings.browser.width},#{Settings.browser.height}"]
+  )
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options:).tap do |driver|
+    driver.browser.download_path = DownloadHelpers::PATH.to_s
+  end
+end
+
+Capybara.default_driver = case Settings.browser.driver
+                          when 'chrome'
+                            :my_chrome_driver
+                          else
+                            :my_firefox_driver
+                          end
+
+Capybara.default_max_wait_time = Settings.timeouts.capybara

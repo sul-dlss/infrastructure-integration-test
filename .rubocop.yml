@@ -160,6 +160,10 @@ Style/FormatStringToken:
 Style/GlobalStdStream:
   Enabled: true
 
+Style/GlobalVars:
+  AllowedVariables:
+    - $sdr_env
+
 Style/HashAsLastArrayItem:
   Enabled: true
 

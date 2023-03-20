@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'byebug'
-require 'capybara/rspec'
-require 'capybara_table/rspec'
+require 'config'
 require 'csv'
 require 'faker'
 require 'io/console'
@@ -12,50 +11,28 @@ require 'sdr-client'
 require 'selenium-webdriver'
 require 'webdrivers'
 
+$sdr_env = ENV.fetch('SDR_ENV', 'stage')
 root = Pathname.new(File.expand_path('../', __dir__))
+
+# Setup Config gem before loading spec supports
+Config.setup do |config|
+  config.const_name = 'Settings'
+  config.use_env = true
+  config.env_prefix = 'SETTINGS'
+  config.env_separator = '__'
+  config.env_converter = :downcase
+end
+
+Config.load_and_set_settings(
+  Config.setting_files(root.join('config'), $sdr_env)
+)
+
+# NOTE: Added to flag situations where the wrong env is typed, e.g., `stage`
+unless Settings.supported_envs.include?($sdr_env)
+  raise "#{$sdr_env} is not a supported environment: #{Settings.supported_envs.join(', ')}"
+end
+
 Dir[root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
-
-Capybara.run_server = false
-
-Capybara.enable_aria_label = true
-
-Capybara.register_driver :my_firefox_driver do |app|
-  options = Selenium::WebDriver::Firefox::Options.new
-  options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
-    profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
-    # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
-    profile['browser.download.folderList'] = 2
-    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml;text/csv'
-    # these two have been proven to be needed to prevent cardinalkey from
-    # constantly prompting to confirm certificate
-    # https://uit.stanford.edu/service/cardinalkey/known-issues
-    profile['security.default_personal_cert'] = 'Select Automatically'
-    profile['security.enterprise_roots.enabled'] = 'true'
-  end
-  # NOTE: You might think the `--window-size` arg would work here. Not for me, it didn't.
-  options.add_argument("--width=#{Settings.browser.width}")
-  options.add_argument("--height=#{Settings.browser.height}")
-
-  Capybara::Selenium::Driver.new(app, browser: :firefox, options:)
-end
-
-Capybara.register_driver :my_chrome_driver do |app|
-  options = Selenium::WebDriver::Chrome::Options.new(
-    args: ["window-size=#{Settings.browser.width},#{Settings.browser.height}"]
-  )
-
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options:).tap do |driver|
-    driver.browser.download_path = DownloadHelpers::PATH.to_s
-  end
-end
-
-Capybara.default_driver = case Settings.browser.driver
-                          when 'chrome'
-                            :my_chrome_driver
-                          else
-                            :my_firefox_driver
-                          end
-Capybara.default_max_wait_time = Settings.timeouts.capybara
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
