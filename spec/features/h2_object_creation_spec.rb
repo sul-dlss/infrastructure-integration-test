@@ -113,21 +113,12 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     expect(page).to have_text 'You have successfully deposited your work'
 
-    # Opens Argo detail page
-    visit "#{Settings.argo_url}/view/#{bare_druid}"
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        break if page.has_text?('v2 Accessioned', wait: 1)
-
-        reset_errored_workflow_step('accessionWF') if page.has_text?('Error: shelve : problem with shelve', wait: 0)
-        sleep 3 # wait to ensure the workflow step reset was accepted so we don't reset again immediately
-        page.refresh
-      end
-    end
-
-    # check Argo facet field with 6 month embargo
+    # Opens Argo and searches on title
     visit Settings.argo_url
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
+    reload_page_until_timeout!(text: 'v2 Accessioned')
+
+    # check Argo facet field with 6 month embargo
     click_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       expect(page).not_to have_text('up to 7 days', wait: 0)

@@ -68,7 +68,6 @@ RSpec.configure do |config|
   config.include PublicXmlHelpers
   config.include RandomPhraseHelpers
   config.include TableHelpers
-  config.include WorkflowHelpers
   config.include XlsxHelpers
 
   # rspec-expectations config goes here. You can use an alternate
