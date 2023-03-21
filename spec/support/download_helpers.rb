@@ -41,3 +41,5 @@ module DownloadHelpers
     FileUtils.rm_f(download)
   end
 end
+
+RSpec.configure { |config| config.include DownloadHelpers }

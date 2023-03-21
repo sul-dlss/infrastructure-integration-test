@@ -29,3 +29,5 @@ module XlsxHelpers
     temp_xlsx
   end
 end
+
+RSpec.configure { |config| config.include XlsxHelpers }

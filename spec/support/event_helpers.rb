@@ -20,3 +20,5 @@ module EventHelpers
     end
   end
 end
+
+RSpec.configure { |config| config.include EventHelpers }

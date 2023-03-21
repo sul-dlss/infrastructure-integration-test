@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # NOTE: this spec will be skipped unless run on stage, since there is no goobi-qa
-RSpec.describe 'Create and accession object via Goobi', if: ENV.fetch('SDR_ENV', 'stage') == 'stage' do
+RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:goobi_project_name) { 'Integration Testing' } # this project must exist in Goobi stage
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }

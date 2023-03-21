@@ -6,3 +6,5 @@ module TableHelpers
     find(:xpath, "//tr/th[text()='#{header_text}']/following-sibling::td")
   end
 end
+
+RSpec.configure { |config| config.include TableHelpers }

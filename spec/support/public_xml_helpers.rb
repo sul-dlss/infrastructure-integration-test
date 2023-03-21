@@ -42,3 +42,5 @@ module PublicXmlHelpers
     expect(archived_website_url).to eq seed_url
   end
 end
+
+RSpec.configure { |config| config.include PublicXmlHelpers }

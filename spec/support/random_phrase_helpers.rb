@@ -23,3 +23,5 @@ module RandomPhraseHelpers
     "#{random_nouns_array.join('_')}_#{random_alpha}"
   end
 end
+
+RSpec.configure { |config| config.include RandomPhraseHelpers }

@@ -83,3 +83,5 @@ module AuthenticationHelpers
     click_button 'Yes, trust browser'
   end
 end
+
+RSpec.configure { |config| config.include AuthenticationHelpers }
