@@ -216,22 +216,41 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     expect(apo_element.first('a')[:href]).to end_with('druid:bx911tp9024') # this is hardcoded in hydra_etd app
     status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
-    click_link('etdSubmitWF')
-    within('#blacklight-modal') do
-      # expect first 5 steps to have completed
-      expect(page).to have_text(/register-object completed/)
-      expect(page).to have_text(/submit completed/)
-      expect(page).to have_text(/reader-approval completed/)
-      expect(page).to have_text(/registrar-approval completed/)
-      expect(page).to have_text(/submit-marc completed/)
-      expect(page).to have_text(/check-marc waiting/)
-      # NOTE: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
-      #  identity, access rights and contentMetadata are updated in otherMetadata WF step
-      #  which is kicked off from ETD app cron noticing check-marc is completed,
-      #  and otherMetadata WF step in ETD app then kicks off start-accession
-      #  ideally, we would then make sure accessioning completes cleanly (at least up to preservation robots steps)
-      click_button 'Cancel'
+    if Settings.folio.enabled
+      reload_page_until_timeout! do
+        click_link('etdSubmitWF')
+        # expect first 6 steps to have completed w/ Folio (but requires reload since the Folio job takes time)
+        page.has_text?(/register-object completed/) &&
+          page.has_text?(/submit completed/) &&
+          page.has_text?(/reader-approval completed/) &&
+          page.has_text?(/registrar-approval completed/) &&
+          page.has_text?(/submit-marc completed/) &&
+          page.has_text?(/check-marc completed/)
+        # TODO: Update the following comment
+        # NOTE: the next etd wf steps are run by cron talking to Folio: catalog-status
+        #  identity, access rights and contentMetadata are updated in otherMetadata WF step
+        #  which is kicked off from ETD app cron noticing check-marc is completed,
+        #  and otherMetadata WF step in ETD app then kicks off start-accession
+        #  ideally, we would then make sure accessioning completes cleanly (at least up to preservation robots steps)
+      end
+    else
+      click_link('etdSubmitWF')
+      within('#blacklight-modal') do
+        # expect first 5 steps to have completed w/ Symphony
+        expect(page).to have_text(/register-object completed/)
+        expect(page).to have_text(/submit completed/)
+        expect(page).to have_text(/reader-approval completed/)
+        expect(page).to have_text(/registrar-approval completed/)
+        expect(page).to have_text(/submit-marc completed/)
+        expect(page).to have_text(/check-marc waiting/)
+        # NOTE: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
+        #  identity, access rights and contentMetadata are updated in otherMetadata WF step
+        #  which is kicked off from ETD app cron noticing check-marc is completed,
+        #  and otherMetadata WF step in ETD app then kicks off start-accession
+        #  ideally, we would then make sure accessioning completes cleanly (at least up to preservation robots steps)
+      end
     end
+    click_button 'Cancel'
 
     # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
