@@ -226,12 +226,11 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
           page.has_text?(/registrar-approval completed/) &&
           page.has_text?(/submit-marc completed/) &&
           page.has_text?(/check-marc completed/)
-        # TODO: Update the following comment
-        # NOTE: the next etd wf steps are run by cron talking to Folio: catalog-status
-        #  identity, access rights and contentMetadata are updated in otherMetadata WF step
-        #  which is kicked off from ETD app cron noticing check-marc is completed,
-        #  and otherMetadata WF step in ETD app then kicks off start-accession
-        #  ideally, we would then make sure accessioning completes cleanly (at least up to preservation robots steps)
+
+        # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
+        #   and then run it through common-accessioning, but the remaining etdSubmitWF steps, catalog-status and
+        #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
+        #   to make sense here.
       end
     else
       click_link('etdSubmitWF')
@@ -243,11 +242,11 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
         expect(page).to have_text(/registrar-approval completed/)
         expect(page).to have_text(/submit-marc completed/)
         expect(page).to have_text(/check-marc waiting/)
-        # NOTE: the next etd wf steps are run by cron talking to symphony: check-marc, catalog-status
-        #  identity, access rights and contentMetadata are updated in otherMetadata WF step
-        #  which is kicked off from ETD app cron noticing check-marc is completed,
-        #  and otherMetadata WF step in ETD app then kicks off start-accession
-        #  ideally, we would then make sure accessioning completes cleanly (at least up to preservation robots steps)
+
+        # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
+        #   and then run it through common-accessioning, but the remaining etdSubmitWF steps of check-marc,
+        #   catalog-status, and otherMetadata require too much fakery specific to the ETD app (cron jobs, cocina-model
+        #   updates) to make sense here.
       end
     end
     click_button 'Cancel'
