@@ -98,7 +98,8 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_text('image/jp2')
     expect(page).to have_text('400 px')
 
-    # Verify that the purl XML includes the proper archived website URL
-    expect_seed_url_in_public_xml(full_seed_druid, archived_url)
+    # Verify that the purl page includes the proper archived website URL
+    visit "#{Settings.purl_url}/#{seed_druid}"
+    expect(page).to have_link('Archived website', href: archived_url)
   end
 end

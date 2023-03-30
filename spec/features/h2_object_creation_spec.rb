@@ -150,8 +150,11 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     embargo_date = DateTime.now.getutc.to_date >> 6
     expect(page).to have_text("Embargoed until #{embargo_date.to_formatted_s(:long)}")
 
-    # check purl xml for embargo
-    expect_embargo_date_in_public_xml(bare_druid, embargo_date)
+    # check purl page for embargo
+    visit "#{Settings.purl_url}/#{bare_druid}"
+    reload_page_until_timeout! do
+      within_frame { page.has_text?("Access is restricted until #{embargo_date.strftime('%d-%b-%Y')}", wait: 1) }
+    end
 
     # change embargo date
     new_embargo_date = Date.today + 3
@@ -179,12 +182,15 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
       find_link('up to 7 days')
     end
 
-    # update the purl XML
+    # republish the item to purl
     visit "#{Settings.argo_url}/view/#{bare_druid}"
     click_button 'Manage PURL'
     click_link 'Publish'
-    sleep 1 # allow purl to get updated
-    # check purl xml for 3 day embargo
-    expect_embargo_date_in_public_xml(bare_druid, new_embargo_date)
+
+    # check purl page for 3 day embargo
+    visit "#{Settings.purl_url}/#{bare_druid}"
+    reload_page_until_timeout! do
+      within_frame { page.has_text?("Access is restricted until #{new_embargo_date.strftime('%d-%b-%Y')}", wait: 1) }
+    end
   end
 end
