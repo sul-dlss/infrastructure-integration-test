@@ -101,9 +101,8 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
 
     # This section confirms the object has been published to PURL and has a
     # valid IIIF manifest
-    visit "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
     # wait for the PURL name to be published by checking for collection name
-    reload_page_until_timeout!(text: collection_name)
+    expect_text_on_purl_page(druid:, text: collection_name)
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
     canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')

@@ -151,10 +151,11 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     expect(page).to have_text("Embargoed until #{embargo_date.to_formatted_s(:long)}")
 
     # check purl page for embargo
-    visit "#{Settings.purl_url}/#{bare_druid}"
-    reload_page_until_timeout! do
-      within_frame { page.has_text?("Access is restricted until #{embargo_date.strftime('%d-%b-%Y')}", wait: 1) }
-    end
+    expect_text_on_purl_page(
+      druid: bare_druid,
+      text: "Access is restricted until #{embargo_date.strftime('%d-%b-%Y')}",
+      within_frame: true
+    )
 
     # change embargo date
     new_embargo_date = Date.today + 3
@@ -188,9 +189,10 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     click_link 'Publish'
 
     # check purl page for 3 day embargo
-    visit "#{Settings.purl_url}/#{bare_druid}"
-    reload_page_until_timeout! do
-      within_frame { page.has_text?("Access is restricted until #{new_embargo_date.strftime('%d-%b-%Y')}", wait: 1) }
-    end
+    expect_text_on_purl_page(
+      druid: bare_druid,
+      text: "Access is restricted until #{new_embargo_date.strftime('%d-%b-%Y')}",
+      within_frame: true
+    )
   end
 end

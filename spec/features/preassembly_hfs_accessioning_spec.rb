@@ -154,13 +154,10 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
     # This section confirms the object has been published to PURL and has filenames in the json
-    purl_url = "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
-    visit purl_url
-    # wait for the PURL name to be published by checking for collection name
-    reload_page_until_timeout!(text: collection_name)
+    expect_text_on_purl_page(druid:, text: collection_name)
 
     # verify the cocina json has the filenames with paths
-    cocina_json = JSON.parse(Faraday.get("#{purl_url}.json").body)
+    cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{druid.delete_prefix('druid:')}.json").body)
     expect(cocina_json['structural']['contains'].size).to eq 5 #  5 resources are shelved
     filenames = cocina_json['structural']['contains'].map { |node| node['structural']['contains'].first['filename'] }
     expect(filenames).to eq ['README.md', 'config/settings.yml', 'config/settings/qa.yml',

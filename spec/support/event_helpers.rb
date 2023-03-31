@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'dor/services/client'
+
 module EventHelpers
   # pass in a block that returns true if the event list has the desired event(s)
   def poll_for_matching_events!(prefixed_druid)
