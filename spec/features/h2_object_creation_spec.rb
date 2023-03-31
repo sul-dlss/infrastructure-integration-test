@@ -96,7 +96,8 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     within '.document-title-heading' do
       click_link
     end
-    bare_druid = page.current_url.split(':').last
+    sleep 1 # sometimes the current_url is not updated quickly enough
+    bare_druid = page.current_url.split('druid:').last
     puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
