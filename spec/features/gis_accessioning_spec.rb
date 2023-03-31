@@ -90,9 +90,8 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
 
     # This section confirms the object has been published to PURL
-    visit "#{Settings.purl_url}/#{druid.delete_prefix('druid:')}"
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
-    reload_page_until_timeout!(text: collection_name)
+    expect_text_on_purl_page(druid:, text: collection_name)
     expect(page).not_to have_text(object_label) # the original object label has been replaced
     expect(page).to have_text('Air Monitoring Stations: California, 2001-2003') # with the new object label
     expect(page).to have_text('cartographic') # type of resource

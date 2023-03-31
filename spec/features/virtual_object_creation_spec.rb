@@ -75,8 +75,12 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
 
     expect(resources_text).to match_array(constituent_druids)
 
+    # Verify that the purl page of each constituent druid points at the "parent" virtual object purl
     constituent_druids.each do |constituent_druid|
-      expect_virtual_object_relationship_in_public_xml(constituent_druid, virtual_object_druid)
+      expect_text_on_purl_page(
+        druid: constituent_druid,
+        text: "#{Settings.purl_url}/#{virtual_object_druid.delete_prefix('druid:')}"
+      )
     end
   end
 end
