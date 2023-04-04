@@ -37,7 +37,7 @@ sunet:
 
 # the URL and username/password used to login to goobi (applicable to stage only)
 goobi:
-  url: https://goobi-stage.stanford.edu/goobi
+  url: https://goobi-stage-a.stanford.edu/goobi
   username: ~
   password: ~
 
