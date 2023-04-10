@@ -49,8 +49,11 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     expect(page).to have_text("Project : #{project}")
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
-    # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v1 Accessioned',
+                                                  workflow: 'accessionWF',
+                                                  workflow_retry_text: 'Version mismatch',
+                                                  retry_wait: 2)
 
     # open a new version
     click_link 'Unlock to make changes to this object'
@@ -71,7 +74,10 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     expect(page).to have_text('closing version for integration testing')
     page.refresh # solves problem of close version modal re-appearing
 
-    # wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned')
+    # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
+                                                  workflow: 'accessionWF',
+                                                  workflow_retry_text: 'Version mismatch',
+                                                  retry_wait: 2)
   end
 end
