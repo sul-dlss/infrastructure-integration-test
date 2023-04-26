@@ -19,6 +19,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
         line.start_with?('WARC-Date') ? "WARC-Date: #{start_time.utc.iso8601(3)}\r\n" : line
       end.join
       file.write(updated_warc)
+      FileUtils.chmod(0o0644, file.path)
       file.close
     end
   end
@@ -31,6 +32,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     raise("unable to create job directory: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
 
     `scp #{updated_warc.path} #{remote_path}`
+
     raise("unable to scp #{updated_warc_path} to #{remote_path}: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
 
     authenticate!(start_url:, expected_text: 'New one-time registration')
