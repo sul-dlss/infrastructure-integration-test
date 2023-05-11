@@ -6,7 +6,7 @@ A set of Capybara tests that drive a browser to do inter-system integration test
 
 ## Installation
 
-The tests use Ruby 3.1.
+The tests use Ruby 3.2.
 
 The tests depend on having Firefox (default) or Chrome downloaded.
 
