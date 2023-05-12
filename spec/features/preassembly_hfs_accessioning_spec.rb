@@ -106,7 +106,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
-    sleep 10 # let's wait a bit before trying the re-accession to avoid a possible race condition
+    sleep 20 # let's wait a bit before trying the re-accession to avoid a possible race condition
 
     ### Re-accession
 
