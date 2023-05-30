@@ -23,3 +23,4 @@ gem 'rubyXL' # for updating Excel spreadsheets
 gem 'sdr-client', '~> 2.0'
 gem 'selenium-webdriver'
 gem 'webdrivers'
+gem 'websocket' # required by selenium-webdrivers; a ruby upgrade somehow obscured this dependency
