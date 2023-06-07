@@ -68,7 +68,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
   let(:supplemental_filename) { 'etd_supplemental.txt' }
   let(:permissions_filename) { 'etd_permissions.pdf' }
 
-  # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure
+  # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure-in-etd-uat
   scenario do
     authenticate!(start_url: "#{Settings.etd_url}/view/0001",
                   expected_text: 'Could not find an Etd with id: 0001')
