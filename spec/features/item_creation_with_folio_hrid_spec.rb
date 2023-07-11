@@ -65,7 +65,7 @@ RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
     # look for metadata source facet having an entry of Folio for this druid
     fill_in 'Search...', with: object_druid
     click_button 'Search'
-    click_button 'Metadata Source (Multi)'
+    click_button 'Metadata Source'
     within '#facet-metadata_source_ssim ul.facet-values' do
       within 'li' do
         find_link('Folio')
