@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module DepositHelpers
-  def deposit(**kwargs)
-    job_id = SdrClient::Deposit.run(**kwargs)
+  def deposit(**)
+    job_id = SdrClient::Deposit.run(**)
 
     # Wait for the deposit to be complete.
     object_druid = nil
@@ -24,7 +24,7 @@ module DepositHelpers
   end
 
   # rubocop:disable Metrics/MethodLength
-  def deposit_object(filenames: [], **kwargs)
+  def deposit_object(filenames: [], **)
     files_metadata = {}
     grouping_strategy = SdrClient::Deposit::SingleFileGroupingStrategy
     if filenames.any?
@@ -49,7 +49,7 @@ module DepositHelpers
                            files: filenames,
                            basepath: 'spec/fixtures',
                            files_metadata:,
-                           **kwargs)
+                           **)
 
     visit "#{start_url}/view/#{object_druid}"
 
