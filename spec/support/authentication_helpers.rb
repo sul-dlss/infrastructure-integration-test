@@ -10,10 +10,14 @@ module AuthenticationHelpers
     visit start_url
     return if expected_text_found?(expected_text) # short-circuit if we are already authenticated
 
-    click_through_trust_browser_if_needed # for cardinal key users, straight to 2FA prompt, no login form
+    # cardinal key users go straight to 2FA prompts without login form
+    click_through_check_if_needed('Yes, trust browser')
+    click_through_check_if_needed('Yes, this is my device')
 
+    # non-cardinal key users get login form followed by 2FA prompts
     submit_credentials_if_needed
-    click_through_trust_browser_if_needed # for people who hit the login form, 2FA prompt comes after it's submitted
+    click_through_check_if_needed('Yes, trust browser')
+    click_through_check_if_needed('Yes, this is my device')
 
     expected_text_found?(expected_text)
   end
@@ -75,12 +79,10 @@ module AuthenticationHelpers
     click_button 'Login'
   end
 
-  # cardinal key users won't get prompted with login form, but may need to click through this prompt, hence
-  # splitting this method from login form submission
-  def click_through_trust_browser_if_needed
-    return unless page.has_text?('Yes, trust browser', wait: Settings.timeouts.post_authentication_text)
+  def click_through_check_if_needed(text)
+    return unless page.has_text?(text, wait: Settings.timeouts.post_authentication_text)
 
-    click_button 'Yes, trust browser'
+    click_button text
   end
 end
 
