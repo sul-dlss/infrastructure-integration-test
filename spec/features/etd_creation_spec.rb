@@ -235,7 +235,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     else
       click_link('etdSubmitWF')
       within('#blacklight-modal') do
-        # expect first 5 steps to have completed w/ Symphony
+        # expect first 5 steps to have completed
         expect(page).to have_text(/register-object completed/)
         expect(page).to have_text(/submit completed/)
         expect(page).to have_text(/reader-approval completed/)
@@ -245,7 +245,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
 
         # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
         #   and then run it through common-accessioning, but the remaining etdSubmitWF steps of check-marc,
-        #   catalog-status, and otherMetadata require too much fakery specific to the ETD app (cron jobs, cocina-model
+        #   catalog-status, and otherMetadata require too much fakery specific to the ETD app (cocina-model
         #   updates) to make sense here.
       end
     end
