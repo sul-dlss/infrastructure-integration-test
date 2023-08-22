@@ -117,7 +117,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     fill_in 'Project name', with: random_project_name
     select 'Pre Assembly Run', from: 'Job type'
     fill_in 'Staging location', with: preassembly_bundle_dir
-    select 'Filename', from: 'Content metadata creation'
+    select 'Group by filename', from: 'Processing configuration'
 
     click_button 'Submit'
 

@@ -123,7 +123,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     select 'Pre Assembly Run', from: 'Job type'
     fill_in 'Staging location', with: preassembly_hfs_bundle_dir
     select 'File', from: 'Content structure'
-    select 'Default', from: 'Content metadata creation'
+    select 'Default', from: 'Processing configuration'
 
     click_button 'Submit'
 
