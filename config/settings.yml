@@ -48,4 +48,4 @@ gis:
 test_folio_instance_hrid: 'a10065784'
 
 folio:
-  enabled: false
+  enabled: true
