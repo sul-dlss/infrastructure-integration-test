@@ -18,6 +18,3 @@ was_registrar:
   jobs_directory: '/was_unaccessioned_data/jobs'
   url: 'https://was-registrar-app-qa.stanford.edu'
   username: 'was'
-
-folio:
-  enabled: true
