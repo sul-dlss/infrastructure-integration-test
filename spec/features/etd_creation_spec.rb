@@ -216,40 +216,31 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     expect(apo_element.first('a')[:href]).to end_with('druid:bx911tp9024') # this is hardcoded in hydra_etd app
     status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
-    if Settings.folio.enabled
-      reload_page_until_timeout! do
+
+    Timeout.timeout(Settings.timeouts.workflow) do
+      workflow_done = false # a "break" statement inside the "within" block does not break out of the loop
+      loop do
         click_link('etdSubmitWF')
-        # expect first 6 steps to have completed w/ Folio (but requires reload since the Folio job takes time)
-        page.has_text?(/register-object completed/) &&
-          page.has_text?(/submit completed/) &&
-          page.has_text?(/reader-approval completed/) &&
-          page.has_text?(/registrar-approval completed/) &&
-          page.has_text?(/submit-marc completed/) &&
-          page.has_text?(/check-marc completed/)
+        within('.modal-dialog') do
+          workflow_done = true if page.has_text?(/register-object\s+completed/) &&
+                                  page.has_text?(/submit\s+completed/) &&
+                                  page.has_text?(/reader-approval\s+completed/) &&
+                                  page.has_text?(/registrar-approval\s+completed/) &&
+                                  page.has_text?(/submit-marc\s+completed/, wait: 1) &&
+                                  page.has_text?(/check-marc\s+completed/, wait: 1) &&
+                                  page.has_text?(/catalog-status\s+waiting/, wait: 1)
 
-        # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
-        #   and then run it through common-accessioning, but the remaining etdSubmitWF steps, catalog-status and
-        #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
-        #   to make sense here.
-      end
-    else
-      click_link('etdSubmitWF')
-      within('#blacklight-modal') do
-        # expect first 5 steps to have completed
-        expect(page).to have_text(/register-object completed/)
-        expect(page).to have_text(/submit completed/)
-        expect(page).to have_text(/reader-approval completed/)
-        expect(page).to have_text(/registrar-approval completed/)
-        expect(page).to have_text(/submit-marc completed/)
-        expect(page).to have_text(/check-marc waiting/)
+          # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
+          #   and then run it through common-accessioning, but the remaining etdSubmitWF steps, catalog-status and
+          #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
+          #   to make sense here.
 
-        # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
-        #   and then run it through common-accessioning, but the remaining etdSubmitWF steps of check-marc,
-        #   catalog-status, and otherMetadata require too much fakery specific to the ETD app (cocina-model
-        #   updates) to make sense here.
+          page.send_keys(:escape) # close modal; click_button('Cancel') and other approaches didn't work
+        end
+
+        break if workflow_done # get out of loop within Timeout block
       end
     end
-    click_button 'Cancel'
 
     # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
