@@ -5,12 +5,12 @@ require 'druid-tools'
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
 RSpec.describe 'Create and re-accession image object via Pre-assembly' do
-  druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
-
+  bare_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:preassembly_bundle_dir) { Settings.preassembly_bundle_directory }
   let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
+  let(:local_file_manifest_location) { 'tmp/file_manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{random_noun}" }
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
   let(:source_id) { "image-integration-test:#{source_id_random_word}" }
@@ -20,7 +20,13 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
-      #{druid},content
+      #{bare_druid},content
+    CSV
+  end
+  let(:preassembly_reaccession_manifest_csv) do
+    <<~CSV
+      druid,object
+      #{bare_druid},#{bare_druid}
     CSV
   end
 
@@ -31,16 +37,19 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
   after do
     clear_downloads
+    FileUtils.rm_rf(bare_druid)
+    unless bare_druid.empty?
+      `ssh preassembly@#{Settings.preassembly_host} rm -rf \
+      #{preassembly_bundle_dir}/#{bare_druid}`
+    end
   end
 
   scenario do
-    # register new object
     select 'integration-testing', from: 'Admin Policy'
     select collection_name, from: 'Collection'
     select 'image', from: 'Content Type'
     fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
-
-    fill_in 'Source ID', with: source_id
+    fill_in 'Source ID', with: "#{source_id}-#{random_alpha}"
     fill_in 'Label', with: object_label
 
     click_button 'Register'
@@ -48,8 +57,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
 
-    bare_object_druid = find('table a').text
-    druid = "druid:#{bare_object_druid}"
+    bare_druid = find('table a').text
+    druid = "druid:#{bare_druid}"
     puts " *** preassembly image accessioning druid: #{druid} ***" # useful for debugging
 
     # create manifest.csv file and scp it to preassembly staging directory
@@ -87,7 +96,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     # delete the downloaded YAML file, so we don't pick it up by mistake during the re-accession
     delete_download(download)
 
-    # ensure Image files are all there, per pre-assembly, organized into specified resources
+    # ensure files are all there, per pre-assembly, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # Wait for accessioningWF to finish
@@ -95,11 +104,58 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     files = all('tr.file')
 
-    expect(files.size).to eq 2
-    expect(files.first.text).to match(%r{image.jpg image/jpeg 28.\d KB})
-    expect(files.last.text).to match(%r{image.jp2 image/jp2 137 KB})
+    expect(files.size).to eq 6
+    expect(files[0].text).to match(%r{argo-logo.png image/png 10.\d KB})
+    expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 10\.*\d* KB})
+    expect(files[2].text).to match(%r{image.jpg image/jpeg 28.\d KB})
+    expect(files[3].text).to match(%r{image.jp2 image/jp2 137 KB})
+    expect(files[4].text).to match(%r{sul-logo.png image/png 19.\d KB})
+    expect(files[5].text).to match(%r{sul-logo.jp2 image/jp2 30.\d KB})
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
+
+    # Download CSV from Argo
+    click_link 'Download CSV'
+    wait_for_download
+    items = CSV.read(download)
+    # delete row for the deleted image file from the CSV and for the changed image file's jp2
+    items.reject! { |row| row[1] == 'Image 3' || row[4] == 'argo-logo.jp2' }
+    # add a row for a new image file
+    items << [bare_druid, 'Image 4', 'image', '3', 'vision_for_stanford.jpg', 'vision_for_stanford.jpg', 'no', 'no', 'yes',
+              'world', 'world', '', 'image/jpeg', '']
+    CSV.open(local_file_manifest_location, 'w') do |csv|
+      items.each do |item|
+        csv << item
+      end
+    end
+
+    delete_download(download)
+
+    # scp file manifest to preassembly
+    `scp #{local_file_manifest_location} #{remote_manifest_location}`
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{local_file_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    end
+
+    # scp manifest for reaccession to preassembly
+    File.write(local_manifest_location, preassembly_reaccession_manifest_csv)
+    `scp #{local_manifest_location} #{remote_manifest_location}`
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    end
+
+    # Create local dir for scp:
+    Dir.mkdir(bare_druid)
+    # Replace one of the files with a different file
+    FileUtils.cp('spec/fixtures/argo-home.png', "#{bare_druid}/argo-logo.png")
+    # Add a new file
+    FileUtils.cp('spec/fixtures/vision_for_stanford.jpg', bare_druid)
+
+    # scp druid directory to preassembly
+    `scp -r #{bare_druid} #{remote_manifest_location}`
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{bare_druid} #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    end
 
     sleep 20 # let's wait a bit before trying the re-accession to avoid a possible race condition
 
@@ -118,6 +174,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     select 'Pre Assembly Run', from: 'Job type'
     fill_in 'Staging location', with: preassembly_bundle_dir
     select 'Group by filename', from: 'Processing configuration'
+    check('batch_context_using_file_manifest')
 
     click_button 'Submit'
 
@@ -141,6 +198,20 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     latest_version = version + 1
 
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+
+    # Wait for accessioningWF to finish
+    reload_page_until_timeout!(text: "v#{latest_version} Accessioned")
+
+    # ensure changed files are all there, per pre-assembly
+    files = all('tr.file')
+    expect(files.size).to eq 6
+    expect(files[0].text).to match(%r{argo-logo.png image/png 97.\d KB})
+    expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 140 KB})
+    expect(files[2].text).to match(%r{image.jpg image/jpeg 28.\d KB})
+    expect(files[3].text).to match(%r{image.jp2 image/jp2 137 KB})
+    expect(files[4].text).to match(%r{vision_for_stanford.jpg image/jpeg 8.\d+ KB})
+    expect(files[5].text).to match(%r{vision_for_stanford.jp2 image/jp2 26.\d KB})
+
     reload_page_until_timeout! do
       click_button 'Events' # expand the Events section
 
