@@ -11,7 +11,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
   let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_bundle_dir}" }
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:local_file_manifest_location) { 'tmp/file_manifest.csv' }
-  let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{random_noun}" }
+  let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{random_noun}-#{random_alpha}" }
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
   let(:source_id) { "image-integration-test:#{source_id_random_word}" }
   let(:label_random_words) { random_phrase }
