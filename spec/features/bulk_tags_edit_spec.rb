@@ -26,7 +26,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
     within('.search-widgets') do
       click_link 'Bulk Actions'
     end
-    expect(page).to have_selector 'h1', text: 'Bulk Actions'
+    expect(page).to have_css 'h1', text: 'Bulk Actions'
 
     click_link 'New Bulk Action'
     expect(page).to have_text 'New Bulk Action'

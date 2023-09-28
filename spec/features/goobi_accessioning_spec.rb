@@ -50,7 +50,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
 
     # login to Goobi
     visit Settings.goobi.url
-    expect(page).to have_selector('h2', text: 'Login')
+    expect(page).to have_css('h2', text: 'Login')
     fill_in 'login', with: Settings.goobi.username
     # NOTE: "passwort" is not a typo, it's a german app
     # there is no english label and this is the ID of the field
