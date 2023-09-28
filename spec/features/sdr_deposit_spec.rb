@@ -3,7 +3,6 @@
 RSpec.describe 'SDR deposit' do
   let(:start_url) { Settings.argo_url }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
-  let(:catkey) { '10065784' }
   let(:folio_instance_hrid) { Settings.test_folio_instance_hrid }
 
   before do
@@ -17,8 +16,7 @@ RSpec.describe 'SDR deposit' do
                            type: Cocina::Models::ObjectType.object,
                            url: Settings.sdrapi_url,
                            source_id:,
-                           catkey: Settings.folio.enabled ? nil : catkey,
-                           folio_instance_hrid: Settings.folio.enabled ? folio_instance_hrid : nil,
+                           folio_instance_hrid:,
                            accession: true,
                            view: 'world',
                            files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],

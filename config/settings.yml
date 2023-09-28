@@ -46,6 +46,3 @@ gis:
   username: 'lyberadmin'
 
 test_folio_instance_hrid: 'a10065784'
-
-folio:
-  enabled: true
