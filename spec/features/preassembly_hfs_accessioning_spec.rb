@@ -59,7 +59,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     end
 
     visit Settings.preassembly_url
-    expect(page).to have_selector('h3', text: 'Complete the form below')
+    expect(page).to have_css('h3', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'

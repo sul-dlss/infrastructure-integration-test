@@ -85,7 +85,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     visit etd_submit_url
 
     # verify citation details
-    expect(page).to have_selector('#pbCitationDetails', text: "Citation details verified\n- Not done")
+    expect(page).to have_css('#pbCitationDetails', text: "Citation details verified\n- Not done")
     expect(page).not_to have_a_complete_step('#pbCitationDetails')
     expect(page).to have_text(dissertation_id)
     expect(page).to have_text(dissertation_author)
@@ -94,7 +94,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     expect(page).to have_a_complete_step('#pbCitationDetails')
 
     # provide abstract
-    expect(page).to have_selector('#pbAbstractProvided', text: "Abstract provided\n- Not done")
+    expect(page).to have_css('#pbAbstractProvided', text: "Abstract provided\n- Not done")
     expect(page).not_to have_a_complete_step('#pbAbstractProvided')
     fill_in 'Enter your abstract in plain text (no HTML or special formatting, such as bullets or indentation).',
             with: abstract_text
@@ -103,13 +103,13 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
 
     # confirm format has been reviewed
     expect(page).not_to have_a_complete_step('#pbFormatReviewed')
-    expect(page).to have_selector('#pbFormatReviewed', text: "Format reviewed\n- Not done")
+    expect(page).to have_css('#pbFormatReviewed', text: "Format reviewed\n- Not done")
     check('confirmFormatReview')
     expect(page).to have_a_complete_step('#pbFormatReviewed')
 
     # upload dissertation PDF
     expect(page).not_to have_text(dissertation_filename, wait: 1)
-    expect(page).to have_selector('#pbDissertationUploaded', text: "Dissertation uploaded\n- Not done")
+    expect(page).to have_css('#pbDissertationUploaded', text: "Dissertation uploaded\n- Not done")
     expect(page).not_to have_a_complete_step('#pbDissertationUploaded')
     attach_file('primaryUpload', "spec/fixtures/#{dissertation_filename}", make_visible: true)
     expect(page).to have_text(dissertation_filename)
@@ -117,30 +117,30 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
 
     # upload supplemental file
     expect(page).not_to have_text(supplemental_filename, wait: 1)
-    expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :hidden)
+    expect(page).to have_css('#pbSupplementalFilesUploaded', visible: :hidden)
     check('My dissertation includes supplemental files.')
     attach_file('supplementalUpload_1', "spec/fixtures/#{supplemental_filename}", make_visible: true)
     expect(page).to have_text(supplemental_filename)
-    expect(page).to have_selector('#pbSupplementalFilesUploaded', visible: :visible)
+    expect(page).to have_css('#pbSupplementalFilesUploaded', visible: :visible)
     expect(page).to have_a_complete_step('#pbSupplementalFilesUploaded')
 
     # indicate copyrighted material
-    expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
+    expect(page).to have_css('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
     expect(find_by_id('pbPermissionsProvided')['style']).to eq '' # rights not yet selected
     select 'Yes', from: "My #{dissertation_type.downcase} contains copyright material"
 
     # provide copyright permissions letters/files
     expect(page).not_to have_text(permissions_filename, wait: 1)
-    expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :hidden)
+    expect(page).to have_css('#pbPermissionFilesUploaded', visible: :hidden)
     attach_file('permissionUpload_1', "spec/fixtures/#{permissions_filename}", make_visible: true)
     expect(page).to have_text(permissions_filename)
-    expect(page).to have_selector('#pbPermissionFilesUploaded', visible: :visible)
+    expect(page).to have_css('#pbPermissionFilesUploaded', visible: :visible)
 
     expect(page).to have_a_complete_step('#pbPermissionFilesUploaded')
     expect(page).to have_a_complete_step('#pbPermissionsProvided')
 
     # apply licenses
-    expect(page).to have_selector('#pbRightsSelected', text: "License terms applied\n- Not done")
+    expect(page).to have_css('#pbRightsSelected', text: "License terms applied\n- Not done")
     expect(page.find_by_id('pbRightsSelected')['style']).to eq '' # rights not applied yet
     click_link 'View Stanford University publication license'
     check 'I have read and agree to the terms of the Stanford University license.'
@@ -165,18 +165,18 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     accept_alert do
       click_button 'Submit to Registrar'
     end
-    expect(page).to have_selector('#submissionSuccessful', text: 'Submission successful')
-    expect(page).to have_selector('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
+    expect(page).to have_css('#submissionSuccessful', text: 'Submission successful')
+    expect(page).to have_css('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
 
     # page has reloaded with submit to registrar and these now will show as updated
-    expect(page).to have_selector('#pbCitationDetails', text: "Citation details verified\n- Done")
-    expect(page).to have_selector('#pbAbstractProvided', text: "Abstract provided\n- Done")
-    expect(page).to have_selector('#pbFormatReviewed', text: "Format reviewed\n- Done")
-    expect(page).to have_selector('#pbDissertationUploaded', text: "Dissertation uploaded\n- Done")
-    expect(page).to have_selector('#pbSupplementalFilesUploaded', text: "Supplemental files uploaded\n- Done")
-    expect(page).to have_selector('#pbPermissionsProvided', text: "Copyrighted material checked\n- Done")
-    expect(page).to have_selector('#pbPermissionFilesUploaded', text: "Permission files uploaded\n- Done")
-    expect(page).to have_selector('#pbRightsSelected', text: "License terms applied\n- Done")
+    expect(page).to have_css('#pbCitationDetails', text: "Citation details verified\n- Done")
+    expect(page).to have_css('#pbAbstractProvided', text: "Abstract provided\n- Done")
+    expect(page).to have_css('#pbFormatReviewed', text: "Format reviewed\n- Done")
+    expect(page).to have_css('#pbDissertationUploaded', text: "Dissertation uploaded\n- Done")
+    expect(page).to have_css('#pbSupplementalFilesUploaded', text: "Supplemental files uploaded\n- Done")
+    expect(page).to have_css('#pbPermissionsProvided', text: "Copyrighted material checked\n- Done")
+    expect(page).to have_css('#pbPermissionFilesUploaded', text: "Permission files uploaded\n- Done")
+    expect(page).to have_css('#pbRightsSelected', text: "License terms applied\n- Done")
 
     # fake reader approval
     reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
@@ -200,7 +200,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
     expect(registrar_progress_list_el).to have_text("Approved by Registrar\n- Done")
 
-    expect(page).to have_selector('#submissionApproved', text: 'Submission approved')
+    expect(page).to have_css('#submissionApproved', text: 'Submission approved')
 
     # check Argo for object (wait for embargo info) and ensure authenticated in Argo
     authenticate!(start_url: "#{Settings.argo_url}/view/#{prefixed_druid}",
