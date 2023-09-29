@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create an item object without any files' do
+RSpec.describe 'Use Argo to create an item object without any files and no collection' do
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -16,7 +16,7 @@ RSpec.describe 'Use Argo to create an item object without any files' do
   scenario do
     # fill in registration form
     select 'integration-testing', from: 'Admin Policy'
-    select 'integration-testing', from: 'Collection'
+    # Leaving collection unselected
     select 'book', from: 'Content Type'
     fill_in 'Tag', with: user_tag
     fill_in 'Project Name', with: project
@@ -49,6 +49,9 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     expect(page).to have_text("Project : #{project}")
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
+    # check no collection
+    expect(page).to have_text('None selected')
+
     # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v1 Accessioned',
                                                   workflow: 'accessionWF',
@@ -64,6 +67,15 @@ RSpec.describe 'Use Argo to create an item object without any files' do
     end
     # look for version text in History section
     expect(page).to have_text('opening version for integration testing')
+
+    # Change collection
+    click_link 'Edit collections'
+    within '.modal-dialog' do
+      select 'integration-testing', from: 'collection'
+      click_button 'Add Collection'
+      click_button 'Cancel'
+    end
+    expect(page).to have_text('integration-testing')
 
     # close version
     click_link 'Close Version'
