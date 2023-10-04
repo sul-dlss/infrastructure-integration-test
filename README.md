@@ -80,11 +80,32 @@ Some integration tests use the `dor-services-client` to interact with the `dor-s
 
 ### Set ETD Credentials
 
-In order to run `spec/features/etd_creation_spec.rb`, you need the ETD application's backdoor username and password for HTTP POST requests.  You'll need to get these values from the `sul-hydra-etd-stage` and `sul-hydra-etd-qa` branches of sul-dlss/shared_configs, and add them to `config/settings/stage.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/etd_creation_spec.rb`, you need the ETD application's backdoor username and password for HTTP POST requests. You can get these from [Vault](https://consul.stanford.edu/display/systeam/Vault+for+Developers):
+
+```shell
+vault kv get puppet/application/hydra_etd/qa/username
+vault kv get puppet/application/hydra_etd/qa/password
+```
+
+or
+
+```shell
+vault kv get puppet/application/hydra_etd/stage/username
+vault kv get puppet/application/hydra_etd/stage/password
+```
+
+Add them to `config/settings/stage.local.yml` and `config/settings/qa.local.yml` respectively.  See `config/settings.yml` for the expected YAML syntax.
 
 ### Set Goobi Credentials
 
-In order to run `spec/features/goobi_accessioning_spec.rb`, you need the Goobi application's integration username and password to login to the UI. Get these values from https://github.com/sul-dlss/shared_configs/tree/infrastructure-team-secrets, and add them to `config/settings/stage.local.yml`.  Note that this test cannot be run in QA (since there is no Goobi QA), so this config is relevant only to stage. See `config/settings.yml` for the expected YAML syntax.
+In order to run `spec/features/goobi_accessioning_spec.rb`, you need the Goobi application's integration username and password to login to the UI. Get these values from [Vault](https://consul.stanford.edu/display/systeam/Vault+for+Developers) and add them to `config/settings/stage.local.yml`.
+
+```shell
+vault kv get puppet/application/goobi/stage/username
+vault kv get puppet/application/goobi/stage/password
+```
+
+This test cannot be run in QA, since there is no Goobi QA. So this configuration is only relevant for stage. See `config/settings.yml` for the expected YAML syntax.
 
 ### Problems with Authentication?
 
