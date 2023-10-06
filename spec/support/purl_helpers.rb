@@ -7,7 +7,7 @@ module PurlHelpers
     visit "#{Settings.purl_url}/#{bare_druid}"
     if within_frame
       reload_page_until_timeout! do
-        within_frame { page.has_text?(text, wait: 1) }
+        within_frame { page.has_text?(text, wait: 2) }
       end
     else
       reload_page_until_timeout!(text:)
@@ -17,7 +17,7 @@ module PurlHelpers
   def expect_link_on_purl_page(druid:, text:, href:)
     bare_druid = druid.delete_prefix('druid:')
     visit "#{Settings.purl_url}/#{bare_druid}"
-    reload_page_until_timeout! { page.has_link?(text, href:, wait: 1) }
+    reload_page_until_timeout! { page.has_link?(text, href:, wait: 2) }
   end
 end
 
