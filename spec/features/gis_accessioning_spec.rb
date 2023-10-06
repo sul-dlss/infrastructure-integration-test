@@ -36,6 +36,8 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     druid = "druid:#{bare_object_druid}"
 
     # Go to kurma server and copy test content to the druid folder so it can be accessioned
+    # Should this test data be deleted from the server,
+    # a zipped copy is available at spec/fixtures/gis_integration_test_data.zip
     test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data')
     test_data_destination_folder = File.join(Settings.gis.robots_content_root, bare_object_druid, 'temp')
     copy_command = "ssh #{Settings.gis.username}@#{Settings.gis.robots_host} " \
