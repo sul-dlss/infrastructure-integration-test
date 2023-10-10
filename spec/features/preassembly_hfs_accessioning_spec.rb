@@ -157,11 +157,8 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect_text_on_purl_page(druid:, text: collection_name)
 
     # verify the cocina json has the filenames with paths
-    cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{druid.delete_prefix('druid:')}.json").body)
-    expect(cocina_json['structural']['contains'].size).to eq 5 #  5 resources are shelved
-    filenames = cocina_json['structural']['contains'].map { |node| node['structural']['contains'].first['filename'] }
-    expect(filenames).to eq ['README.md', 'config/settings.yml', 'config/settings/qa.yml',
-                             'config/settings/settings.yml', 'config/settings/staging.yml']
+    expect_published_files(druid:, filenames: ['README.md', 'config/settings.yml', 'config/settings/qa.yml',
+                                               'config/settings/settings.yml', 'config/settings/staging.yml'])
 
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and

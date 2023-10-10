@@ -9,25 +9,30 @@ RSpec.describe 'SDR deposit' do
     authenticate!(start_url:, expected_text: 'Welcome to Argo!')
   end
 
+  after do
+    clear_downloads
+  end
+
   it 'deposits objects' do
     ensure_token
-    object_druid = deposit(apo: Settings.default_apo,
-                           collection: Settings.default_collection,
-                           type: Cocina::Models::ObjectType.object,
-                           url: Settings.sdrapi_url,
-                           source_id:,
-                           folio_instance_hrid:,
-                           accession: true,
-                           view: 'world',
-                           files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
-                           files_metadata: {
-                             'Gemfile' => { 'preserve' => true },
-                             'Gemfile.lock' => { 'preserve' => true },
-                             'config/settings.yml' => { 'preserve' => true }
-                           })
-    puts " *** sdr deposit druid: #{object_druid} ***" # useful for debugging
+    druid = deposit(apo: Settings.default_apo,
+                    collection: Settings.default_collection,
+                    type: Cocina::Models::ObjectType.object,
+                    url: Settings.sdrapi_url,
+                    source_id:,
+                    folio_instance_hrid:,
+                    accession: true,
+                    view: 'world',
+                    download: 'world',
+                    files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
+                    files_metadata: {
+                      'Gemfile' => { 'preserve' => true, 'shelve' => false, 'publish' => false },
+                      'Gemfile.lock' => { 'preserve' => false, 'shelve' => true, 'publish' => true },
+                      'config/settings.yml' => { 'preserve' => true }
+                    })
+    puts " *** sdr deposit druid: #{druid} ***" # useful for debugging
 
-    visit "#{start_url}/view/#{object_druid}"
+    visit "#{start_url}/view/#{druid}"
 
     # Wait for indexing and workflows to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')
@@ -45,7 +50,66 @@ RSpec.describe 'SDR deposit' do
 
     within('#document-techmd-section') do
       file_listing = find_all('.file')
-      expect(file_listing.size).to eq 3
+      # Only preserved files get techmd
+      expect(file_listing.size).to eq 2
     end
+
+    # Wait for accessioningWF to finish
+    reload_page_until_timeout!(text: 'v1 Accessioned')
+
+    # Download Gemfile (preserved=true) from Preservation
+    click_link 'Gemfile'
+    expect(page).to have_text 'Preservation:'
+    gemfile_pres_link = find('.modal-content a')
+    gemfile_pres_url = gemfile_pres_link['href']
+    expect(gemfile_pres_url.end_with?("/items/#{druid}/files/Gemfile/preserved?version=1")).to be true
+
+    click_link gemfile_pres_link.text
+    wait_for_download
+
+    click_button 'Cancel'
+
+    # Download Gemfile.lock (shelve=true) from Stacks
+    click_link 'Gemfile.lock'
+    expect(page).to have_text 'Stacks:'
+    gemfile_lock_stacks_link = find('.modal-content a')
+    gemfile_lock_stacks_url = gemfile_lock_stacks_link['href']
+    expect(gemfile_lock_stacks_url.end_with?("/file/#{druid}/Gemfile.lock")).to be true
+
+    click_link gemfile_lock_stacks_link.text
+    wait_for_download
+
+    click_button 'Cancel'
+
+    clear_downloads
+
+    # Try to download Gemfile.lock (preserve=false) from Preservation
+    click_link 'Gemfile'
+    expect(page).to have_text 'Preservation:'
+    # Visit doesn't work here, so https://tenor.com/view/sneaky-sis-connect-four-commercial-hero-gif-12265444
+    page.execute_script "document.querySelector('.modal-content a').href = '#{gemfile_pres_url.sub('Gemfile',
+                                                                                                   'Gemfile.lock')}'"
+    gemfile_pres_link = find('.modal-content a')
+    expect(gemfile_pres_link['href'].end_with?("/items/#{druid}/files/Gemfile.lock/preserved?version=1")).to be true
+
+    click_link gemfile_pres_link.text
+    # This file is downloaded, but contain a 404 error message. (This is just how Argo currently operates.)
+    expect(download_content).to include '404 Not Found'
+
+    click_button 'Cancel'
+
+    # Try to download Gemfile (shelve=false) from Stacks
+    click_link 'Gemfile.lock'
+    expect(page).to have_text 'Stacks:'
+    page.execute_script "document.querySelector('.modal-content a').href = " \
+                        "'#{gemfile_lock_stacks_url.delete_suffix('.lock')}'"
+    gemfile_stacks_link = find('.modal-content a')
+    expect(gemfile_stacks_link['href'].end_with?("/file/#{druid}/Gemfile")).to be true
+
+    click_link gemfile_stacks_link.text
+    expect(page).to have_text 'File not found'
+
+    # Check publishing
+    expect_published_files(druid:, filenames: ['Gemfile.lock', 'config/settings.yml'])
   end
 end
