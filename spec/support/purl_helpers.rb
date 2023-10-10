@@ -19,6 +19,12 @@ module PurlHelpers
     visit "#{Settings.purl_url}/#{bare_druid}"
     reload_page_until_timeout! { page.has_link?(text, href:, wait: 2) }
   end
+
+  def expect_published_files(druid:, filenames:)
+    cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{druid.delete_prefix('druid:')}.json").body)
+    check_filenames = cocina_json['structural']['contains'].map { |node| node['structural']['contains'].first['filename'] }
+    expect(check_filenames).to eq filenames
+  end
 end
 
 RSpec.configure { |config| config.include PurlHelpers }
