@@ -15,7 +15,7 @@ GEM
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     attr_extras (7.1.0)
-    base64 (0.1.1)
+    base64 (0.2.0)
     bigdecimal (3.1.4)
     byebug (11.1.3)
     capybara (3.39.2)
@@ -31,7 +31,7 @@ GEM
       capybara (>= 3.31)
       terminal-table
       xpath (>= 2.1)
-    cocina-models (0.92.0)
+    cocina-models (0.93.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -58,14 +58,14 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.5.0)
-    dor-services-client (13.2.0)
+    dor-services-client (13.3.0)
       activesupport (>= 4.2, < 8)
-      cocina-models (~> 0.92.0)
+      cocina-models (~> 0.93.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry
       zeitwerk (~> 2.1)
-    drb (2.1.1)
+    drb (2.2.0)
       ruby2_keywords
     druid-tools (3.0.0)
     dry-configurable (1.1.0)
@@ -137,7 +137,7 @@ GEM
     mini_portile2 (2.8.5)
     minitest (5.20.0)
     multi_json (1.15.0)
-    mutex_m (0.1.2)
+    mutex_m (0.2.0)
     nokogiri (1.15.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -214,9 +214,9 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
     rubyzip (2.3.2)
-    sdr-client (2.7.0)
+    sdr-client (2.8.0)
       activesupport
-      cocina-models (~> 0.92.0)
+      cocina-models (~> 0.93.0)
       config
       dry-monads
       faraday (>= 0.16)
