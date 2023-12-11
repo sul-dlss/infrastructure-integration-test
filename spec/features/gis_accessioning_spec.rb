@@ -102,7 +102,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
 
     # This section confirms the object has been published to PURL
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
-    # expect_text_on_purl_page(druid:, text: collection_name) # TODO: PURL bug: re-design doesn't show ureleased collection
+    expect_text_on_purl_page(druid:, text: collection_name)
     expect_link_on_purl_page(druid:,
                              text: 'View in EarthWorks',
                              href: "https://earthworks.stanford.edu/catalog/stanford-#{bare_object_druid}")

@@ -102,7 +102,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     # This section confirms the object has been published to PURL and has a
     # valid IIIF manifest
     # wait for the PURL name to be published by checking for collection name
-    # expect_text_on_purl_page(druid:, text: collection_name) # TODO: PURL bug: re-design doesn't show ureleased collection
+    expect_text_on_purl_page(druid:, text: collection_name)
     expect_text_on_purl_page(druid:, text: 'This work is licensed under an Apache License 2.0')
     expect_text_on_purl_page(druid:, text: object_label)
     expect_link_on_purl_page(druid:,

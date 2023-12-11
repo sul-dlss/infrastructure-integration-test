@@ -154,7 +154,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
     # This section confirms the object has been published to PURL and has filenames in the json
-    # expect_text_on_purl_page(druid:, text: collection_name) # TODO: PURL bug: re-design doesn't show ureleased collection
+    expect_text_on_purl_page(druid:, text: collection_name)
     expect_text_on_purl_page(druid:, text: object_label)
 
     # verify the cocina json has the filenames with paths
