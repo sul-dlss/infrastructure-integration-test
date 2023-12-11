@@ -53,6 +53,15 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     select 'gisAssemblyWF', from: 'wf'
     click_button 'Add'
     expect(page).to have_text('Added gisAssemblyWF')
+    # wait for gisAssemblyWF to finish; retry if extract-boundingbox fails in a known/retriable way
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: nil,
+                                                  workflow: 'gisAssemblyWF',
+                                                  workflow_retry_text: 'Error: extract-boundingbox',
+                                                  retry_wait: 5) do |page|
+      click_link 'Reindex'
+      sleep 5
+      !page.has_text?('Error: extract-boundingbox')
+    end
     # verify the workflow completes
     reload_page_until_timeout! do
       page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
@@ -94,6 +103,11 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # This section confirms the object has been published to PURL
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
     expect_text_on_purl_page(druid:, text: collection_name)
+    expect_link_on_purl_page(druid:,
+                             text: 'View in EarthWorks',
+                             href: "https://earthworks.stanford.edu/catalog/stanford-#{bare_object_druid}")
+    expect_text_on_purl_page(druid:, text: 'This point shapefile represents all air monitoring stations active in ' \
+                                           'California from 2001 until 2003')
     expect(page).not_to have_text(object_label) # the original object label has been replaced
     expect(page).to have_text('Air Monitoring Stations: California, 2001-2003') # with the new object label
     expect(page).to have_text('cartographic') # type of resource

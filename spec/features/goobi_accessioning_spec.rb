@@ -103,6 +103,11 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     # valid IIIF manifest
     # wait for the PURL name to be published by checking for collection name
     expect_text_on_purl_page(druid:, text: collection_name)
+    expect_text_on_purl_page(druid:, text: 'This work is licensed under an Apache License 2.0')
+    expect_text_on_purl_page(druid:, text: object_label)
+    expect_link_on_purl_page(druid:,
+                             text: 'View in SearchWorks',
+                             href: "https://searchworks.stanford.edu/view/#{bare_object_druid}")
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
     canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')

@@ -24,7 +24,7 @@ module DepositHelpers
   end
 
   # rubocop:disable Metrics/MethodLength
-  def deposit_object(filenames: [], **)
+  def deposit_object(filenames: [], label: nil, **)
     files_metadata = {}
     grouping_strategy = SdrClient::Deposit::SingleFileGroupingStrategy
     if filenames.any?
@@ -43,7 +43,7 @@ module DepositHelpers
                            source_id: "virtual-object-test:#{SecureRandom.uuid}",
                            accession: true,
                            view: 'world',
-                           label: random_phrase,
+                           label: label || random_phrase,
                            grouping_strategy:,
                            file_set_type_strategy:,
                            files: filenames,

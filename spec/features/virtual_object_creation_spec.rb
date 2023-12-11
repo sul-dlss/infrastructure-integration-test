@@ -15,7 +15,8 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     ensure_token
 
     # Create virtual object
-    virtual_object_druid = deposit_object(viewing_direction: 'left-to-right')
+    virtual_object_label = random_phrase
+    virtual_object_druid = deposit_object(label: virtual_object_label, viewing_direction: 'left-to-right')
     puts " *** virtual object druid: #{virtual_object_druid} ***" # useful for debugging
 
     # Create constituent objects
@@ -77,9 +78,10 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
 
     # Verify that the purl page of each constituent druid points at the "parent" virtual object purl
     constituent_druids.each do |constituent_druid|
-      expect_text_on_purl_page(
+      expect_link_on_purl_page(
         druid: constituent_druid,
-        text: "#{Settings.purl_url}/#{virtual_object_druid.delete_prefix('druid:')}"
+        href: "#{Settings.purl_url}/#{virtual_object_druid.delete_prefix('druid:')}",
+        text: virtual_object_label
       )
     end
   end

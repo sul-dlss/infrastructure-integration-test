@@ -155,6 +155,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     # This section confirms the object has been published to PURL and has filenames in the json
     expect_text_on_purl_page(druid:, text: collection_name)
+    expect_text_on_purl_page(druid:, text: object_label)
 
     # verify the cocina json has the filenames with paths
     expect_published_files(druid:, filenames: ['README.md', 'config/settings.yml', 'config/settings/qa.yml',
