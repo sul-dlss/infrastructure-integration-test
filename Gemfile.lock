@@ -251,6 +251,7 @@ DEPENDENCIES
   druid-tools
   faker
   faraday
+  parallel
   pry-byebug
   rake
   rspec
