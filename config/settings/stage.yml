@@ -14,3 +14,14 @@ was_registrar:
   jobs_directory: '/was_unaccessioned_data/jobs'
   url: 'https://was-registrar-app-stage.stanford.edu'
   username: 'was'
+
+load_test:
+  streaming_video:
+    druids: # these should be bare druids, i.e. no druid prefix
+      # - db246zg5803
+      - qc898xy1175
+      - qb933xv2993
+      - pf759xf5671
+      # - cm856pm4228
+    multiplier: 2
+    watch_time: 60

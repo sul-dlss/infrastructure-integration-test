@@ -4,6 +4,7 @@ require 'byebug'
 require 'config'
 require 'faker'
 require 'io/console'
+require 'parallel'
 require 'pry-byebug'
 require 'rubyXL'
 require 'sdr_client'
@@ -35,6 +36,8 @@ Dir[root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.include Capybara::DSL # required without `type: :feature` spec metadata, which RSpec infers
+
+  config.filter_run_excluding(:load_test) # don't run load tests by default (run with '--tag load_test' arg to override)
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
