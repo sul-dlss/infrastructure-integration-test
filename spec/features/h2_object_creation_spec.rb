@@ -11,10 +11,10 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
-    click_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
+    click_link_or_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
 
     # CREATE COLLECTION
-    click_link '+ Create a new collection'
+    click_link_or_button '+ Create a new collection'
     # Checks for specific content in create collection view
     expect(page).to have_text('Manage release of deposits for discovery and download')
 
@@ -30,38 +30,38 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     select 'CC0-1.0', from: 'collection_required_license'
 
     # Adds user to depositor field
-    click_button '+ Add another depositor'
+    click_link_or_button '+ Add another depositor'
     fill_in 'lookup SunetID', with: AuthenticationHelpers.username
     within '.participant-overlay' do
-      click_button 'Add'
+      click_link_or_button 'Add'
     end
 
-    click_button 'Deposit'
+    click_link_or_button 'Deposit'
     expect(page).to have_text(collection_title)
     expect(page).to have_text('+ Deposit to this collection')
 
     collection_id = page.current_url.split('/').last
 
     # RESERVE A PURL
-    click_link 'Dashboard'
+    click_link_or_button 'Dashboard'
     within "#summary_collection_#{collection_id}" do
-      click_button 'Reserve a PURL'
+      click_link_or_button 'Reserve a PURL'
     end
     within '#purlReservationModal' do
       fill_in 'Enter a title for this deposit', with: item_title
-      click_button 'Submit'
+      click_link_or_button 'Submit'
     end
     expect(page).to have_text(item_title)
     expect(page).to have_text('PURL Reserved') # async - it might take a bit
 
     # EDIT THE ITEM
-    click_link "Choose Type and Edit #{item_title}"
+    click_link_or_button "Choose Type and Edit #{item_title}"
 
     # Selects image type
     find('label', text: 'Image').click
 
     # Route to work deposit view
-    click_button 'Continue'
+    click_link_or_button 'Continue'
 
     # Work Deposit view
     attach_file('spec/fixtures/sul-logo.png') do
@@ -82,8 +82,8 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     find_button('Deposit').click
 
     expect(page).to have_text 'You have successfully deposited your work'
-    click_link 'Return to dashboard'
-    click_link item_title
+    click_link_or_button 'Return to dashboard'
+    click_link_or_button item_title
 
     # Checks if title is on resulting display
     expect(page).to have_text(item_title)
@@ -94,7 +94,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     # Click on link with the item's title in the search results
     within '.document-title-heading' do
-      click_link
+      click_link_or_button
     end
     sleep 1 # sometimes the current_url is not updated quickly enough
     bare_druid = page.current_url.split('druid:').last
@@ -107,10 +107,10 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # create a new version
     visit "#{Settings.h2_url}/dashboard"
-    click_link "Edit #{item_title}"
+    click_link_or_button "Edit #{item_title}"
     fill_in 'What\'s changing?', with: 'abstract'
     fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
-    click_button 'Deposit'
+    click_link_or_button 'Deposit'
 
     expect(page).to have_text 'You have successfully deposited your work'
 
@@ -125,14 +125,14 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # check Argo facet field with 6 month embargo
     visit Settings.argo_url
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
-    click_button('Embargo Release Date')
+    click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
-      expect(page).not_to have_text('up to 7 days', wait: 0)
+      expect(page).to have_no_text('up to 7 days', wait: 0)
     end
 
     # Click on link with the item's title in the search results
     within '.document-title-heading' do
-      click_link
+      click_link_or_button
     end
     # check embargo date
     embargo_date = DateTime.now.getutc.to_date >> 6
@@ -149,32 +149,32 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{bare_druid}"
     # open a new version so we can manage embargo
-    click_link 'Unlock to make changes to this object'
+    click_link_or_button 'Unlock to make changes to this object'
     within '.modal-dialog' do
       select 'Admin', from: 'Type'
       fill_in 'Version description', with: 'opening version for integration testing'
-      click_button 'Open Version'
+      click_link_or_button 'Open Version'
     end
-    click_link 'Manage embargo'
+    click_link_or_button 'Manage embargo'
     within '#modal-frame' do
       fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
-      click_button 'Save'
+      click_link_or_button 'Save'
     end
     reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}")
 
     # check Argo facet field with 3 day embargo
     fill_in 'Search...', with: bare_druid
-    click_button 'Search'
+    click_link_or_button 'Search'
     reload_page_until_timeout!(text: 'Embargo Release Date')
-    click_button('Embargo Release Date')
+    click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       find_link('up to 7 days')
     end
 
     # republish the item to purl
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    click_button 'Manage PURL'
-    click_link 'Publish'
+    click_link_or_button 'Manage PURL'
+    click_link_or_button 'Publish'
 
     # check purl page for 3 day embargo
     expect_text_on_purl_page(

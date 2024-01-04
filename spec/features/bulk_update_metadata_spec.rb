@@ -17,18 +17,18 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
 
     visit "#{Settings.argo_url}/view/#{Settings.default_apo}"
     # Open the MODS bulk jobs
-    click_link 'Upload MODS'
+    click_link_or_button 'Upload MODS'
     expect(page).to have_text 'Spreadsheet bulk upload for APO'
 
     # Open the Submit new file modal
-    click_link 'Submit new file ...'
+    click_link_or_button 'Submit new file ...'
     expect(page).to have_text 'Submit MODS descriptive metadata for bulk processing'
 
     # Attach spreadsheet fixture, select spreadsheet input, and add note
     attach_file('Select', temp_xlsx.path)
     choose 'Spreadsheet input; load into objects'
     fill_in '3. Note', with: note
-    click_button 'Submit'
+    click_link_or_button 'Submit'
     expect(page).to have_text('Bulk processing started')
 
     reload_page_until_timeout!(text: note)
@@ -39,7 +39,7 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
     tds[9].find('form > button').click
     # Confirm delete in the popup
     within('#confirm-delete-modal') do
-      click_button 'Delete' # '#bulk-delete-confirm'
+      click_link_or_button 'Delete' # '#bulk-delete-confirm'
     end
     expect(page).to have_text "Bulk job for APO (#{Settings.default_apo}) deleted."
 

@@ -25,7 +25,7 @@ module AuthenticationHelpers
   def ensure_token
     self.token ||= begin
       visit "#{Settings.argo_url}/settings/tokens"
-      click_button 'Generate new token'
+      click_link_or_button 'Generate new token'
       find_field('Token').value.tap do |token|
         SdrClient::Credentials.write(token)
       end
@@ -76,13 +76,13 @@ module AuthenticationHelpers
     ensure_password!
     fill_in 'SUNet ID', with: username
     fill_in 'Password', with: password
-    click_button 'Login'
+    click_link_or_button 'Login'
   end
 
   def click_through_check_if_needed(text)
     return unless page.has_text?(text, wait: Settings.timeouts.post_authentication_text)
 
-    click_button text
+    click_link_or_button text
   end
 end
 

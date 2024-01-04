@@ -98,7 +98,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     expect(page).not_to have_a_complete_step('#pbAbstractProvided')
     fill_in 'Enter your abstract in plain text (no HTML or special formatting, such as bullets or indentation).',
             with: abstract_text
-    click_button 'Save'
+    click_link_or_button 'Save'
     expect(page).to have_a_complete_step('#pbAbstractProvided')
 
     # confirm format has been reviewed
@@ -108,7 +108,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     expect(page).to have_a_complete_step('#pbFormatReviewed')
 
     # upload dissertation PDF
-    expect(page).not_to have_text(dissertation_filename, wait: 1)
+    expect(page).to have_no_text(dissertation_filename, wait: 1)
     expect(page).to have_css('#pbDissertationUploaded', text: "Dissertation uploaded\n- Not done")
     expect(page).not_to have_a_complete_step('#pbDissertationUploaded')
     attach_file('primaryUpload', "spec/fixtures/#{dissertation_filename}", make_visible: true)
@@ -116,7 +116,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     expect(page).to have_a_complete_step('#pbDissertationUploaded')
 
     # upload supplemental file
-    expect(page).not_to have_text(supplemental_filename, wait: 1)
+    expect(page).to have_no_text(supplemental_filename, wait: 1)
     expect(page).to have_css('#pbSupplementalFilesUploaded', visible: :hidden)
     check('My dissertation includes supplemental files.')
     attach_file('supplementalUpload_1', "spec/fixtures/#{supplemental_filename}", make_visible: true)
@@ -130,7 +130,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     select 'Yes', from: "My #{dissertation_type.downcase} contains copyright material"
 
     # provide copyright permissions letters/files
-    expect(page).not_to have_text(permissions_filename, wait: 1)
+    expect(page).to have_no_text(permissions_filename, wait: 1)
     expect(page).to have_css('#pbPermissionFilesUploaded', visible: :hidden)
     attach_file('permissionUpload_1', "spec/fixtures/#{permissions_filename}", make_visible: true)
     expect(page).to have_text(permissions_filename)
@@ -142,28 +142,28 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     # apply licenses
     expect(page).to have_css('#pbRightsSelected', text: "License terms applied\n- Not done")
     expect(page.find_by_id('pbRightsSelected')['style']).to eq '' # rights not applied yet
-    click_link 'View Stanford University publication license'
+    click_link_or_button 'View Stanford University publication license'
     check 'I have read and agree to the terms of the Stanford University license.'
     within('#lb_stanfordLicense') do
-      click_button 'Close'
+      click_link_or_button 'Close'
     end
-    click_link 'View Creative Commons licenses'
+    click_link_or_button 'View Creative Commons licenses'
     within('#lb_licenseCC') do
       select 'CC Attribution license', from: 'selectCCLicenseOptions'
-      click_button 'Close'
+      click_link_or_button 'Close'
     end
 
     # set embargo
-    click_link 'Postpone release'
+    click_link_or_button 'Postpone release'
     within('#lb_embargo') do
       select '6 months', from: 'selectReleaseDelayOptions'
-      click_button 'Close'
+      click_link_or_button 'Close'
     end
 
     expect(page).to have_a_complete_step('#pbRightsSelected')
 
     accept_alert do
-      click_button 'Submit to Registrar'
+      click_link_or_button 'Submit to Registrar'
     end
     expect(page).to have_css('#submissionSuccessful', text: 'Submission successful')
     expect(page).to have_css('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
@@ -220,7 +220,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     Timeout.timeout(Settings.timeouts.workflow) do
       workflow_done = false # a "break" statement inside the "within" block does not break out of the loop
       loop do
-        click_link('etdSubmitWF')
+        click_link_or_button('etdSubmitWF')
         within('.modal-dialog') do
           workflow_done = true if page.has_text?(/register-object\s+completed/) &&
                                   page.has_text?(/submit\s+completed/) &&
@@ -235,7 +235,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
           #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
           #   to make sense here.
 
-          page.send_keys(:escape) # close modal; click_button('Cancel') and other approaches didn't work
+          page.send_keys(:escape) # close modal; click_link_or_button('Cancel') and other approaches didn't work
         end
 
         break if workflow_done # get out of loop within Timeout block
@@ -245,26 +245,26 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
     fill_in 'Search...', with: prefixed_druid
-    click_button 'Search'
-    click_button('Embargo Release Date')
+    click_link_or_button 'Search'
+    click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
-      expect(page).not_to have_text('up to 7 days', wait: 1)
+      expect(page).to have_no_text('up to 7 days', wait: 1)
     end
 
     # Manage embargo
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    click_link 'Manage embargo'
+    click_link_or_button 'Manage embargo'
     fill_in('Enter the date when this embargo ends', with: new_embargo_date.strftime('%F'))
-    click_button 'Save'
+    click_link_or_button 'Save'
 
     page.refresh # solves problem of update embargo modal re-appearing
     reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}")
 
     # check Argo facet field with 3 day embargo
     fill_in 'Search...', with: prefixed_druid
-    click_button 'Search'
-    click_button('Embargo Release Date')
+    click_link_or_button 'Search'
+    click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       find_link('up to 7 days')
     end

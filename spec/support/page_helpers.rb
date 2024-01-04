@@ -8,7 +8,7 @@ module PageHelpers
 
         # Check for workflow errors and bail out early. There is no recovering
         # from a workflow error. This selector is found on the Argo item page.
-        expect(page).not_to have_css('.alert-danger', wait: 0)
+        expect(page).to have_no_css('.alert-danger', wait: 0)
 
         page.refresh
       end
@@ -30,12 +30,12 @@ module PageHelpers
         break if block_given? ? yield(page) : page.has_text?(expected_text, wait: 1)
 
         if page.has_css?('.alert-danger', wait: 0) && page.has_text?(workflow_retry_text)
-          click_link workflow
+          click_link_or_button workflow
           select 'Rerun', from: 'status'
           confirm_message = 'You have selected to manually change the status. '
           confirm_message += 'This could result in processing errors. Are you sure you want to proceed?'
           accept_confirm(confirm_message) do
-            click_button 'Save'
+            click_link_or_button 'Save'
           end
           sleep retry_wait
         end

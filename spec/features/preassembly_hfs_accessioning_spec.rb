@@ -42,7 +42,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
@@ -66,7 +66,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     select 'File', from: 'Content structure'
     fill_in 'Staging location', with: preassembly_hfs_bundle_dir
 
-    click_button 'Submit'
+    click_link_or_button 'Submit'
     expect(page).to have_content 'Success! Your job is queued. ' \
                                  'A link to job output will be emailed to you upon completion.'
 
@@ -79,7 +79,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
       page.has_link?('Download', wait: 1)
     end
 
-    click_link 'Download'
+    click_link_or_button 'Download'
     wait_for_download
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
@@ -125,7 +125,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     select 'File', from: 'Content structure'
     select 'Default', from: 'Processing configuration'
 
-    click_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_content 'Success! Your job is queued. ' \
                                  'A link to job output will be emailed to you upon completion.'
@@ -136,7 +136,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
       page.has_link?('Download', wait: 1)
     end
 
-    click_link 'Download'
+    click_link_or_button 'Download'
 
     wait_for_download
 
@@ -172,7 +172,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     latest_s3_key = "#{druid_tree_str}.v000#{latest_version}.zip"
     reload_page_until_timeout! do
-      click_button 'Events' # expand the Events section
+      click_link_or_button 'Events' # expand the Events section
 
       # this is a hack that forces the event section to scroll into view; the section
       # is lazily loaded, and won't actually be requested otherwise, even if the button

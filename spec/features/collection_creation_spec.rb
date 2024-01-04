@@ -11,10 +11,10 @@ RSpec.describe 'Use Argo to create a collection' do
   end
 
   scenario do
-    click_link 'Create Collection'
+    click_link_or_button 'Create Collection'
     fill_in 'Collection Title', with: collection_title
     fill_in 'Collection Abstract', with: collection_abstract
-    click_button 'Register Collection'
+    click_link_or_button 'Register Collection'
 
     expect(page).to have_text 'Created collection'
 

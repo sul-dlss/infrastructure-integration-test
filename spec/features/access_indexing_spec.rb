@@ -21,7 +21,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
@@ -73,8 +73,8 @@ end
 
 def find_access_rights_single_facet_value(druid, facet_value)
   fill_in 'Search...', with: druid
-  click_button 'Search'
-  click_button('Access Rights')
+  click_link_or_button 'Search'
+  click_link_or_button('Access Rights')
 
   within '#facet-rights_descriptions_ssim ul.facet-values' do
     within 'li' do
@@ -87,16 +87,16 @@ end
 def choose_rights(view:, download: nil, location: nil, cdl: false)
   # go to record view
   within '.index_title' do
-    click_link
+    click_link_or_button
   end
 
-  click_link 'Edit rights'
+  click_link_or_button 'Edit rights'
   within '#access-rights' do
     select view, from: 'item_view_access'
     select download, from: 'item_download_access' if download
     select location, from: 'item_access_location' if location
     select 'Yes', from: 'Controlled digital lending' if cdl
-    click_button 'Save'
+    click_link_or_button 'Save'
   end
 
   # It takes a few milliseconds for the rights update to take

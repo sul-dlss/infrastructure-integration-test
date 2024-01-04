@@ -13,10 +13,10 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
-    click_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
+    click_link_or_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
 
     # CREATE COLLECTION
-    click_link '+ Create a new collection'
+    click_link_or_button '+ Create a new collection'
     # Checks for specific content in create collection view
     expect(page).to have_text('Manage release of deposits for discovery and download')
 
@@ -28,23 +28,23 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # Select license
     select 'CC0-1.0', from: 'collection_required_license'
 
-    click_button 'Deposit'
+    click_link_or_button 'Deposit'
     expect(page).to have_text(collection_title)
     expect(page).to have_text('+ Deposit to this collection')
 
     collection_id = page.current_url.split('/').last
 
     # CREATE THE ITEM
-    click_link 'Dashboard'
+    click_link_or_button 'Dashboard'
     within "#summary_collection_#{collection_id}" do
-      click_button '+ Deposit to this collection'
+      click_link_or_button '+ Deposit to this collection'
     end
 
     # Selects image type
     find('label', text: 'Image').click
 
     # Route to work deposit view
-    click_button 'Continue'
+    click_link_or_button 'Continue'
 
     # Work Deposit view
     find_by_id('work_upload_type_globus').click
@@ -62,13 +62,13 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # Mark globus upload as complete
     find_button('Save as draft').click
     expect(page).to have_text('Draft - Not deposited')
-    click_link 'Edit or Deposit'
+    click_link_or_button 'Edit or Deposit'
     check('Check this box once all your files have completed uploading to Globus.')
-    click_button 'Deposit'
+    click_link_or_button 'Deposit'
 
     expect(page).to have_text 'You have successfully deposited your work'
-    click_link 'Return to dashboard'
-    click_link item_title
+    click_link_or_button 'Return to dashboard'
+    click_link_or_button item_title
 
     # Checks if title is on resulting display
     expect(page).to have_text(item_title)
@@ -79,7 +79,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     find_field('Search...').send_keys("\"#{item_title}\"", :enter)
     # Click on link with the item's title in the search results
     within '.document-title-heading' do
-      click_link
+      click_link_or_button
     end
     bare_druid = page.current_url.split(':').last
     puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging

@@ -43,7 +43,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     fill_in 'Job directory', with: job_specific_directory
     fill_in 'Collection Druid', with: Settings.default_collection
     fill_in 'Source ID', with: source_id
-    click_button 'Create Registration job'
+    click_link_or_button 'Create Registration job'
 
     expect(page).to have_text('Queueing one-time registration.')
 
@@ -81,7 +81,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     fill_in 'Source ID', with: "seed-#{source_id}"
     fill_in 'Label', with: url_in_wayback
     fill_in 'Tags', with: 'webarchive : seed'
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     expect(page).to have_text 'Items successfully registered.'
 
