@@ -29,7 +29,7 @@ RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
     fill_in 'Folio Instance HRID', with: folio_instance_hrid
     fill_in 'Label', with: object_label # will be overwritten and checked below
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
@@ -51,20 +51,20 @@ RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
     # edit folio_instance_hrid
-    click_link 'Manage Folio Instance HRID'
+    click_link_or_button 'Manage Folio Instance HRID'
     fill_in 'catalog_record_id_catalog_record_ids_attributes_0_value', with: folio_instance_hrid_updated
-    click_button 'Update'
+    click_link_or_button 'Update'
 
     # look for updated hrid and refresh metadata
     expect(page).to have_text(folio_instance_hrid_updated)
-    click_button 'Manage description'
-    click_link 'Refresh'
+    click_link_or_button 'Manage description'
+    click_link_or_button 'Refresh'
     reload_page_until_timeout!(text: catalog_object_label_updated) # updated label pulled from folio for new HRID
 
     # look for metadata source facet having an entry of Folio for this druid
     fill_in 'Search...', with: object_druid
-    click_button 'Search'
-    click_button 'Metadata Source'
+    click_link_or_button 'Search'
+    click_link_or_button 'Metadata Source'
     within '#facet-metadata_source_ssim ul.facet-values' do
       within 'li' do
         find_link('Folio')

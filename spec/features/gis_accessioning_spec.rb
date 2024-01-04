@@ -26,7 +26,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
@@ -49,16 +49,16 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # add gisAssemblyWF
-    click_link 'Add workflow'
+    click_link_or_button 'Add workflow'
     select 'gisAssemblyWF', from: 'wf'
-    click_button 'Add'
+    click_link_or_button 'Add'
     expect(page).to have_text('Added gisAssemblyWF')
     # wait for gisAssemblyWF to finish; retry if extract-boundingbox fails in a known/retriable way
     reload_page_until_timeout_with_wf_step_retry!(expected_text: nil,
                                                   workflow: 'gisAssemblyWF',
                                                   workflow_retry_text: 'Error: extract-boundingbox',
                                                   retry_wait: 5) do |page|
-      click_link 'Reindex'
+      click_link_or_button 'Reindex'
       sleep 5
       !page.has_text?('Error: extract-boundingbox')
     end
@@ -68,24 +68,24 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     end
 
     # add gisDeliveryWF
-    click_link 'Add workflow'
+    click_link_or_button 'Add workflow'
     select 'gisDeliveryWF', from: 'wf'
-    click_button 'Add'
+    click_link_or_button 'Add'
     expect(page).to have_text('Added gisDeliveryWF')
     # manually set the "reset geowebcache" step to completed
     #  because of an existing bug: https://github.com/sul-dlss/gis-robot-suite/issues/401
     #  we can remove when no longer needed  7/29/2022
-    click_link 'gisDeliveryWF'
-    click_button 'workflow-status-set-reset-geowebcache-completed'
+    click_link_or_button 'gisDeliveryWF'
+    click_link_or_button 'workflow-status-set-reset-geowebcache-completed'
     # verify the workflow completes
     reload_page_until_timeout! do
       page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
     end
 
     # add accessionWF
-    click_link 'Add workflow'
+    click_link_or_button 'Add workflow'
     select 'accessionWF', from: 'wf'
-    click_button 'Add'
+    click_link_or_button 'Add'
     expect(page).to have_text('Added accessionWF')
     # Wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')
@@ -108,7 +108,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
                              href: "https://earthworks.stanford.edu/catalog/stanford-#{bare_object_druid}")
     expect_text_on_purl_page(druid:, text: 'This point shapefile represents all air monitoring stations active in ' \
                                            'California from 2001 until 2003')
-    expect(page).not_to have_text(object_label) # the original object label has been replaced
+    expect(page).to have_no_text(object_label) # the original object label has been replaced
     expect(page).to have_text('Air Monitoring Stations: California, 2001-2003') # with the new object label
     expect(page).to have_text('cartographic') # type of resource
     expect(page).to have_text('Shapefile') # form

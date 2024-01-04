@@ -52,7 +52,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     fill_in 'Source ID', with: "#{source_id}-#{random_alpha}"
     fill_in 'Label', with: object_label
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
@@ -76,7 +76,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     select 'Image', from: 'Content structure'
     fill_in 'Staging location', with: preassembly_bundle_dir
 
-    click_button 'Submit'
+    click_link_or_button 'Submit'
     expect(page).to have_text 'Success! Your job is queued. ' \
                               'A link to job output will be emailed to you upon completion.'
 
@@ -89,7 +89,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
       page.has_link?('Download', wait: 1)
     end
 
-    click_link 'Download'
+    click_link_or_button 'Download'
     wait_for_download
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
@@ -115,7 +115,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 
     # Download CSV from Argo
-    click_link 'Download CSV'
+    click_link_or_button 'Download CSV'
     wait_for_download
     items = CSV.read(download)
     # delete row for the deleted image file from the CSV and for the changed image file's jp2
@@ -176,7 +176,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     select 'Group by filename', from: 'Processing configuration'
     check('batch_context_using_file_manifest')
 
-    click_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_text 'Success! Your job is queued. ' \
                               'A link to job output will be emailed to you upon completion.'
@@ -187,7 +187,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
       page.has_link?('Download', wait: 1)
     end
 
-    click_link 'Download'
+    click_link_or_button 'Download'
 
     wait_for_download
 
@@ -213,7 +213,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(files[5].text).to match(%r{vision_for_stanford.jp2 image/jp2 26.\d KB})
 
     reload_page_until_timeout! do
-      click_button 'Events' # expand the Events section
+      click_link_or_button 'Events' # expand the Events section
 
       # this is a hack that forces the event section to scroll into view; the section
       # is lazily loaded, and won't actually be requested otherwise, even if the button
@@ -249,7 +249,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     latest_s3_key = "#{druid_tree_str}.v000#{latest_version}.zip"
     reload_page_until_timeout! do
-      click_button 'Events' # expand the Events section
+      click_link_or_button 'Events' # expand the Events section
 
       # this is a hack that forces the event section to scroll into view; the section
       # is lazily loaded, and won't actually be requested otherwise, even if the button

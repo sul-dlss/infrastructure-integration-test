@@ -24,7 +24,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
@@ -39,9 +39,9 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     reload_page_until_timeout!(text: 'v1 Registered')
 
     # add accessionWF
-    click_link 'Add workflow'
+    click_link_or_button 'Add workflow'
     select 'accessionWF', from: 'wf'
-    click_button 'Add'
+    click_link_or_button 'Add'
     expect(page).to have_text('Added accessionWF')
 
     # look for tags
@@ -59,29 +59,29 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
                                                   retry_wait: 2)
 
     # open a new version
-    click_link 'Unlock to make changes to this object'
+    click_link_or_button 'Unlock to make changes to this object'
     within '.modal-dialog' do
       select 'Admin', from: 'Type'
       fill_in 'Version description', with: 'opening version for integration testing'
-      click_button 'Open Version'
+      click_link_or_button 'Open Version'
     end
     # look for version text in History section
     expect(page).to have_text('opening version for integration testing')
 
     # Change collection
-    click_link 'Edit collections'
+    click_link_or_button 'Edit collections'
     within '.modal-dialog' do
       select 'integration-testing', from: 'collection'
-      click_button 'Add Collection'
-      click_button 'Cancel'
+      click_link_or_button 'Add Collection'
+      click_link_or_button 'Cancel'
     end
     expect(page).to have_text('integration-testing')
 
     # close version
-    click_link 'Close Version'
+    click_link_or_button 'Close Version'
     within '.modal-dialog' do
       fill_in 'Version description', with: 'closing version for integration testing'
-      click_button 'Close Version'
+      click_link_or_button 'Close Version'
     end
     expect(page).to have_text('closing version for integration testing')
     page.refresh # solves problem of close version modal re-appearing

@@ -22,7 +22,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     select license, from: 'Default use license'
     fill_in 'Default Use and Reproduction statement', with: terms_of_use
     fill_in 'Default Copyright statement', with: copyright
-    click_button 'Register APO'
+    click_link_or_button 'Register APO'
 
     # make sure we're on an APO show view
     expect(page).to have_text apo_title
@@ -45,7 +45,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_button 'Register'
+    click_link_or_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
