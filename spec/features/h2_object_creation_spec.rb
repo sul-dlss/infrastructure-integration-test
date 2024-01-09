@@ -164,7 +164,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # check Argo facet field with 3 day embargo
     fill_in 'Search...', with: bare_druid
-    click_link_or_button 'Search'
+    click_button 'Search'
     reload_page_until_timeout!(text: 'Embargo Release Date')
     click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do

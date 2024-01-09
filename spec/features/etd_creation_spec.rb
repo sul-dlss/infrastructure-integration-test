@@ -245,7 +245,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
     fill_in 'Search...', with: prefixed_druid
-    click_link_or_button 'Search'
+    click_button 'Search'
     click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       expect(page).to have_no_text('up to 7 days', wait: 1)
@@ -263,7 +263,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
 
     # check Argo facet field with 3 day embargo
     fill_in 'Search...', with: prefixed_druid
-    click_link_or_button 'Search'
+    click_button 'Search'
     click_link_or_button('Embargo Release Date')
     within '#facet-embargo_release_date ul.facet-values' do
       find_link('up to 7 days')
