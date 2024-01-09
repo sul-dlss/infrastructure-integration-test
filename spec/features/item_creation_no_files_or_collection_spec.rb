@@ -24,7 +24,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_link_or_button 'Register'
+    click_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'

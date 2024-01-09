@@ -26,7 +26,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    click_link_or_button 'Register'
+    click_button 'Register'
 
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'

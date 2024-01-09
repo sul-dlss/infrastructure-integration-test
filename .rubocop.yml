@@ -487,8 +487,6 @@ Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
   Enabled: true
 Style/YAMLFileRead: # new in 1.53
   Enabled: true
-Capybara/ClickLinkOrButtonStyle: # new in 2.19
-  Enabled: true
 Capybara/RSpec/HaveSelector: # new in 2.19
   Enabled: true
 Capybara/RSpec/PredicateMatcher: # new in 2.19
@@ -509,3 +507,16 @@ RSpec/SpecFilePathSuffix: # new in 2.24
   Enabled: true
 RSpec/Rails/NegationBeValid: # new in 2.23
   Enabled: true
+
+# We've encountered cases where we have a link and a button in the same page with the same text.
+# As of this rule's disabling (Jan 2024), the only instances we've seen like that are for
+# the "Register" button on the Argo registration form (there's a nav header link with the same
+# text that leads to the form), and the "Search" button on the Argo view page (afaict the links
+# with the same title are not visible, but may be to screen readers).  If click_link_or_button
+# is used in those cases, we see tests fail with errors like:
+# Ambiguous match, found 2 elements matching visible link or button "Register"
+#
+# Perhaps something to tighten up later, see:
+# https://github.com/sul-dlss/infrastructure-integration-test/pull/663 and https://github.com/sul-dlss/argo/issues/4304
+Capybara/ClickLinkOrButtonStyle: # new in 2.19
+  Enabled: false
