@@ -29,6 +29,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     select 'CC0-1.0', from: 'collection_required_license'
 
     click_link_or_button 'Deposit'
+    click_through_terms_of_deposit_modal
     expect(page).to have_text(collection_title)
     expect(page).to have_text('+ Deposit to this collection')
 
@@ -65,6 +66,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     click_link_or_button 'Edit or Deposit'
     check('Check this box once all your files have completed uploading to Globus.')
     click_link_or_button 'Deposit'
+    click_through_terms_of_deposit_modal
 
     expect(page).to have_text 'You have successfully deposited your work'
     click_link_or_button 'Return to dashboard'

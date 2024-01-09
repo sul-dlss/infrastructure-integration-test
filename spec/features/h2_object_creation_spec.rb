@@ -37,6 +37,8 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     end
 
     click_link_or_button 'Deposit'
+    click_through_terms_of_deposit_modal
+
     expect(page).to have_text(collection_title)
     expect(page).to have_text('+ Deposit to this collection')
 
@@ -111,6 +113,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     fill_in 'What\'s changing?', with: 'abstract'
     fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
     click_link_or_button 'Deposit'
+    click_through_terms_of_deposit_modal
 
     expect(page).to have_text 'You have successfully deposited your work'
 
