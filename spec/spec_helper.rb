@@ -7,7 +7,7 @@ require 'faker'
 require 'io/console'
 require 'pry-byebug'
 require 'rubyXL'
-require 'sdr-client'
+require 'sdr_client'
 require 'selenium-webdriver'
 require 'webdrivers'
 
