@@ -9,6 +9,9 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: /Dashboard|Continue your deposit/)
   end
 
+  # note! you likely want to use `click_deposit_and_handle_terms_modal` for deposit
+  # form submission (instead of just `click_link_or_button 'Deposit'`), since the modal
+  # may pop up on any attempt to deposit.
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
     click_link_or_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
@@ -36,8 +39,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
       click_link_or_button 'Add'
     end
 
-    click_link_or_button 'Deposit'
-    click_through_terms_of_deposit_modal
+    click_deposit_and_handle_terms_modal
 
     expect(page).to have_text(collection_title)
     expect(page).to have_text('+ Deposit to this collection')
@@ -112,8 +114,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     click_link_or_button "Edit #{item_title}"
     fill_in 'What\'s changing?', with: 'abstract'
     fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
-    click_link_or_button 'Deposit'
-    click_through_terms_of_deposit_modal
+    click_deposit_and_handle_terms_modal
 
     expect(page).to have_text 'You have successfully deposited your work'
 

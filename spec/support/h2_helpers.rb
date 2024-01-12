@@ -2,6 +2,14 @@
 
 # This module helps with common actions in the self deposit app (H2)
 module H2Helpers
+  # all-in-one convenience method for submitting the deposit form and
+  # handling the modal if one is shown
+  def click_deposit_and_handle_terms_modal
+    click_link_or_button 'Deposit'
+    click_through_terms_of_deposit_modal
+  end
+
+  # if a terms of deposit modal is showing, click through it, otherwise do nothing
   def click_through_terms_of_deposit_modal
     return unless terms_of_deposit_modal_showing?
 
@@ -11,6 +19,8 @@ module H2Helpers
   end
 
   def terms_of_deposit_modal_showing?
+    # a bit fragile/un-user-like to use a CSS selector, but the alternative would be
+    # to use very specific substrings from the terms, which also feels fragile.
     return false unless page.has_css?('div.modal', visible: true, wait: modal_selector_wait)
 
     within('div.modal') do
