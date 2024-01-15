@@ -508,6 +508,24 @@ RSpec/SpecFilePathSuffix: # new in 2.24
 RSpec/Rails/NegationBeValid: # new in 2.23
   Enabled: true
 
+Lint/ItWithoutArgumentsInBlock: # new in 1.59
+  Enabled: true
+Lint/LiteralAssignmentInCondition: # new in 1.58
+  Enabled: true
+Style/SingleLineDoEndBlock: # new in 1.57
+  Enabled: true
+Style/SuperWithArgsParentheses: # new in 1.58
+  Enabled: true
+Capybara/RedundantWithinFind: # new in 2.20
+  Enabled: true
+FactoryBot/ExcessiveCreateList: # new in 2.25
+  Enabled: true
+RSpec/RedundantPredicateMatcher: # new in 2.26
+  Enabled: true
+RSpec/RemoveConst: # new in 2.26
+  Enabled: true
+
+
 # We've encountered cases where we have a link and a button in the same page with the same text.
 # As of this rule's disabling (Jan 2024), the only instances we've seen like that are for
 # the "Register" button on the Argo registration form (there's a nav header link with the same
