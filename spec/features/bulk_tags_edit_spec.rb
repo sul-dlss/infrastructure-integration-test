@@ -57,7 +57,8 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
           wait_for_download
           druids_with_tags = CSV.parse(File.read(download))
           expect(druids_with_tags.count).to eq(number_of_druids)
-          druids_with_tags.each do |druid, tags|
+          # druids_with_tags is an array of arrays, each of which is a druid and its tags
+          druids_with_tags.each do |(druid, *tags)|
             expect(druid).to match(druid_regex)
             tags.all? { |tag| expect(tag).to match(tag_regex) }
           end
