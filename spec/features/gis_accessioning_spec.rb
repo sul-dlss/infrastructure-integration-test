@@ -67,11 +67,6 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
       page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
     end
 
-    # add gisDeliveryWF
-    click_link_or_button 'Add workflow'
-    select 'gisDeliveryWF', from: 'wf'
-    click_link_or_button 'Add'
-    expect(page).to have_text('Added gisDeliveryWF')
     # manually set the "reset geowebcache" step to completed
     #  because of an existing bug: https://github.com/sul-dlss/gis-robot-suite/issues/401
     #  we can remove when no longer needed  7/29/2022
