@@ -62,17 +62,11 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
       sleep 5
       !page.has_text?('Error: extract-boundingbox')
     end
-    # verify the workflow completes
+    # verify the gisAssemblyWF workflow completes
     reload_page_until_timeout! do
       page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
     end
-
-    # manually set the "reset geowebcache" step to completed
-    #  because of an existing bug: https://github.com/sul-dlss/gis-robot-suite/issues/401
-    #  we can remove when no longer needed  7/29/2022
-    click_link_or_button 'gisDeliveryWF'
-    click_link_or_button 'workflow-status-set-reset-geowebcache-completed'
-    # verify the workflow completes
+    # verify the gisDeliveryWF workflow completes
     reload_page_until_timeout! do
       page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
     end
