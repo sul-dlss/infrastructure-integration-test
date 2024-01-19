@@ -31,7 +31,7 @@ GEM
       capybara (>= 3.31)
       terminal-table
       xpath (>= 2.1)
-    cocina-models (0.93.1)
+    cocina-models (0.94.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -58,9 +58,9 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.5.0)
-    dor-services-client (13.4.0)
+    dor-services-client (14.1.0)
       activesupport (>= 4.2, < 8)
-      cocina-models (~> 0.93.0)
+      cocina-models (~> 0.94.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -216,9 +216,9 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
     rubyzip (2.3.2)
-    sdr-client (2.8.0)
+    sdr-client (2.9.0)
       activesupport
-      cocina-models (~> 0.93.0)
+      cocina-models (~> 0.94.0)
       config
       dry-monads
       faraday (>= 0.16)
@@ -259,7 +259,7 @@ DEPENDENCIES
   capybara
   capybara_table
   config
-  dor-services-client (~> 13.0)
+  dor-services-client (~> 14.0)
   druid-tools
   faker
   faraday
