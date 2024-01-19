@@ -43,7 +43,7 @@ goobi:
   password: ~
 
 gis:
-  robots_content_root: '/var/geomdtk/current/stage'
+  robots_content_root: '/gis_workflow_data/stage'
   username: 'lyberadmin'
 
 test_folio_instance_hrid: 'a10065784'
