@@ -71,11 +71,6 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
       page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
     end
 
-    # add accessionWF
-    click_link_or_button 'Add workflow'
-    select 'accessionWF', from: 'wf'
-    click_link_or_button 'Add'
-    expect(page).to have_text('Added accessionWF')
     # Wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
