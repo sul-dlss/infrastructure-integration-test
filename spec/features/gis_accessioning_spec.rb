@@ -21,7 +21,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # register new GIS object
     select apo_name, from: 'Admin Policy'
     select collection_name, from: 'Collection'
-    select 'file', from: 'Content Type'
+    select 'geo', from: 'Content Type'
     fill_in 'Project Name', with: project_name
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
