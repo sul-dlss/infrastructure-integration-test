@@ -3,12 +3,14 @@
 require 'druid-tools'
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
-# To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
+# To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 RSpec.describe 'Create and re-accession image object via Pre-assembly' do
   bare_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:preassembly_bundle_dir) { Settings.preassembly_bundle_directory }
-  let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_bundle_dir}" }
+  let(:preassembly_bundle_dir) { Settings.preassembly.bundle_directory }
+  let(:remote_manifest_location) do
+    "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
+  end
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:local_file_manifest_location) { 'tmp/file_manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-image-#{random_noun}-#{random_alpha}" }
@@ -39,7 +41,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     clear_downloads
     FileUtils.rm_rf(bare_druid)
     unless bare_druid.empty?
-      `ssh preassembly@#{Settings.preassembly_host} rm -rf \
+      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
       #{preassembly_bundle_dir}/#{bare_druid}`
     end
   end
@@ -68,7 +70,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
 
-    visit Settings.preassembly_url
+    visit Settings.preassembly.url
     expect(page).to have_css('h3', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
@@ -166,7 +168,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     md = /^v(\d+) Accessioned/.match(elem.text)
     version = md[1].to_i
 
-    visit Settings.preassembly_url
+    visit Settings.preassembly.url
 
     expect(page).to have_text 'Complete the form below'
 

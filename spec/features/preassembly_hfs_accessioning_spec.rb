@@ -3,13 +3,15 @@
 require 'druid-tools'
 
 # Preassembly requires that files to be included in an object must be available on a mounted drive
-# To this end, files have been placed on Settings.preassembly_host at Settings.preassembly_bundle_directory
+# To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 RSpec.describe 'Create and re-accession object with hierarchical files via Pre-assembly' do
   druid = ''
 
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:preassembly_hfs_bundle_dir) { Settings.preassembly_hfs_bundle_directory }
-  let(:remote_manifest_location) { "preassembly@#{Settings.preassembly_host}:#{preassembly_hfs_bundle_dir}" }
+  let(:preassembly_hfs_bundle_dir) { Settings.preassembly.hfs_bundle_directory }
+  let(:remote_manifest_location) do
+    "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_hfs_bundle_dir}"
+  end
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-hsf-#{random_noun}" }
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
@@ -58,7 +60,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
 
-    visit Settings.preassembly_url
+    visit Settings.preassembly.url
     expect(page).to have_css('h3', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
@@ -115,7 +117,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     md = /^v(\d+) Accessioned/.match(elem.text)
     version = md[1].to_i
 
-    visit Settings.preassembly_url
+    visit Settings.preassembly.url
 
     expect(page).to have_content 'Complete the form below'
 
