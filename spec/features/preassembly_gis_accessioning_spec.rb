@@ -121,8 +121,8 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     # look for expected files produced by GIS workflows
     files = all('tr.file')
     expect(files.size).to eq 3
-    expect(files[0].text).to match(%r{data.zip application/zip 5\d.\d KB})
-    expect(files[1].text).to match(%r{data_EPSG_4326.zip application/zip 2\d KB})
+    expect(files[0].text).to match(%r{#{bare_druid}.zip application/zip 5\d.\d KB})
+    expect(files[1].text).to match(%r{#{bare_druid}_normalized.zip application/zip 2\d KB})
     expect(files[2].text).to match(%r{preview.jpg image/jpeg 2\d.\d KB})
 
     # verify that the content type is "geo"
