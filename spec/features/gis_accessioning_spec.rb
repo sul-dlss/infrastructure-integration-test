@@ -60,9 +60,11 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
                                                   retry_wait: 5) do |page|
       click_link_or_button 'Reindex'
       sleep 5
-      !page.has_text?('Error: extract-boundingbox')
+      # verify the gisAssemblyWF workflow completes
+      page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
     end
-    # verify the gisAssemblyWF workflow completes
+
+    # (re?)verify the gisAssemblyWF workflow completes
     reload_page_until_timeout! do
       page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
     end
