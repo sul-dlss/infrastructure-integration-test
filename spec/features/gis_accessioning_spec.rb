@@ -54,6 +54,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     click_link_or_button 'Add'
     expect(page).to have_text('Added gisAssemblyWF')
     # wait for gisAssemblyWF to finish; retry if extract-boundingbox fails in a known/retriable way
+    # It will stop retrying when the passed block returns true
     reload_page_until_timeout_with_wf_step_retry!(expected_text: nil,
                                                   workflow: 'gisAssemblyWF',
                                                   workflow_retry_text: 'Error: extract-boundingbox',
