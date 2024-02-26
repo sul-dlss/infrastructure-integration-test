@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.1.3)
+    activesupport (7.1.3.2)
       base64
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -165,7 +165,7 @@ GEM
       pry (>= 0.13, < 0.15)
     public_suffix (5.0.4)
     racc (1.7.3)
-    rack (3.0.9)
+    rack (3.0.9.1)
     rack-test (2.1.0)
       rack (>= 1.3)
     rainbow (3.1.1)
@@ -184,7 +184,7 @@ GEM
     rspec-mocks (3.13.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-support (3.13.0)
+    rspec-support (3.13.1)
     rss (0.3.0)
       rexml
     rubocop (1.60.2)
