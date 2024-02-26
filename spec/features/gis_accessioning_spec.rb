@@ -106,7 +106,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     expect(page).to have_text('Air Monitoring Stations: California, 2001-2003') # with the new object label
     expect(page).to have_text('cartographic') # type of resource
     expect(page).to have_text('Shapefile') # form
-    expect(page).to have_text('Scale not given ; EPSG::4326') # map data
+    expect(page).to have_text('EPSG::3310') # form for native projection
     expect(page).to have_text('Geospatial data') # genre
     expect(page).to have_text('Cartographic dataset') # genre
     expect(page).to have_link('View in EarthWorks') # link to Earthworks
