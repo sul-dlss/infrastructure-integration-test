@@ -79,17 +79,16 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
 
     # look for expected files produced by GIS workflows
     files = all('tr.file')
-    expect(files.size).to eq 10
+    expect(files.size).to eq 9
     expect(files[0].text).to match(%r{AirMonitoringStations.shp application/vnd.shp 8.14 KB})
     expect(files[1].text).to match(%r{AirMonitoringStations.shx application/vnd.shx 2.39 KB})
     expect(files[2].text).to match(%r{AirMonitoringStations.dbf application/vnd.dbf 40.8 KB})
     expect(files[3].text).to match(%r{AirMonitoringStations.prj text/plain 468 Bytes})
-    expect(files[4].text).to match(%r{data.zip application/zip 5\d.\d KB})
-    expect(files[5].text).to match(%r{preview.jpg image/jpeg 2\d.\d KB})
-    expect(files[6].text).to match(%r{AirMonitoringStations.shp.xml application/xml 6\d.\d KB})
-    expect(files[7].text).to match(%r{AirMonitoringStations-iso19139.xml application/xml 2\d.\d KB})
-    expect(files[8].text).to match(%r{AirMonitoringStations-iso19110.xml application/xml 1\d.\d KB})
-    expect(files[9].text).to match(%r{AirMonitoringStations-fgdc.xml application/xml 5.\d+ KB})
+    expect(files[4].text).to match(%r{preview.jpg image/jpeg 2\d.\d KB})
+    expect(files[5].text).to match(%r{AirMonitoringStations.shp.xml application/xml 6\d.\d KB})
+    expect(files[6].text).to match(%r{AirMonitoringStations-iso19139.xml application/xml 2\d.\d KB})
+    expect(files[7].text).to match(%r{AirMonitoringStations-iso19110.xml application/xml 1\d.\d KB})
+    expect(files[8].text).to match(%r{AirMonitoringStations-fgdc.xml application/xml 5.\d+ KB})
 
     # verify that the content type is "geo"
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
