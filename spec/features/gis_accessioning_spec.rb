@@ -93,6 +93,15 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # verify that the content type is "geo"
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
 
+    # release to Earthworks
+    click_link_or_button 'Manage release'
+    select 'Earthworks', from: 'to'
+    click_link_or_button('Submit')
+    expect(page).to have_text('Release object job was successfully created.')
+
+    # pause for a couple seconds for release to happen
+    sleep 2
+
     # This section confirms the object has been published to PURL
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
     expect_text_on_purl_page(druid:, text: collection_name)
@@ -110,21 +119,6 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     expect(page).to have_text('Cartographic dataset') # genre
     # TODO: Add additional checks for GIS embed delivery on PURL?
     #  May rely on reloading geoserver layers in geoserver UI and existence of qa/stage geoservers and other complications
-
-    # back to argo detail page
-    visit "#{Settings.argo_url}/view/#{druid}"
-
-    # release to Earthworks
-    click_link_or_button 'Manage release'
-    select 'Earthworks', from: 'to'
-    click_link_or_button('Submit')
-    expect(page).to have_text('Release object job was successfully created.')
-
-    # pause for a couple seconds for release to happen
-    sleep 2
-
-    # back to purl page
-    visit "#{Settings.purl_url}/#{bare_druid}"
 
     # click Earthworks link and verify it was released
     click_link_or_button 'View in EarthWorks'
