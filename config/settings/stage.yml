@@ -8,7 +8,6 @@ preassembly:
   url: 'https://sul-preassembly-stage.stanford.edu'
 sdrapi_url: 'https://sdr-api-stage.stanford.edu'
 was_playback_url: 'https://swap-stage.stanford.edu'
-earthworks_url: 'https://earthworks-stage.stanford.edu/catalog'
 was_registrar:
   host: 'was-registrar-app-stage.stanford.edu'
   jobs_directory: '/was_unaccessioned_data/jobs'

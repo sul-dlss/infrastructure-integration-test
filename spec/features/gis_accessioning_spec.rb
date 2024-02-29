@@ -123,8 +123,11 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # pause for a couple seconds for release to happen
     sleep 2
 
-    # go to Earthworks and verify it was released
-    visit "#{Settings.earthworks_url}/stanford-#{bare_druid}"
+    # back to purl page
+    visit "#{Settings.purl_url}/#{bare_druid}"
+
+    # click Earthworks link and verify it was released
+    click_link_or_button 'View in EarthWorks'
     reload_page_until_timeout!(text: 'Air Monitoring Stations: California, 2001-2003')
   end
 end

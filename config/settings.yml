@@ -55,4 +55,4 @@ preassembly:
   hfs_bundle_directory: '/dor/staging/integration-tests/hierarchical-file-test'
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
 
-earthworks_url: 'https://earthworks.stanford.edu/catalog'
+earthworks_url: 'https://earthworks-stage.stanford.edu/catalog'
