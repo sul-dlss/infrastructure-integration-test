@@ -93,12 +93,21 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # verify that the content type is "geo"
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
 
+    # release to Earthworks
+    click_link_or_button 'Manage release'
+    select 'Earthworks', from: 'to'
+    click_link_or_button('Submit')
+    expect(page).to have_text('Release object job was successfully created.')
+
+    # pause for a couple seconds for release to happen
+    sleep 2
+
     # This section confirms the object has been published to PURL
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
     expect_text_on_purl_page(druid:, text: collection_name)
     expect_link_on_purl_page(druid:,
                              text: 'View in EarthWorks',
-                             href: "https://earthworks.stanford.edu/catalog/stanford-#{bare_druid}")
+                             href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
     expect_text_on_purl_page(druid:, text: 'This point shapefile represents all air monitoring stations active in ' \
                                            'California from 2001 until 2003')
     expect(page).to have_no_text(object_label) # the original object label has been replaced
@@ -108,8 +117,11 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     expect(page).to have_text('EPSG::3310') # form for native projection
     expect(page).to have_text('Geospatial data') # genre
     expect(page).to have_text('Cartographic dataset') # genre
-    expect(page).to have_link('View in EarthWorks') # link to Earthworks
     # TODO: Add additional checks for GIS embed delivery on PURL?
     #  May rely on reloading geoserver layers in geoserver UI and existence of qa/stage geoservers and other complications
+
+    # click Earthworks link and verify it was released
+    click_link_or_button 'View in EarthWorks'
+    reload_page_until_timeout!(text: 'Air Monitoring Stations: California, 2001-2003')
   end
 end

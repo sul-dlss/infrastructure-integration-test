@@ -54,3 +54,5 @@ preassembly:
   bundle_directory: '/dor/staging/integration-tests/files-reaccessioning-test'
   hfs_bundle_directory: '/dor/staging/integration-tests/hierarchical-file-test'
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
+
+earthworks_url: 'https://earthworks-stage.stanford.edu/catalog'
