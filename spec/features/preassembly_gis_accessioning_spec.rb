@@ -139,7 +139,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     expect_text_on_purl_page(druid:, text: collection_name)
     expect_link_on_purl_page(druid:,
                              text: 'View in EarthWorks',
-                             href: "https://earthworks.stanford.edu/catalog/stanford-#{bare_druid}")
+                             href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
     expect_text_on_purl_page(druid:, text: 'This point shapefile represents all air monitoring stations active in ' \
                                            'California from 2001 until 2003')
     expect(page).to have_no_text(object_label) # the original object label has been replaced
@@ -149,6 +149,21 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     expect(page).to have_text('Scale not given ; EPSG::3310') # map data
     expect(page).to have_text('Geospatial data') # genre
     expect(page).to have_text('Cartographic dataset') # genre
-    expect(page).to have_link('View in EarthWorks') # link to Earthworks
+
+    # back to argo detail page
+    visit "#{Settings.argo_url}/view/#{druid}"
+
+    # release to Earthworks
+    click_link_or_button 'Manage release'
+    select 'Earthworks', from: 'to'
+    click_link_or_button('Submit')
+    expect(page).to have_text('Release object job was successfully created.')
+
+    # pause for a couple seconds for release to happen
+    sleep 2
+
+    # go to Earthworks and verify it was released
+    visit "#{Settings.earthworks_url}/stanford-#{bare_druid}"
+    reload_page_until_timeout!(text: 'Air Monitoring Stations: California, 2001-2003')
   end
 end
