@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'druid-tools'
+
 # NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
 RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -39,7 +41,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # Should this test data be deleted from the server,
     # a zipped copy is available at spec/fixtures/gis_integration_test_data.zip
     test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data')
-    test_data_destination_folder = File.join(Settings.gis.robots_content_root, bare_druid, 'temp')
+    test_data_destination_folder = File.join(DruidTools::Druid.new(druid, Settings.gis.robots_content_root).path, 'content')
     copy_command = "ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
                    "\"mkdir -p #{test_data_destination_folder} " \
                    "&& cp #{test_data_source_folder}/* #{test_data_destination_folder}\""
