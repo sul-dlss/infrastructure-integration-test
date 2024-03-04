@@ -47,8 +47,8 @@ gis:
 
 test_folio_instance_hrid: 'a10065784'
 
-# note for purl_url: there is no purl for qa;  sul-h2-qa uses stage ...
-purl_url: 'https://sul-purl-stage.stanford.edu' # from shared_configs for sul-h2-stage
+purl_url: 'https://sul-purl-stage.stanford.edu' # there is no QA environment for Purl
+searchworks_url: 'https://searchworks-preview-stage.stanford.edu' # there is no QA environment for SearchWorks
 preassembly:
   username: 'preassembly'
   bundle_directory: '/dor/staging/integration-tests/files-reaccessioning-test'

@@ -107,7 +107,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     expect_text_on_purl_page(druid:, text: object_label)
     expect_link_on_purl_page(druid:,
                              text: 'View in SearchWorks',
-                             href: "https://searchworks.stanford.edu/view/#{bare_object_druid}")
+                             href: "#{Settings.searchworks_url}/view/#{bare_object_druid}")
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
     canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
