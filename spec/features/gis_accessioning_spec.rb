@@ -2,6 +2,7 @@
 
 require 'druid-tools'
 
+# Accession a vector based GIS object
 # NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
 RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -39,8 +40,8 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
 
     # Go to kurma server and copy test content to the druid folder so it can be accessioned
     # Should this test data be deleted from the server,
-    # a zipped copy is available at spec/fixtures/gis_integration_test_data.zip
-    test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data')
+    # a zipped copy is available at spec/fixtures/gis_integration_test_data_vector.zip
+    test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data_vector')
     test_data_destination_folder = File.join(DruidTools::Druid.new(druid, Settings.gis.robots_content_root).path, 'content')
     copy_command = "ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
                    "\"mkdir -p #{test_data_destination_folder} " \
@@ -110,10 +111,10 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     expect_link_on_purl_page(druid:,
                              text: 'View in EarthWorks',
                              href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
-    expect_text_on_purl_page(druid:, text: 'This point shapefile represents all air monitoring stations active in ' \
-                                           'California from 2001 until 2003')
     expect(page).to have_no_text(object_label) # the original object label has been replaced
     expect(page).to have_text('Air Monitoring Stations: California, 2001-2003') # with the new object label
+    expect(page).to have_text('This point shapefile represents all air monitoring stations active in ' \
+                              'California from 2001 until 2003') # abstract
     expect(page).to have_text('cartographic') # type of resource
     expect(page).to have_text('Shapefile') # form
     expect(page).to have_text('EPSG::3310') # form for native projection
