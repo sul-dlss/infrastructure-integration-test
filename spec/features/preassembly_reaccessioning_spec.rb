@@ -116,6 +116,22 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 
+    # check technical metadata for all non-thumbnail files
+    reload_page_until_timeout! do
+      click_link_or_button 'Technical metadata' # expand the Technical metadata section
+
+      # this is a hack that forces the event section to scroll into view; the section
+      # is lazily loaded, and won't actually be requested otherwise, even if the button
+      # is clicked to expand the event section.
+      page.execute_script 'window.scrollBy(0,100);'
+
+      # events are loaded lazily, give the network a few moments
+      page.has_text?('v1 Accessioned', wait: 2)
+    end
+    page.has_text?('filetype', count: 3)
+    page.has_text?('file_modification', count: 3)
+    page.has_text?('bytes 29634') # file to be missing from manifest for targeted re-accession
+
     # Download CSV from Argo
     click_link_or_button 'Download CSV'
     wait_for_download
@@ -213,6 +229,23 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(files[3].text).to match(%r{image.jp2 image/jp2 137 KB})
     expect(files[4].text).to match(%r{vision_for_stanford.jpg image/jpeg 8.\d+ KB})
     expect(files[5].text).to match(%r{vision_for_stanford.jp2 image/jp2 26.\d KB})
+
+    # check technical metadata for all non-thumbnail files
+    reload_page_until_timeout! do
+      click_link_or_button 'Technical metadata' # expand the Technical metadata section
+
+      # this is a hack that forces the event section to scroll into view; the section
+      # is lazily loaded, and won't actually be requested otherwise, even if the button
+      # is clicked to expand the event section.
+      page.execute_script 'window.scrollBy(0,100);'
+
+      # events are loaded lazily, give the network a few moments
+      page.has_text?("v#{latest_version} Accessioned", wait: 2)
+    end
+    page.has_text?('filetype', count: 3)
+    page.has_text?('file_modification', count: 3)
+    page.has_text?('bytes 9071') # vision_for_stanford.jpg (new file)
+    page.has_text?('bytes 29634') # file from original accession, neither removed nor changed.
 
     reload_page_until_timeout! do
       click_link_or_button 'Events' # expand the Events section
