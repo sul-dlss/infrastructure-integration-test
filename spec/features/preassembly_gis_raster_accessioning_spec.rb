@@ -36,7 +36,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     clear_downloads
     FileUtils.rm_rf(bare_druid)
     unless bare_druid.empty?
-      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
+      `ssh -oProxyJump=#{Settings.deployment_host} #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
       #{preassembly_bundle_dir}/content && rm -fr #{preassembly_bundle_dir}/manifest.csv`
     end
   end
@@ -63,7 +63,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     # a zipped copy is available at spec/fixtures/gis_integration_test_data_raster.zip
     test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data_raster')
     test_data_destination_folder = File.join(Settings.preassembly.gis_bundle_directory, 'content')
-    copy_command = "ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
+    copy_command = "ssh -oProxyJump=#{Settings.deployment_host} #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
                    "\"mkdir -p #{test_data_destination_folder} " \
                    "&& cp #{test_data_source_folder}/* #{test_data_destination_folder}\""
     `#{copy_command}`
@@ -73,7 +73,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
-    manifest_copy_command = "scp #{local_manifest_location} #{remote_manifest_location}"
+    manifest_copy_command = "scp -oProxyJump=#{Settings.deployment_host} #{local_manifest_location} #{remote_manifest_location}"
     `#{manifest_copy_command}`
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")

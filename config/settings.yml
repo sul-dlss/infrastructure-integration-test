@@ -56,3 +56,5 @@ preassembly:
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
 
 earthworks_url: 'https://earthworks-stage.stanford.edu/catalog'
+
+deployment_host: sdr-infra.stanford.edu
