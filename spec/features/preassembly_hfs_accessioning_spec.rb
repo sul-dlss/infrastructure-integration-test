@@ -55,7 +55,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
-    `scp #{local_manifest_location} #{remote_manifest_location}`
+    `scp -oProxyJump=#{Settings.deployment_host} #{local_manifest_location} #{remote_manifest_location}`
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end

@@ -27,11 +27,11 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
   let(:archived_url) { "#{Settings.was_playback_url}/*/#{url_in_wayback}" }
 
   before do
-    `ssh #{Settings.was_registrar.username}@#{Settings.was_registrar.host} mkdir -p \
+    `ssh -oProxyJump=#{Settings.deployment_host} #{Settings.was_registrar.username}@#{Settings.was_registrar.host} mkdir -p \
          #{Settings.was_registrar.jobs_directory}/#{job_specific_directory}`
     raise("unable to create job directory: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
 
-    `scp #{updated_warc.path} #{remote_path}`
+    `scp -oProxyJump=#{Settings.deployment_host} #{updated_warc.path} #{remote_path}`
 
     raise("unable to scp #{updated_warc_path} to #{remote_path}: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
 
