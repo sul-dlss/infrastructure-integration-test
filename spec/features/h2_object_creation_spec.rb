@@ -155,7 +155,6 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # open a new version so we can manage embargo
     click_link_or_button 'Unlock to make changes to this object'
     within '.modal-dialog' do
-      select 'Admin', from: 'Type'
       fill_in 'Version description', with: 'opening version for integration testing'
       click_link_or_button 'Open Version'
     end
