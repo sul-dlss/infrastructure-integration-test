@@ -61,7 +61,6 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     # open a new version
     click_link_or_button 'Unlock to make changes to this object'
     within '.modal-dialog' do
-      select 'Admin', from: 'Type'
       fill_in 'Version description', with: 'opening version for integration testing'
       click_link_or_button 'Open Version'
     end
