@@ -43,7 +43,7 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # a zipped copy is available at spec/fixtures/gis_integration_test_data_vector.zip
     test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data_vector')
     test_data_destination_folder = File.join(DruidTools::Druid.new(druid, Settings.gis.robots_content_root).path, 'content')
-    copy_command = "ssh -oProxyJump=#{Settings.deployment_host} #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
+    copy_command = "ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
                    "\"mkdir -p #{test_data_destination_folder} " \
                    "&& cp #{test_data_source_folder}/* #{test_data_destination_folder}\""
     `#{copy_command}`

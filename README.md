@@ -21,6 +21,7 @@ See the `Other Configuration` section below for
 
 1. Connect to Stanford VPN (full-tunnel or split-tunnel)
 1. Ensure you have a valid, non-expired Kerberos ticket (use `klist` to verify, or run `kinit` to refresh)
+1. Set up SSH per [DLSS developer best practices](https://github.com/sul-dlss/DeveloperPlaybook/blob/main/best-practices/ssh_configuration.md)
 1. See the `Authentication Configuration` section below to set up necessary credentials:
 - dor_services_app credentials
 - etd credentials
@@ -130,4 +131,3 @@ If you find you need to modify the default window size for either browser---*e.g
 ### Increase Timeout Values
 
 If you are experiencing timeout errors when running tests, you may override the default timeout values by adding `timeouts.capybara`, `timeouts.bulk_action`, and/or `timeouts.workflow` in `config/settings.local.yml` depending on where you see timeouts.
-
