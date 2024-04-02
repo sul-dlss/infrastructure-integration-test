@@ -41,7 +41,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     clear_downloads
     FileUtils.rm_rf(bare_druid)
     unless bare_druid.empty?
-      `ssh -oProxyJump=#{Settings.deployment_host} #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
+      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
       #{preassembly_bundle_dir}/#{bare_druid}`
     end
   end
@@ -65,7 +65,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
-    `scp -oProxyJump=#{Settings.deployment_host} #{local_manifest_location} #{remote_manifest_location}`
+    `scp #{local_manifest_location} #{remote_manifest_location}`
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
@@ -150,14 +150,14 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     delete_download(download)
 
     # scp file manifest to preassembly
-    `scp -oProxyJump=#{Settings.deployment_host} #{local_file_manifest_location} #{remote_manifest_location}`
+    `scp #{local_file_manifest_location} #{remote_manifest_location}`
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_file_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
 
     # scp manifest for reaccession to preassembly
     File.write(local_manifest_location, preassembly_reaccession_manifest_csv)
-    `scp -oProxyJump=#{Settings.deployment_host} #{local_manifest_location} #{remote_manifest_location}`
+    `scp #{local_manifest_location} #{remote_manifest_location}`
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
@@ -170,7 +170,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     FileUtils.cp('spec/fixtures/vision_for_stanford.jpg', bare_druid)
 
     # scp druid directory to preassembly
-    `scp -oProxyJump=#{Settings.deployment_host} -r #{bare_druid} #{remote_manifest_location}`
+    `scp -r #{bare_druid} #{remote_manifest_location}`
     unless $CHILD_STATUS.success? # rubocop:disable Style/IfUnlessModifier
       raise("unable to scp #{bare_druid} #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
