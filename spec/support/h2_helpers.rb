@@ -13,9 +13,7 @@ module H2Helpers
   def click_through_terms_of_deposit_modal
     return unless terms_of_deposit_modal_showing?
 
-    puts 'clicking through Terms of Deposit modal...'
     click_close_then_click_deposit
-    puts '...clicked through Terms of Deposit modal'
   end
 
   def terms_of_deposit_modal_showing?

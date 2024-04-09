@@ -14,7 +14,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
   # may pop up on any attempt to deposit.
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
-    click_link_or_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.post_authentication_text)
+    click_link_or_button 'No' if page.has_text?('Continue your deposit')
 
     # CREATE COLLECTION
     click_link_or_button '+ Create a new collection'
