@@ -217,29 +217,21 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
 
-    Timeout.timeout(Settings.timeouts.workflow) do
-      workflow_done = false # a "break" statement inside the "within" block does not break out of the loop
-      loop do
-        click_link_or_button('etdSubmitWF')
-        within('.modal-dialog') do
-          workflow_done = true if page.has_text?(/register-object\s+completed/) &&
-                                  page.has_text?(/submit\s+completed/) &&
-                                  page.has_text?(/reader-approval\s+completed/) &&
-                                  page.has_text?(/registrar-approval\s+completed/) &&
-                                  page.has_text?(/submit-marc\s+completed/, wait: 1) &&
-                                  page.has_text?(/check-marc\s+completed/, wait: 1) &&
-                                  page.has_text?(/catalog-status\s+waiting/, wait: 1)
+    click_link_or_button('etdSubmitWF')
+    within('.modal-dialog') do
+      # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
+      #   and then run it through common-accessioning, but the remaining etdSubmitWF steps, catalog-status and
+      #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
+      #   to make sense here.
+      page.has_text?(/register-object\s+completed/) &&
+        page.has_text?(/submit\s+completed/) &&
+        page.has_text?(/reader-approval\s+completed/) &&
+        page.has_text?(/registrar-approval\s+completed/) &&
+        page.has_text?(/submit-marc\s+completed/, wait: 5) &&
+        page.has_text?(/check-marc\s+completed/, wait: 5) &&
+        page.has_text?(/catalog-status\s+waiting/, wait: 5)
 
-          # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
-          #   and then run it through common-accessioning, but the remaining etdSubmitWF steps, catalog-status and
-          #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
-          #   to make sense here.
-
-          page.send_keys(:escape) # close modal; click_link_or_button('Cancel') and other approaches didn't work
-        end
-
-        break if workflow_done # get out of loop within Timeout block
-      end
+      click_button('Cancel')
     end
 
     # test Embargo UI and indexing before an item is fully accessioned
