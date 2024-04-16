@@ -44,10 +44,11 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     reload_page_until_timeout!(text: 'v1 Registered')
 
     # add accessionWF
-    click_link_or_button 'Add workflow'
-    select 'accessionWF', from: 'wf'
-    click_link_or_button 'Add'
-    expect(page).to have_text('Added accessionWF')
+    click_link_or_button 'Close Version'
+    within '.modal-dialog' do
+      fill_in 'Version description', with: 'closing version for integration testing'
+      click_link_or_button 'Close Version'
+    end
 
     # look for tags
     expect(page).to have_text(user_tag)
