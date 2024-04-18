@@ -176,8 +176,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
 
     # republish the item to purl
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    click_link_or_button 'Manage PURL'
-    click_link_or_button 'Publish'
+    click_link_or_button 'Republish'
 
     # check purl page for 3 day embargo
     expect_text_on_purl_page(
