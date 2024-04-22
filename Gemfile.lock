@@ -200,7 +200,7 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
     rubyzip (2.3.2)
-    sdr-client (2.12.0)
+    sdr-client (2.13.0.beta2)
       activesupport
       cocina-models (~> 0.96.0)
       config
@@ -256,7 +256,7 @@ DEPENDENCIES
   rubocop-rake
   rubocop-rspec
   rubyXL
-  sdr-client (~> 2.0)
+  sdr-client (= 2.13.0.beta2)
   selenium-webdriver
   webdrivers
   websocket
