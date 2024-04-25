@@ -7,7 +7,6 @@ module XlsxHelpers
     source_id = "spreadsheet-druid:#{random_phrase}"
     object_label = "Object Label for #{random_phrase}"
 
-    ensure_token
     deposit(
       apo: Settings.default_apo,
       source_id:,

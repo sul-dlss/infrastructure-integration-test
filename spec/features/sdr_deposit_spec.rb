@@ -14,16 +14,15 @@ RSpec.describe 'SDR deposit' do
   end
 
   it 'deposits objects' do
-    ensure_token
     druid = deposit(apo: Settings.default_apo,
                     collection: Settings.default_collection,
                     type: Cocina::Models::ObjectType.object,
-                    url: Settings.sdrapi_url,
                     source_id:,
                     folio_instance_hrid:,
                     accession: true,
                     view: 'world',
                     download: 'world',
+                    basepath: '.',
                     files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
                     files_metadata: {
                       'Gemfile' => { 'preserve' => true, 'shelve' => false, 'publish' => false },
