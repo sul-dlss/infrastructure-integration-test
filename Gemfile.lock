@@ -200,7 +200,7 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 1.3.0)
     rubyzip (2.3.2)
-    sdr-client (2.12.0)
+    sdr-client (2.13.2)
       activesupport
       cocina-models (~> 0.96.0)
       config
@@ -212,7 +212,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    super_diff (0.11.0)
+    super_diff (0.12.0)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff

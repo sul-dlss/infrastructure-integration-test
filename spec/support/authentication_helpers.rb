@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AuthenticationHelpers
-  mattr_accessor :username, :password, :token
+  mattr_accessor :username, :password
 
   def authenticate!(start_url:, expected_text:)
     ensure_username! # sunet is needed by some tests, even if the user doesn't have to enter user/pass for Stanford web authN
@@ -20,16 +20,6 @@ module AuthenticationHelpers
     click_through_check_if_needed('Yes, this is my device')
 
     expected_text_found?(expected_text)
-  end
-
-  def ensure_token
-    self.token ||= begin
-      visit "#{Settings.argo_url}/settings/tokens"
-      click_link_or_button 'Generate new token'
-      find_field('Token').value.tap do |token|
-        SdrClient::Credentials.write(token)
-      end
-    end
   end
 
   private
