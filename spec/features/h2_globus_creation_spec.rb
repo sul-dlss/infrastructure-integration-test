@@ -11,9 +11,6 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     authenticate!(start_url: "#{Settings.h2_url}/dashboard", expected_text: /Dashboard|Continue your deposit/)
   end
 
-  # note! you likely want to use `click_deposit_and_handle_terms_modal` for deposit
-  # form submission (instead of just `click_link_or_button 'Deposit'`), since the modal
-  # may pop up on any attempt to deposit.
   scenario do
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
     click_link_or_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.h2_terms_modal_wait)
