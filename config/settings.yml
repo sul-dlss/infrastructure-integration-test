@@ -52,6 +52,7 @@ searchworks_url: 'https://searchworks-preview-stage.stanford.edu' # there is no 
 preassembly:
   username: 'preassembly'
   bundle_directory: '/dor/staging/integration-tests/files-reaccessioning-test'
+  ocr_bundle_directory: '/dor/staging/integration-tests/ocr-test'
   hfs_bundle_directory: '/dor/staging/integration-tests/hierarchical-file-test'
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
 

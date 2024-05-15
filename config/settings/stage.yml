@@ -13,3 +13,5 @@ was_registrar:
   jobs_directory: '/was_unaccessioned_data/jobs'
   url: 'https://was-registrar-app-stage.stanford.edu'
   username: 'was'
+ocr:
+  enabled: false
