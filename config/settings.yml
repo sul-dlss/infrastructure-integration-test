@@ -53,6 +53,7 @@ preassembly:
   username: 'preassembly'
   bundle_directory: '/dor/staging/integration-tests/files-reaccessioning-test'
   ocr_bundle_directory: '/dor/staging/integration-tests/ocr-test'
+  ocr_document_bundle_directory: '/dor/staging/integration-tests/ocr-test-document'
   hfs_bundle_directory: '/dor/staging/integration-tests/hierarchical-file-test'
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
 

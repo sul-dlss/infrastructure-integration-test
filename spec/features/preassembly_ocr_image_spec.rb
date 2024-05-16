@@ -78,8 +78,8 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     select 'Pre Assembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
     fill_in 'Staging location', with: preassembly_bundle_dir
-    choose 'No' # images do not have pre-existing OCR
-    choose 'Yes. Run ABBYY OCR.' # yes, run OCR
+    choose 'batch_context_manually_corrected_ocr_false' # indicate images do not have pre-existing OCR
+    choose 'batch_context_run_ocr_true' # yes, run OCR
 
     click_link_or_button 'Submit'
     expect(page).to have_text 'Success! Your job is queued. ' \
