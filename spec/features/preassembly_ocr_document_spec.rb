@@ -108,12 +108,6 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     # Check that ocrWF ran
     reload_page_until_timeout!(text: 'ocrWF')
 
-    # TODO: remove this when we actually have ocr-create complete with the process
-    # this manually completes the ocr-create step
-    click_link_or_button 'ocrWF'
-    first('button', text: 'Set to completed').click
-    click_link_or_button 'Cancel' # close the workflow window
-
     # Wait for the second version accessioningWF to finish
     reload_page_until_timeout!(text: 'v2 Accessioned')
 
