@@ -171,9 +171,15 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
       find_link('up to 7 days')
     end
 
-    # republish the item to purl
+    # close version to republish the item to purl
     visit "#{Settings.argo_url}/view/#{bare_druid}"
-    click_link_or_button 'Republish'
+    click_link_or_button 'Close Version'
+    within '.modal-dialog' do
+      fill_in 'Version description', with: 'closing version for integration testing'
+      click_link_or_button 'Close Version'
+    end
+    expect(page).to have_text('closing version for integration testing')
+    page.refresh # solves problem of close version modal re-appearing
 
     # check purl page for 3 day embargo
     expect_text_on_purl_page(
