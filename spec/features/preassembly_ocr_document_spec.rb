@@ -72,7 +72,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     end
 
     visit Settings.preassembly.url
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'

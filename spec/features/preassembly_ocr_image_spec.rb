@@ -72,7 +72,7 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     end
 
     visit Settings.preassembly.url
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'
@@ -80,6 +80,11 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     fill_in 'Staging location', with: preassembly_bundle_dir
     choose 'batch_context_manually_corrected_ocr_false' # indicate images do not have pre-existing OCR
     choose 'batch_context_run_ocr_true' # yes, run OCR
+
+    # NOTE: the following commented out code is for testing the language selector, but submit seems to hang
+    # first('button[aria-label="toggle dropdown"]').click # open the dropdown for language selector
+    # check 'batch_context_ocr_languages_english' # choose a couple languages
+    # check 'batch_context_ocr_languages_spanish'
 
     click_link_or_button 'Submit'
     expect(page).to have_text 'Success! Your job is queued. ' \
