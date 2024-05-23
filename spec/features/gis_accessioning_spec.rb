@@ -96,14 +96,18 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # verify that the content type is "geo"
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
 
+    # Confirms that the object has been published to PURL.
+    # Confirming here because there may be a file system latency for the purl xml file.
+    # If the purl xml file is not available, release won't work.
+    # This may be obviated when no longer using the file system for purl xml files.
+    expect_text_on_purl_page(druid:, text: collection_name)
+
     # release to Earthworks
+    visit "#{Settings.argo_url}/view/#{druid}"
     click_link_or_button 'Manage release'
     select 'Earthworks', from: 'to'
     click_link_or_button('Submit')
     expect(page).to have_text('Release object job was successfully created.')
-
-    # pause for a couple seconds for release to happen
-    sleep 2
 
     # This section confirms the object has been published to PURL
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
