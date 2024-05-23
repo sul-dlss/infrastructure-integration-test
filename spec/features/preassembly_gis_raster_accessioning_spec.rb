@@ -80,7 +80,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     end
 
     visit Settings.preassembly.url
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
     select 'Pre Assembly Run', from: 'Job type'
