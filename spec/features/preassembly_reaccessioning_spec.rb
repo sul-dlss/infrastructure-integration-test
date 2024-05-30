@@ -50,6 +50,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     select 'integration-testing', from: 'Admin Policy'
     select collection_name, from: 'Collection'
     select 'image', from: 'Content Type'
+
+    # sleep 1 # if you notice the project name not filling in completely, try this to
+    #           give the page a moment to load so we fill in the full text field
     fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
     fill_in 'Source ID', with: "#{source_id}-#{random_alpha}"
     fill_in 'Label', with: object_label
