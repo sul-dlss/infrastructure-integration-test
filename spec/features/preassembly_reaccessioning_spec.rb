@@ -77,8 +77,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: preassembly_project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Image', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'Image', from: 'Content type'
     fill_in 'Staging location', with: preassembly_bundle_dir
 
     click_link_or_button 'Submit'
@@ -192,9 +192,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(page).to have_text 'Complete the form below'
 
     fill_in 'Project name', with: random_project_name
-    select 'Pre Assembly Run', from: 'Job type'
+    select 'Preassembly Run', from: 'Job type'
     fill_in 'Staging location', with: preassembly_bundle_dir
-    select 'Group by filename', from: 'Processing configuration'
+    select 'Group by filename', from: 'Processing configuration' unless Settings.ocr.enabled
     check('batch_context_using_file_manifest')
 
     click_link_or_button 'Submit'

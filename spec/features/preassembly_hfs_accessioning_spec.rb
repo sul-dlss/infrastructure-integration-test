@@ -66,8 +66,8 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     # sleep 1 # if you notice the project name not filling in completely, try this to
     #           give the page a moment to load so we fill in the full text field
     fill_in 'Project name', with: preassembly_project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'File', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'File', from: 'Content type'
     fill_in 'Staging location', with: preassembly_hfs_bundle_dir
 
     click_link_or_button 'Submit'
@@ -124,10 +124,10 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect(page).to have_content 'Complete the form below'
 
     fill_in 'Project name', with: random_project_name
-    select 'Pre Assembly Run', from: 'Job type'
+    select 'Preassembly Run', from: 'Job type'
     fill_in 'Staging location', with: preassembly_hfs_bundle_dir
-    select 'File', from: 'Content structure'
-    select 'Default', from: 'Processing configuration'
+    select 'File', from: 'Content type'
+    select 'Default', from: 'Processing configuration' unless Settings.ocr.enabled
 
     click_link_or_button 'Submit'
 

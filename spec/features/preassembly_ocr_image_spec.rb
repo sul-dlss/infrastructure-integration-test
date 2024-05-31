@@ -74,13 +74,13 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Complete the form below')
 
-    # sleep 1 # if you notice the project name not filling in completely, try this to
+    sleep 1 # if you notice the project name not filling in completely, try this to
     #           give the page a moment to load so we fill in the full text field
     fill_in 'Project name', with: preassembly_project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Image', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'Image', from: 'Content type'
     fill_in 'Staging location', with: preassembly_bundle_dir
-    choose 'batch_context_manually_corrected_ocr_false' # indicate images do not have pre-existing OCR
+    choose 'batch_context_ocr_available_false' # indicate images do not have pre-existing OCR
     choose 'batch_context_run_ocr_true' # yes, run OCR
 
     # NOTE: the following commented out code is for testing the language selector, but submit seems to hang
