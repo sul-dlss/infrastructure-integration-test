@@ -51,7 +51,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     select collection_name, from: 'Collection'
     select 'image', from: 'Content Type'
 
-    # sleep 1 # if you notice the project name not filling in completely, try this to
+    sleep 1 # if you notice the project name not filling in completely, try this to
     #           give the page a moment to load so we fill in the full text field
     fill_in 'Project Name', with: 'Integration Test - Image via Preassembly'
     fill_in 'Source ID', with: "#{source_id}-#{random_alpha}"
@@ -76,6 +76,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Complete the form below')
 
+    sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: preassembly_project_name
     select 'Preassembly Run', from: 'Job type'
     select 'Image', from: 'Content type'
@@ -191,6 +192,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     expect(page).to have_text 'Complete the form below'
 
+    sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: random_project_name
     select 'Preassembly Run', from: 'Job type'
     fill_in 'Staging location', with: preassembly_bundle_dir
