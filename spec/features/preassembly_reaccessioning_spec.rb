@@ -195,9 +195,10 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: random_project_name
     select 'Preassembly Run', from: 'Job type'
+    select 'Image', from: 'Content type'
     fill_in 'Staging location', with: preassembly_bundle_dir
     select 'Group by filename', from: 'Processing configuration' unless Settings.ocr.enabled
-    check('batch_context_using_file_manifest')
+    choose 'batch_context_using_file_manifest_true'
 
     click_link_or_button 'Submit'
 
