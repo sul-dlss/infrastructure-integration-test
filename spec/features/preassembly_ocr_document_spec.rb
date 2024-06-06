@@ -120,8 +120,9 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
 
     files = all('tr.file')
 
-    expect(files.size).to eq 1
+    expect(files.size).to eq 2
     expect(files[0].text).to match(%r{testocr-image-only.pdf application/pdf 9\d\d KB})
+    expect(files[1].text).to match(%r{#{bare_druid}-generated.pdf application/pdf 16\.\d KB Transcription})
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('document') # filled in by accessioning
 
