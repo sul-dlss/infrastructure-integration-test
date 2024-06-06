@@ -74,11 +74,11 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Complete the form below')
 
-    # sleep 1 # if you notice the project name not filling in completely, try this to
+    sleep 1 # if you notice the project name not filling in completely, try this to
     #           give the page a moment to load so we fill in the full text field
     fill_in 'Project name', with: preassembly_project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Document', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'Document/PDF', from: 'Content type'
     fill_in 'Staging location', with: preassembly_bundle_dir
     choose 'batch_context_manually_corrected_ocr_false' # indicate documents do not have pre-existing OCR
     choose 'batch_context_run_ocr_true' # yes, run OCR
@@ -120,8 +120,9 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
 
     files = all('tr.file')
 
-    expect(files.size).to eq 1
+    expect(files.size).to eq 2
     expect(files[0].text).to match(%r{testocr-image-only.pdf application/pdf 9\d\d KB})
+    expect(files[1].text).to match(%r{#{bare_druid}-generated.pdf application/pdf 16\.\d KB Transcription})
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('document') # filled in by accessioning
 
