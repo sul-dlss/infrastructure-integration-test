@@ -132,7 +132,7 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
 
     expect(files[3].text).to match(%r{testocr2.tiff image/tiff 177 KB})
     expect(files[4].text).to match(%r{testocr2.jp2 image/jp2 25\.*\d* KB})
-    expect(files[5].text).to match(%r{testocr2.xml application/xml 7\.*\d* KB Transcription})
+    expect(files[5].text).to match(%r{testocr2.xml application/xml 8\.*\d* KB Transcription})
 
     expect(files[6].text).to match(%r{#{bare_druid}.pdf application/pdf 16\.*\d* KB Transcription})
     expect(files[7].text).to match(%r{#{bare_druid}.txt text/plain 570 Bytes Transcription})
