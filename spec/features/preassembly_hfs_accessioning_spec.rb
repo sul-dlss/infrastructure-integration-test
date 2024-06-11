@@ -61,7 +61,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     end
 
     visit Settings.preassembly.url
-    expect(page).to have_css('h1', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Start new job')
 
     sleep 1 # if you notice the project name not filling in completely, try this to
     #           give the page a moment to load so we fill in the full text field
@@ -121,7 +121,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     visit Settings.preassembly.url
 
-    expect(page).to have_content 'Complete the form below'
+    expect(page).to have_content 'Start new job'
 
     sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: random_project_name

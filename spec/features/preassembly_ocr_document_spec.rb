@@ -72,7 +72,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     end
 
     visit Settings.preassembly.url
-    expect(page).to have_css('h1', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Start new job')
 
     sleep 1 # if you notice the project name not filling in completely, try this to
     #           give the page a moment to load so we fill in the full text field
@@ -84,6 +84,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     choose 'batch_context_run_ocr_true' # yes, run OCR
 
     click_link_or_button 'Submit'
+    sleep 10
     expect(page).to have_text 'Success! Your job is queued. ' \
                               'A link to job output will be emailed to you upon completion.'
 
