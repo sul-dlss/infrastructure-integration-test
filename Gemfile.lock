@@ -186,10 +186,15 @@ GEM
       parser (>= 3.3.1.0)
     rubocop-capybara (2.21.0)
       rubocop (~> 1.41)
+    rubocop-factory_bot (2.26.1)
+      rubocop (~> 1.61)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
     rubocop-rspec (3.0.1)
       rubocop (~> 1.61)
+    rubocop-rspec_rails (2.30.0)
+      rubocop (~> 1.61)
+      rubocop-rspec (~> 3, >= 3.0.1)
     ruby-progressbar (1.13.0)
     rubyXL (3.4.27)
       nokogiri (>= 1.10.8)
@@ -249,8 +254,10 @@ DEPENDENCIES
   rspec
   rubocop
   rubocop-capybara
+  rubocop-factory_bot
   rubocop-rake
   rubocop-rspec
+  rubocop-rspec_rails
   rubyXL
   sdr-client (~> 2.0)
   selenium-webdriver
