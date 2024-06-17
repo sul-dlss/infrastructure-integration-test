@@ -1,7 +1,9 @@
 require:
-  - rubocop-rspec
-  - rubocop-rake
   - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-rake
+  - rubocop-rspec
+  - rubocop-rspec_rails
 
 inherit_from: .rubocop_todo.yml
 
@@ -12,8 +14,8 @@ AllCops:
     - './Rakefile'
     - '**/*.rb'
 
-RSpec/Capybara/FeatureMethods:
-  EnabledMethods:
+RSpec/Dialect:
+  Enabled:
     - 'scenario'
 
 Layout/EmptyLinesAroundAttributeAccessor:
@@ -327,7 +329,7 @@ RSpec/SubjectDeclaration: # new in 2.5
   Enabled: true
 FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
-RSpec/Rails/AvoidSetupHook: # new in 2.4
+RSpecRails/AvoidSetupHook: # new in 2.4
   Enabled: true
 
 Gemspec/DeprecatedAttributeAssignment: # new in 1.30
@@ -367,7 +369,7 @@ Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
 Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
-RSpec/Rails/HaveHttpStatus: # new in 2.12
+RSpecRails/HaveHttpStatus: # new in 2.12
   Enabled: true
 
 Lint/RequireRangeParentheses: # new in 1.32
@@ -399,7 +401,7 @@ Capybara/SpecificActions: # new in 2.14
   Enabled: true
 FactoryBot/ConsistentParenthesesStyle: # new in 2.14
   Enabled: true
-RSpec/Rails/InferredSpecType: # new in 2.14
+RSpecRails/InferredSpecType: # new in 2.14
   Enabled: true
 
 Lint/UselessRescue: # new in 1.43
@@ -424,7 +426,7 @@ RSpec/PendingWithoutReason: # new in 2.16
   Enabled: true
 FactoryBot/FactoryNameStyle: # new in 2.16
   Enabled: true
-RSpec/Rails/MinitestAssertions: # new in 2.17
+RSpecRails/MinitestAssertions: # new in 2.17
   Enabled: true
 
 Gemspec/DevelopmentDependencies: # new in 1.44
@@ -472,7 +474,7 @@ RSpec/RedundantAround: # new in 2.19
   Enabled: true
 RSpec/SkipBlockInsideExample: # new in 2.19
   Enabled: true
-RSpec/Rails/TravelAround: # new in 2.19
+RSpecRails/TravelAround: # new in 2.19
   Enabled: true
 
 Lint/MixedCaseRange: # new in 1.53
@@ -505,7 +507,7 @@ RSpec/SpecFilePathFormat: # new in 2.24
   Enabled: true
 RSpec/SpecFilePathSuffix: # new in 2.24
   Enabled: true
-RSpec/Rails/NegationBeValid: # new in 2.23
+RSpecRails/NegationBeValid: # new in 2.23
   Enabled: true
 
 Lint/ItWithoutArgumentsInBlock: # new in 1.59
