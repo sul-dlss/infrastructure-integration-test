@@ -131,7 +131,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     reload_page_until_timeout! do
       click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-      # this is a hack that forces the event section to scroll into view; the section
+      # this is a hack that forces the tech metadata section to scroll into view; the section
       # is lazily loaded, and won't actually be requested otherwise, even if the button
       # is clicked to expand the event section.
       page.execute_script 'window.scrollBy(0,100);'
@@ -139,12 +139,8 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
       # events are loaded lazily, give the network a few moments
       page.has_text?('v2 Accessioned', wait: 2)
     end
-    page.has_text?('filetype', count: 1)
-    page.has_text?('file_modification', count: 1)
-
-    # This section confirms the object has been published to PURL
-    expect_text_on_purl_page(druid:, text: collection_name)
-    expect_text_on_purl_page(druid:, text: object_label)
+    page.has_text?('filetype', count: 2)
+    page.has_text?('file_modification', count: 2)
 
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and
@@ -152,7 +148,6 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     # to a cloud endpoint.  So, confirming that both versions of our test object have
     # replication events logged for all three cloud endpoints is a good basic test of the
     # entire preservation flow.
-    visit "#{Settings.argo_url}/view/#{druid}"
     prefixed_druid = "druid:#{bare_druid}"
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
@@ -186,5 +181,9 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
         end
       end
     end
+
+    # This section confirms the object has been published to PURL
+    expect_text_on_purl_page(druid:, text: collection_name)
+    expect_text_on_purl_page(druid:, text: object_label)
   end
 end

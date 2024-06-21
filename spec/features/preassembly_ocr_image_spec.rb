@@ -143,7 +143,7 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     reload_page_until_timeout! do
       click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-      # this is a hack that forces the event section to scroll into view; the section
+      # this is a hack that forces the tech metadata section to scroll into view; the section
       # is lazily loaded, and won't actually be requested otherwise, even if the button
       # is clicked to expand the event section.
       page.execute_script 'window.scrollBy(0,100);'
@@ -151,22 +151,8 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
       # events are loaded lazily, give the network a few moments
       page.has_text?('v2 Accessioned', wait: 2)
     end
-    page.has_text?('filetype', count: 2)
-    page.has_text?('file_modification', count: 2)
-
-    # This section confirms the object has been published to PURL and has a
-    # valid IIIF manifest
-    # wait for the PURL name to be published by checking for collection name
-    expect_text_on_purl_page(druid:, text: collection_name)
-    expect_text_on_purl_page(druid:, text: object_label)
-    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
-    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
-    canvas = JSON.parse(Faraday.get(canvas_url).body)
-    image_url = canvas.dig('images', 0, 'resource', '@id')
-    image_response = Faraday.get(image_url)
-    expect(image_response.status).to eq(200)
-    expect(image_response.headers['content-type']).to include('image/jpeg')
+    page.has_text?('filetype', count: 6)
+    page.has_text?('file_modification', count: 6)
 
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and
@@ -174,7 +160,6 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     # to a cloud endpoint.  So, confirming that both versions of our test object have
     # replication events logged for all three cloud endpoints is a good basic test of the
     # entire preservation flow.
-    visit "#{Settings.argo_url}/view/#{druid}"
     prefixed_druid = "druid:#{bare_druid}"
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
@@ -208,5 +193,19 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
         end
       end
     end
+
+    # This section confirms the object has been published to PURL and has a
+    # valid IIIF manifest
+    # wait for the PURL name to be published by checking for collection name
+    expect_text_on_purl_page(druid:, text: collection_name)
+    expect_text_on_purl_page(druid:, text: object_label)
+    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
+    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
+    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
+    canvas = JSON.parse(Faraday.get(canvas_url).body)
+    image_url = canvas.dig('images', 0, 'resource', '@id')
+    image_response = Faraday.get(image_url)
+    expect(image_response.status).to eq(200)
+    expect(image_response.headers['content-type']).to include('image/jpeg')
   end
 end
