@@ -32,7 +32,7 @@ GEM
       terminal-table
       xpath (>= 2.1)
     childprocess (5.0.0)
-    cocina-models (0.98.0)
+    cocina-models (0.98.1)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -61,7 +61,7 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.5.1)
-    dor-services-client (14.13.0)
+    dor-services-client (14.14.0)
       activesupport (>= 4.2, < 8)
       cocina-models (~> 0.98.0)
       deprecation
@@ -120,7 +120,7 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     mini_portile2 (2.8.7)
-    minitest (5.24.0)
+    minitest (5.24.1)
     multi_json (1.15.0)
     mutex_m (0.2.0)
     net-http (0.4.1)
@@ -157,7 +157,7 @@ GEM
     rake (13.2.1)
     rb_sys (0.9.97)
     regexp_parser (2.9.2)
-    rexml (3.3.0)
+    rexml (3.3.1)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
