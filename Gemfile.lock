@@ -98,7 +98,7 @@ GEM
       activesupport (>= 3.0, < 8.0)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
-    faker (3.4.1)
+    faker (3.4.2)
       i18n (>= 1.8.11, < 2)
     faraday (2.10.0)
       faraday-net_http (>= 2.0, < 3.2)
@@ -159,7 +159,7 @@ GEM
     rake (13.2.1)
     rb_sys (0.9.98)
     regexp_parser (2.9.2)
-    rexml (3.3.1)
+    rexml (3.3.2)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
