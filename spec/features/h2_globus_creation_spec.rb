@@ -73,16 +73,16 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # Checks if title is on resulting display
     expect(page).to have_text(item_title)
     expect(page).to have_text('Deposited') # async - it might take a bit
+    expect(page).to have_text(Settings.purl_url) # async - it might take a bit
 
-    # Opens Argo and searches on title
-    visit Settings.argo_url
-    find_field('Search...').send_keys("\"#{item_title}\"", :enter)
-    # Click on link with the item's title in the search results
-    within '.document-title-heading' do
-      click_link_or_button
-    end
-    bare_druid = page.current_url.split(':').last
+    bare_druid = find('a.copy-button')[:href][-11, 11]
     puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
+
+    # Opens Argo detail page
+    visit Settings.argo_url
+    expect(page).to have_text('Welcome to Argo!')
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
+
     reload_page_until_timeout!(text: 'v1 Accessioned')
     expect(page).to have_text('my-icons-collection/license/license.pdf')
   end
