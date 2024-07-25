@@ -90,15 +90,14 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     expect(page).to have_text(item_title)
     expect(page).to have_text(Settings.purl_url) # async - it might take a bit
 
-    # Opens Argo and searches on title
+    bare_druid = find('a.copy-button')[:href][-11, 11]
+    puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
+
+    # Opens Argo detail page
     visit Settings.argo_url
-    find_field('Search...').send_keys("\"#{item_title}\"", :enter)
-    # Click on link with the item's title in the search results
-    within '.document-title-heading' do
-      click_link_or_button
-    end
-    sleep 1 # sometimes the current_url is not updated quickly enough
-    bare_druid = page.current_url.split('druid:').last
+    expect(page).to have_text('Welcome to Argo!')
+
+    visit "#{Settings.argo_url}/view/#{bare_druid}"
     puts " *** h2 object creation druid: #{bare_druid} ***" # useful for debugging
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
@@ -109,6 +108,7 @@ RSpec.describe 'Use H2 to create a collection and an item object belonging to it
     # create a new version
     visit "#{Settings.h2_url}/dashboard"
     click_link_or_button "Edit #{item_title}"
+    choose('No') # Do you want to create a new version of this deposit?
     fill_in 'What\'s changing?', with: 'abstract'
     fill_in 'Abstract', with: "A changed abstract for #{collection_title} logo"
     click_deposit_and_handle_terms_modal
