@@ -137,5 +137,17 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
                                                   retry_wait: 10)
 
     expect(page).to have_text('adding file (Public version 2)')
+
+    # Go to public version 1, which can be withdrawn
+    click_link_or_button 'Public version 1'
+    expect(page).to have_text('You are viewing an older version.')
+    accept_confirm 'Once you withdraw this version, the Purl will no longer display it. Are your sure?' do
+      click_link_or_button 'Withdraw'
+    end
+    expect(page).to have_text('Withdrawn.')
+
+    # Now restore it.
+    click_link_or_button 'Restore'
+    expect(page).to have_text('Restored.')
   end
 end
