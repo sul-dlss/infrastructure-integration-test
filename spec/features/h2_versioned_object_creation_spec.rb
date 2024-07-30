@@ -141,7 +141,7 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
     # Go to public version 1, which can be withdrawn
     click_link_or_button 'Public version 1'
     expect(page).to have_text('You are viewing an older version.')
-    accept_confirm 'Once you withdraw this version, the Purl will no longer display it. Are your sure?' do
+    accept_confirm 'Once you withdraw this version, the Purl will no longer display it. Are you sure?' do
       click_link_or_button 'Withdraw'
     end
     expect(page).to have_text('Withdrawn.')
