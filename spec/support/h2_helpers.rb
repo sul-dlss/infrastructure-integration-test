@@ -5,6 +5,7 @@ module H2Helpers
   # all-in-one convenience method for submitting the deposit form and
   # handling the modal if one is shown
   def click_deposit_and_handle_terms_modal
+    sleep 0.5 # wait for everything to settle
     click_link_or_button 'Deposit'
     click_through_terms_of_deposit_modal
   end
