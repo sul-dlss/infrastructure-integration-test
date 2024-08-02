@@ -141,33 +141,36 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
     # Go to public version 1, which can be withdrawn
     click_link_or_button 'Public version 1'
     expect(page).to have_text('You are viewing an older version.')
-    accept_confirm 'Once you withdraw this version, the Purl will no longer display it. Are your sure?' do
+    accept_confirm 'Once you withdraw this version, the Purl will no longer display it. Are you sure?' do
       click_link_or_button 'Withdraw'
     end
     expect(page).to have_text('Withdrawn.')
 
     # Verify that changes are reflected in purl service
     visit "#{Settings.purl_url}/#{bare_druid}?version_feature=true"
-    expect(page).to have_text('Versions')
+    reload_page_until_timeout!(text: 'Versions')
     expect(find_table_cell_following(header_text: 'Version 2', xpath_suffix: '[2]').text)
       .to eq('You are viewing this version | Copy URL')
     expect(find_table_cell_following(header_text: 'Version 1', xpath_suffix: '[2]').text)
-      # TODO: Change to `eq('Withdrawn')` when user version propagation to Purl is done
-      .to eq('View | Copy URL')
+      .to eq('Withdrawn')
     visit "#{Settings.purl_url}/#{bare_druid}/v1?version_feature=true"
-    # TODO: change to `have_text('This version has been withdrawn')` when user version propagation to Purl is done
-    expect(page).to have_text('A newer version of this item is available')
-    # TODO: Remove the following two tests and add a test to `expect(page).not_to have_text('Versions')`
-    #       when user version propagation to Purl is done
-    expect(find_table_cell_following(header_text: 'Version 2', xpath_suffix: '[2]').text)
-      .to eq('View | Copy URL')
-    expect(find_table_cell_following(header_text: 'Version 1', xpath_suffix: '[2]').text)
-      .to eq('You are viewing this version | Copy URL')
+    expect(page).to have_text('This version has been withdrawn')
+    expect(page).to have_no_text('Versions')
 
     # Now restore it.
     visit "#{Settings.argo_url}/view/#{bare_druid}"
     click_link_or_button 'Public version 1'
+    expect(page).to have_text('You are viewing an older version.')
     click_link_or_button 'Restore'
     expect(page).to have_text('Restored.')
+
+    # Verify that changes are reflected in purl service
+    visit "#{Settings.purl_url}/#{bare_druid}?version_feature=true"
+    reload_page_until_timeout!(text: 'View | Copy URL')
+    expect(page).to have_text('Versions')
+    expect(find_table_cell_following(header_text: 'Version 2', xpath_suffix: '[2]').text)
+      .to eq('You are viewing this version | Copy URL')
+    expect(find_table_cell_following(header_text: 'Version 1', xpath_suffix: '[2]').text)
+      .to eq('View | Copy URL')
   end
 end
