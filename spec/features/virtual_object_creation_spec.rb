@@ -37,7 +37,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     end
 
     # Use Bulk Actions to upload CSV
-    click_link_or_button 'Bulk Actions'
+    click_link_or_button "Bulk\u00a0Action"
     expect(page).to have_text 'Bulk Actions'
     click_link_or_button 'New Bulk Action'
     expect(page).to have_text 'New Bulk Action'
