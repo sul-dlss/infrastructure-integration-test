@@ -153,7 +153,7 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
       .to eq('You are viewing this version | Copy URL')
     expect(find_table_cell_following(header_text: 'Version 1', xpath_suffix: '[2]').text)
       .to eq('Withdrawn')
-    visit "#{Settings.purl_url}/#{bare_druid}/v1?version_feature=true"
+    visit "#{Settings.purl_url}/#{bare_druid}/version/1?version_feature=true"
     expect(page).to have_text('This version has been withdrawn')
     expect(page).to have_no_text('Versions')
 
