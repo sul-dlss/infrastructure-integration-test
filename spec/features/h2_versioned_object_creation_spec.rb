@@ -140,7 +140,7 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
 
     # Go to public version 1, which can be withdrawn
     click_link_or_button 'Public version 1'
-    expect(page).to have_text('You are viewing an older version.')
+    expect(page).to have_text('You are viewing an older public version.')
     accept_confirm 'Once you withdraw this version, the Purl will no longer display it. Are you sure?' do
       click_link_or_button 'Withdraw'
     end
@@ -160,7 +160,7 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
     # Now restore it.
     visit "#{Settings.argo_url}/view/#{bare_druid}"
     click_link_or_button 'Public version 1'
-    expect(page).to have_text('You are viewing an older version.')
+    expect(page).to have_text('You are viewing an older public version.')
     click_link_or_button 'Restore'
     expect(page).to have_text('Restored.')
 
