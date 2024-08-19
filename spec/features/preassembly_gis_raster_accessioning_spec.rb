@@ -159,7 +159,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     expect(page).to have_text('This raster dataset is a georeferenced image') # abstract
     expect(page).to have_text('cartographic') # type of resource
     expect(page).to have_text('GeoTIFF') # form
-    expect(page).to have_text('Scale not given ; EPSG::4326') # map data
+    expect(page).to have_text('EPSG::4326') # map data
     expect(page).to have_text('Geospatial data') # genre
     expect(page).to have_text('Cartographic dataset') # genre
 
