@@ -9,7 +9,6 @@ require 'pry-byebug'
 require 'rubyXL'
 require 'sdr_client'
 require 'selenium-webdriver'
-require 'webdrivers'
 
 $sdr_env = ENV.fetch('SDR_ENV', 'stage')
 root = Pathname.new(File.expand_path('../', __dir__))
