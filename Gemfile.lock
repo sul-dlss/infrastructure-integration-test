@@ -102,8 +102,9 @@ GEM
       nokogiri (>= 1.4.3)
     faker (3.4.2)
       i18n (>= 1.8.11, < 2)
-    faraday (2.11.0)
+    faraday (2.12.0)
       faraday-net_http (>= 2.0, < 3.4)
+      json
       logger
     faraday-net_http (3.3.0)
       net-http
@@ -211,13 +212,13 @@ GEM
       launchy
       zeitwerk
     securerandom (0.3.1)
-    selenium-webdriver (4.24.0)
+    selenium-webdriver (4.25.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    super_diff (0.12.1)
+    super_diff (0.13.0)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
