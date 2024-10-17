@@ -56,6 +56,7 @@ preassembly:
   bundle_directory: '/dor/staging/integration-tests/files-reaccessioning-test'
   ocr_bundle_directory: '/dor/staging/integration-tests/ocr-test'
   ocr_document_bundle_directory: '/dor/staging/integration-tests/ocr-test-document'
+  speech_to_text_bundle_directory: '/dor/staging/integration-tests/speech-to-text-test'
   hfs_bundle_directory: '/dor/staging/integration-tests/hierarchical-file-test'
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
 
@@ -63,3 +64,6 @@ earthworks_url: 'https://earthworks-stage.stanford.edu/catalog'
 
 ocr:
   enabled: true
+
+speech_to_text:
+  enabled: false
