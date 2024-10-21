@@ -13,7 +13,6 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
   end
   let(:local_manifest_location) { 'tmp/manifest.csv' }
-  let(:local_file_manifest_location) { 'tmp/file_manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-image-ocr-#{random_noun}-#{random_alpha}" }
   let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
   let(:source_id) { "image-ocr-integration-test:#{source_id_random_word}" }
@@ -24,12 +23,6 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     <<~CSV
       druid,object
       #{bare_druid},content
-    CSV
-  end
-  let(:preassembly_reaccession_manifest_csv) do
-    <<~CSV
-      druid,object
-      #{bare_druid},#{bare_druid}
     CSV
   end
 
