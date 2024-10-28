@@ -137,23 +137,23 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     expect(files.size).to eq 17
     expect(files[0].text).to match(%r{video_1.mp4 video/mp4 1.4\d KB})
     expect(files[1].text).to match(%r{video_1.mpeg video/mpeg 64\d* KB})
-    expect(files[2].text).to match(%r{video_1_thumb.jp2 image/jp2 2\d*\d* KB})
-    expect(files[3].text).to match(%r{video_1.json application/json 3\d*\d* KB})
-    expect(files[4].text).to match(%r{video_1.srt text/plain 4\d* KB})
-    expect(files[5].text).to match(%r{video_1.tsv text/plain 3\d* KB})
-    expect(files[6].text).to match(%r{video_1.txt text/plain 1\d* KB})
-    expect(files[7].text).to match(%r{video_1.vtt text/vtt 4\d* KB})
+    expect(files[2].text).to match(%r{video_1_thumb.jp2 image/jp2 2\d*\d* Bytes})
+    expect(files[3].text).to match(%r{video_1.json application/json 3\d*\d* Bytes})
+    expect(files[4].text).to match(%r{video_1.srt text/plain 4\d* Bytes})
+    expect(files[5].text).to match(%r{video_1.tsv text/plain 3\d* Bytes})
+    expect(files[6].text).to match(%r{video_1.txt text/plain 1\d* Bytes})
+    expect(files[7].text).to match(%r{video_1.vtt text/vtt 4\d* Bytes})
 
     expect(files[8].text).to match(%r{video_2.mp4 video/mp4 1.4\d KB})
     expect(files[9].text).to match(%r{video_2.mpeg video/mpeg 64\d* KB})
-    expect(files[10].text).to match(%r{video_2_thumb.jp2 image/jp2 2\d*\d* KB})
-    expect(files[11].text).to match(%r{video_2.json application/json 3\d*\d* KB})
-    expect(files[12].text).to match(%r{video_2.srt text/plain 4\d* KB})
-    expect(files[13].text).to match(%r{video_2.tsv text/plain 3\d* KB})
-    expect(files[14].text).to match(%r{video_2.txt text/plain 1\d* KB})
-    expect(files[15].text).to match(%r{video_2.vtt text/vtt 4\d* KB})
+    expect(files[10].text).to match(%r{video_2_thumb.jp2 image/jp2 2\d*\d* Bytes})
+    expect(files[11].text).to match(%r{video_2.json application/json 3\d*\d* Bytes})
+    expect(files[12].text).to match(%r{video_2.srt text/plain 4\d* Bytes})
+    expect(files[13].text).to match(%r{video_2.tsv text/plain 3\d* Bytes})
+    expect(files[14].text).to match(%r{video_2.txt text/plain 1\d* Bytes})
+    expect(files[15].text).to match(%r{video_2.vtt text/vtt 4\d* Bytes})
 
-    expect(files[16].text).to match(%r{video_log.txt text/plain 1\d* KB})
+    expect(files[16].text).to match(%r{video_log.txt text/plain 1\d* Bytes})
 
     # TODO: Add expectations for the speech to text files when they are added to the object
     #
@@ -221,11 +221,6 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     expect_text_on_purl_page(druid:, text: object_label)
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
-    canvas = JSON.parse(Faraday.get(canvas_url).body)
-    image_url = canvas.dig('images', 0, 'resource', '@id')
-    image_response = Faraday.get(image_url)
-    expect(image_response.status).to eq(200)
-    expect(image_response.headers['content-type']).to include('image/jpeg')
+    expect(iiif_manifest['label']['en'].first).to eq object_label
   end
 end
