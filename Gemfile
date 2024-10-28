@@ -9,7 +9,7 @@ gem 'capybara'
 gem 'capybara_table'
 gem 'config'
 gem 'csv'
-gem 'dor-services-client', '~> 14.0'
+gem 'dor-services-client'
 gem 'druid-tools' # for constructing druid tree strings easily
 gem 'faker'
 gem 'faraday' # etds require POST request from registrar
