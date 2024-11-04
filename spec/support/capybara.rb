@@ -8,8 +8,11 @@ Capybara.enable_aria_label = true
 Capybara.run_server = false
 
 Capybara.register_driver :my_firefox_driver do |app|
+  Selenium::WebDriver::Firefox::Service::EXECUTABLE = Settings.browser.geckodriver_path if Settings.browser.geckodriver_path
+
   options = Selenium::WebDriver::Firefox::Options.new
   options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
+    profile['browser.download.alwaysOpenPanel'] = false
     profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
     # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
     profile['browser.download.folderList'] = 2
@@ -23,6 +26,7 @@ Capybara.register_driver :my_firefox_driver do |app|
   # NOTE: You might think the `--window-size` arg would work here. Not for me, it didn't.
   options.add_argument("--width=#{Settings.browser.width}")
   options.add_argument("--height=#{Settings.browser.height}")
+  options.binary = Settings.browser.firefox_path if Settings.browser.firefox_path
 
   Capybara::Selenium::Driver.new(app, browser: :firefox, options:)
 end
