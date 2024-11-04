@@ -28,14 +28,14 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
   end
   let(:preassembly_file_manifest_csv) do
     <<~CSV
-      druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type
-      content,video_1.mp4,Video file 1,1,yes,yes,yes,video
-      content,video_1.mpeg,Video file 1,1,no,yes,no,video
-      content,video_1_thumb.jp2,Video file 1,1,yes,yes,yes,image
-      content,video_2.mp4,Video file 2,2,yes,yes,yes,video
-      content,video_2.mpeg,Video file 2,2,no,yes,no,video
-      content,video_2_thumb.jp2,Video file 2,2,yes,yes,yes,image
-      content,video_log.txt,Disc log file,5,no,yes,no,file
+      druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,sdr_generated_text,corrected_for_accessibility
+      content,video_1.mp4,Video file 1,1,yes,yes,yes,video,,,
+      content,video_1.mpeg,Video file 1,1,no,yes,no,video,,,
+      content,video_1_thumb.jp2,Video file 1,1,yes,yes,yes,image,,,
+      content,video_2.mp4,Video file 2,2,yes,yes,yes,video,,,
+      content,video_2.mpeg,Video file 2,2,no,yes,no,video,,,
+      content,video_2_thumb.jp2,Video file 2,2,yes,yes,yes,image,,,
+      content,video_log.txt,Disc log file,5,no,yes,no,file,,,
     CSV
   end
 
