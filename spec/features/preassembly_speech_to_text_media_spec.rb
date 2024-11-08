@@ -133,24 +133,18 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
 
     files = all('tr.file')
 
-    expect(files.size).to eq 15
+    expect(files.size).to eq 9
     expect(files[0].text).to match(%r{video_1.mp4 video/mp4 9.9\d* MB})
     expect(files[1].text).to match(%r{video_1_thumb.jp2 image/jp2 4\d.\d* KB})
-    expect(files[2].text).to match(%r{video_1.json application/json 2\d.\d* KB})
-    expect(files[3].text).to match(%r{video_1.srt text/plain \d.\d* KB})
-    expect(files[4].text).to match(%r{video_1.tsv text/plain \d.\d* KB})
-    expect(files[5].text).to match(%r{video_1.txt text/plain \d.\d* KB})
-    expect(files[6].text).to match(%r{video_1.vtt text/vtt \d.\d* KB})
+    expect(files[2].text).to match(%r{video_1.txt text/plain \d.\d* KB})
+    expect(files[3].text).to match(%r{video_1.vtt text/vtt \d.\d* KB})
 
-    expect(files[7].text).to match(%r{audio_1.m4a audio/mp4 4.6\d* MB})
-    expect(files[8].text).to match(%r{audio_1_thumb.jp2 image/jp2 3\d.\d* KB})
-    expect(files[9].text).to match(%r{audio_1.json application/json 2\d.\d* KB})
-    expect(files[10].text).to match(%r{audio_1.srt text/plain \d.\d* KB})
-    expect(files[11].text).to match(%r{audio_1.tsv text/plain \d.\d* KB})
-    expect(files[12].text).to match(%r{audio_1.txt text/plain \d.\d* KB})
-    expect(files[13].text).to match(%r{audio_1.vtt text/vtt \d.\d* KB})
+    expect(files[4].text).to match(%r{audio_1.m4a audio/mp4 4.6\d* MB})
+    expect(files[5].text).to match(%r{audio_1_thumb.jp2 image/jp2 3\d.\d* KB})
+    expect(files[6].text).to match(%r{audio_1.txt text/plain \d.\d* KB})
+    expect(files[7].text).to match(%r{audio_1.vtt text/vtt \d.\d* KB})
 
-    expect(files[14].text).to match(%r{video_log.txt text/plain 5\d* Bytes})
+    expect(files[8].text).to match(%r{video_log.txt text/plain 5\d* Bytes})
 
     # TODO: Add expectations for the speech to text files when they are added to the object
     #
@@ -168,8 +162,8 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
       # events are loaded lazily, give the network a few moments
       page.has_text?('v2 Accessioned', wait: 2)
     end
-    page.has_text?('filetype', count: 15)
-    page.has_text?('file_modification', count: 15)
+    page.has_text?('filetype', count: 9)
+    page.has_text?('file_modification', count: 9)
 
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and
