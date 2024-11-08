@@ -116,7 +116,10 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     reload_page_until_timeout!(text: 'ocrWF')
 
     # Wait for the second version accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned')
+    workflow_retry_text = /fetch-files : Preservation::Client.*got.*from Preservation/
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
+                                                  workflow: 'ocrWF',
+                                                  workflow_retry_text:)
 
     # Check that the version description is correct for the second version
     reload_page_until_timeout!(text: 'Start OCR workflow')
