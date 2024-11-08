@@ -141,10 +141,10 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
 
     expect(files[4].text).to match(%r{audio_1.m4a audio/mp4 4.6\d* MB})
     expect(files[5].text).to match(%r{audio_1_thumb.jp2 image/jp2 3\d.\d* KB})
-    expect(files[6].text).to match(%r{audio_1.txt text/plain \d.\d* KB})
-    expect(files[7].text).to match(%r{audio_1.vtt text/vtt \d.\d* KB})
+    expect(files[6].text).to match(%r{audio_1.txt text/plain \d.\d* KB Transcription})
+    expect(files[7].text).to match(%r{audio_1.vtt text/vtt \d.\d* KB Caption})
 
-    expect(files[8].text).to match(%r{video_log.txt text/plain 5\d* Bytes})
+    expect(files[8].text).to match(%r{video_log.txt text/plain 5\d* Bytes No role})
 
     # TODO: Add expectations for the speech to text files when they are added to the object
     #
