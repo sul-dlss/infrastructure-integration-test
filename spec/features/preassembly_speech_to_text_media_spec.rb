@@ -30,11 +30,9 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     <<~CSV
       druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,sdr_generated_text,corrected_for_accessibility
       content,video_1.mp4,Video file 1,1,yes,yes,yes,video,,,
-      content,video_1.mpeg,Video file 1,1,no,yes,no,video,,,
       content,video_1_thumb.jp2,Video file 1,1,yes,yes,yes,image,,,
-      content,video_2.mp4,Video file 2,2,yes,yes,yes,video,,,
-      content,video_2.mpeg,Video file 2,2,no,yes,no,video,,,
-      content,video_2_thumb.jp2,Video file 2,2,yes,yes,yes,image,,,
+      content,audio_1.m4a,Audio file 1,2,yes,yes,yes,audio,,,
+      content,audio_1_thumb.jp2,Video file 2,2,yes,yes,yes,image,,,
       content,video_log.txt,Disc log file,5,no,yes,no,file,,,
     CSV
   end
@@ -124,8 +122,9 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     # Check that speechToTextWF ran
     reload_page_until_timeout!(text: 'speechToTextWF')
 
-    # Wait for the second version accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned')
+    # Wait for the second version accessioningWF to finish -- this can take longer
+    # than normal due to the captioning process in AWS taking longer
+    reload_page_until_timeout!(text: 'v2 Accessioned', num_seconds: 600)
 
     # Check that the version description is correct for the second version
     reload_page_until_timeout!(text: 'Start SpeechToText workflow')
@@ -134,26 +133,24 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
 
     files = all('tr.file')
 
-    expect(files.size).to eq 17
-    expect(files[0].text).to match(%r{video_1.mp4 video/mp4 1.4\d KB})
-    expect(files[1].text).to match(%r{video_1.mpeg video/mpeg 64\d* KB})
-    expect(files[2].text).to match(%r{video_1_thumb.jp2 image/jp2 2\d*\d* Bytes})
-    expect(files[3].text).to match(%r{video_1.json application/json 3\d*\d* Bytes})
-    expect(files[4].text).to match(%r{video_1.srt text/plain 4\d* Bytes})
-    expect(files[5].text).to match(%r{video_1.tsv text/plain 3\d* Bytes})
-    expect(files[6].text).to match(%r{video_1.txt text/plain 1\d* Bytes})
-    expect(files[7].text).to match(%r{video_1.vtt text/vtt 4\d* Bytes})
+    expect(files.size).to eq 15
+    expect(files[0].text).to match(%r{video_1.mp4 video/mp4 9.9\d* MB})
+    expect(files[1].text).to match(%r{video_1_thumb.jp2 image/jp2 4\d.\d* KB})
+    expect(files[2].text).to match(%r{video_1.json application/json 2\d.\d* KB})
+    expect(files[3].text).to match(%r{video_1.srt text/plain \d.\d* KB})
+    expect(files[4].text).to match(%r{video_1.tsv text/plain \d.\d* KB})
+    expect(files[5].text).to match(%r{video_1.txt text/plain \d.\d* KB})
+    expect(files[6].text).to match(%r{video_1.vtt text/vtt \d.\d* KB})
 
-    expect(files[8].text).to match(%r{video_2.mp4 video/mp4 1.4\d KB})
-    expect(files[9].text).to match(%r{video_2.mpeg video/mpeg 64\d* KB})
-    expect(files[10].text).to match(%r{video_2_thumb.jp2 image/jp2 2\d*\d* Bytes})
-    expect(files[11].text).to match(%r{video_2.json application/json 3\d*\d* Bytes})
-    expect(files[12].text).to match(%r{video_2.srt text/plain 4\d* Bytes})
-    expect(files[13].text).to match(%r{video_2.tsv text/plain 3\d* Bytes})
-    expect(files[14].text).to match(%r{video_2.txt text/plain 1\d* Bytes})
-    expect(files[15].text).to match(%r{video_2.vtt text/vtt 4\d* Bytes})
+    expect(files[7].text).to match(%r{audio_1.m4a audio/mp4 4.6\d* MB})
+    expect(files[8].text).to match(%r{audio_1_thumb.jp2 image/jp2 3\d.\d* KB})
+    expect(files[9].text).to match(%r{audio_1.json application/json 2\d.\d* KB})
+    expect(files[10].text).to match(%r{audio_1.srt text/plain \d.\d* KB})
+    expect(files[11].text).to match(%r{audio_1.tsv text/plain \d.\d* KB})
+    expect(files[12].text).to match(%r{audio_1.txt text/plain \d.\d* KB})
+    expect(files[13].text).to match(%r{audio_1.vtt text/vtt \d.\d* KB})
 
-    expect(files[16].text).to match(%r{video_log.txt text/plain 1\d* Bytes})
+    expect(files[14].text).to match(%r{video_log.txt text/plain 5\d* Bytes})
 
     # TODO: Add expectations for the speech to text files when they are added to the object
     #
@@ -172,7 +169,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
       page.has_text?('v2 Accessioned', wait: 2)
     end
     page.has_text?('filetype', count: 15)
-    page.has_text?('file_modification', count: 17)
+    page.has_text?('file_modification', count: 15)
 
     # The below confirms that preservation replication is working: we only replicate a
     # Moab version once it's been written successfully to on prem storage roots, and

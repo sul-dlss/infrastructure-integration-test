@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module PageHelpers
-  def reload_page_until_timeout!(text: '')
-    Timeout.timeout(Settings.timeouts.workflow) do
+  def reload_page_until_timeout!(text: '', num_seconds: Settings.timeouts.workflow)
+    Timeout.timeout(num_seconds) do
       loop do
         break if block_given? ? yield : page.has_text?(text, wait: 1)
 
