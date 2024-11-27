@@ -93,7 +93,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     fill_in 'Staging location', with: preassembly_bundle_dir
     choose 'batch_context_stt_available_false' # indicate media does not have pre-existing speech to text
     choose 'batch_context_run_stt_true' # yes, run speech to text
-    choose 'batch_context_using_file_manifest_true' # use file manifest
+    # Note: for media, file manifest is automatically selected with no radio button
 
     click_link_or_button 'Submit'
     expect(page).to have_text 'Success! Your job is queued. ' \
