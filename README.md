@@ -11,7 +11,7 @@ The tests use Ruby 3.3.
 The tests depend on having Firefox (default) or Chrome downloaded.
 
 1. `bundle install`
-1. `bundle exec rake webdrivers:geckodriver:update`
+1. `bin/rake webdrivers:geckodriver:update`
 
 See the `Other Configuration` section below for
 - instructions on using Chrome
@@ -30,19 +30,19 @@ See the `Other Configuration` section below for
 
 By default, the integration tests run in the SDR stage environment:
 
-`bundle exec rspec`
+`bin/rspec`
 
 To test in the SDR QA environment, run tests with the `SDR_ENV` environment variable, like so:
 
 ```shell
-SDR_ENV=qa bundle exec rspec
+SDR_ENV=qa bin/rspec
 ```
 
 No matter which environment you run tests in, you may be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push. If you tire of typing in your credentials, see the `Other Configuration` section below for help securely storing them.
 
 When running the virtual_object_creation test, you can create more than two constituents by running as follows:
 
-`SETTINGS__NUMBER_OF_CONSTITUENTS=11 bundle exec rspec`
+`SETTINGS__NUMBER_OF_CONSTITUENTS=11 bin/rspec`
 
 ## Add New Tests
 
@@ -121,7 +121,7 @@ If you tire of typing in your SUNet credentials over and over, you may add them 
 ### Use Chrome Browser
 
 1. `bundle install`
-1. `bundle exec rake webdrivers:chromedriver:update`
+1. `bin/rake webdrivers:chromedriver:update`
 1. Set `browser.driver` to `chrome` in `config/settings.local.yml`
 
 ### Change Browser Window Size
