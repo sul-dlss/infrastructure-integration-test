@@ -3,12 +3,18 @@
 require 'capybara/rspec'
 require 'capybara_table/rspec'
 
+# Silence deprecation warnings until upstream Capybara version is updated.
+# See: https://github.com/teamcapybara/capybara/issues/2779
+Selenium::WebDriver.logger.ignore(:clear_local_storage, :clear_session_storage)
+
 Capybara.enable_aria_label = true
 
 Capybara.run_server = false
 
 Capybara.register_driver :my_firefox_driver do |app|
-  Selenium::WebDriver::Firefox::Service::EXECUTABLE = Settings.browser.geckodriver_path if Settings.browser.geckodriver_path
+  silence_warnings do
+    Selenium::WebDriver::Firefox::Service::EXECUTABLE = Settings.browser.geckodriver_path if Settings.browser.geckodriver_path
+  end
 
   options = Selenium::WebDriver::Firefox::Options.new
   options.profile = Selenium::WebDriver::Firefox::Profile.new.tap do |profile|
