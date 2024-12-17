@@ -13,6 +13,7 @@ gem 'dor-services-client'
 gem 'druid-tools' # for constructing druid tree strings easily
 gem 'faker'
 gem 'faraday' # etds require POST request from registrar
+gem 'parallel'
 gem 'pry-byebug'
 gem 'rake'
 gem 'rspec'
