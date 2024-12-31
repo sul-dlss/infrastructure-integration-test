@@ -110,5 +110,19 @@ RSpec.describe 'SDR deposit' do
 
     # Check publishing
     expect_published_files(druid:, filenames: ['Gemfile.lock', 'config/settings.yml'])
+
+    # Release to Searchworks
+    visit "#{start_url}/view/#{druid}"
+    click_link_or_button 'Manage release'
+    select 'Searchworks', from: 'to'
+    click_link_or_button('Submit')
+    expect(page).to have_text('Release object job was successfully created.')
+
+    # pause for release to happen
+    sleep 2
+    visit "#{start_url}/view/#{druid}"
+    reload_page_until_timeout! do
+      page.has_selector?('#workflow-details-status-releaseWF', text: 'completed', wait: 1)
+    end
   end
 end
