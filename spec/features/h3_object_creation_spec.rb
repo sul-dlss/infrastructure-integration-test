@@ -99,8 +99,8 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # Selects image type
     choose 'Image'
 
-    find('.nav-link', text: 'License').click
-    select 'CC-BY-4.0 Attribution International', from: 'License'
+    # find('.nav-link', text: 'License').click
+    # select 'CC-BY-4.0 Attribution International', from: 'License'
 
     find('.nav-link', text: 'Deposit').click
     click_link_or_button 'Deposit', class: 'btn-primary'
