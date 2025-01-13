@@ -136,15 +136,15 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     expect(files.size).to eq 11
     expect(files[0].text).to match(%r{video_1.mp4 video/mp4 9.9\d* MB})
     expect(files[1].text).to match(%r{video_1_thumb.jp2 image/jp2 4\d.\d* KB})
-    expect(files[2].text).to match(%r{video_1.json application/json \d\d.\d* KB})
-    expect(files[3].text).to match(%r{video_1.txt text/plain \d.\d* KB})
-    expect(files[4].text).to match(%r{video_1.vtt text/vtt \d.\d* KB})
+    expect(files[2].text).to match(%r{video_1_mp4.json application/json \d\d.\d* KB})
+    expect(files[3].text).to match(%r{video_1_mp4.txt text/plain \d.\d* KB})
+    expect(files[4].text).to match(%r{video_1_mp4.vtt text/vtt \d.\d* KB})
 
     expect(files[5].text).to match(%r{audio_1.m4a audio/mp4 4.6\d* MB})
     expect(files[6].text).to match(%r{audio_1_thumb.jp2 image/jp2 3\d.\d* KB})
-    expect(files[7].text).to match(%r{audio_1.json application/json \d\d.\d* KB})
-    expect(files[8].text).to match(%r{audio_1.txt text/plain \d.\d* KB Transcription})
-    expect(files[9].text).to match(%r{audio_1.vtt text/vtt \d.\d* KB Caption})
+    expect(files[7].text).to match(%r{audio_1_m4a.json application/json \d\d.\d* KB})
+    expect(files[8].text).to match(%r{audio_1_m4a.txt text/plain \d.\d* KB Transcription})
+    expect(files[9].text).to match(%r{audio_1_m4a.vtt text/vtt \d.\d* KB Caption})
 
     expect(files[10].text).to match(%r{video_log.txt text/plain 5\d* Bytes No role})
 
