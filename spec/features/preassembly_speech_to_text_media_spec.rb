@@ -116,7 +116,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     delete_download(download)
 
     # ensure accessioning completed ... we should have two versions now,
-    # with all files there, and an ocrWF, organized into specified resources
+    # with all files there, and a speechToTextWF, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # Check that speechToTextWF ran
@@ -124,7 +124,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
 
     # Wait for the second version accessioningWF to finish -- this can take longer
     # than normal due to the captioning process in AWS taking longer
-    reload_page_until_timeout!(text: 'v2 Accessioned', num_seconds: 600)
+    reload_page_until_timeout!(text: 'v2 Accessioned', num_seconds: 1200)
 
     # Check that the version description is correct for the second version
     reload_page_until_timeout!(text: 'Start SpeechToText workflow')
