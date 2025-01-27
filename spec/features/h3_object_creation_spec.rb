@@ -49,7 +49,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     #   expect(page).to have_text('+ Deposit to this collection')
 
     collection_druid = page.current_url.split('/').last
-    puts " *** h2 collection creation druid: #{collection_druid} ***" # useful for debugging
+    puts " *** h3 collection creation druid: #{collection_druid} ***" # useful for debugging
 
     # Create a Work in the collection
     visit Settings.h3_url
@@ -102,6 +102,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # find('.nav-link', text: 'License').click
     # select 'CC-BY-4.0 Attribution International', from: 'License'
 
+    find('.nav-link', text: 'Terms of deposit').click
+    find('p', text: 'You agreed') || all('input[type="checkbox"]').each(&:click)
+
     find('.nav-link', text: 'Deposit').click
     click_link_or_button 'Deposit', class: 'btn-primary'
 
@@ -123,7 +126,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     #   expect(page).to have_text(Settings.purl_url) # async - it might take a bit
 
     #   bare_druid = find('a.copy-button')[:href][-11, 11]
-    puts " *** h2 work creation druid: #{work_druid} ***" # useful for debugging
+    puts " *** h3 work creation druid: #{work_druid} ***" # useful for debugging
 
     #   # Opens Argo detail page
     visit Settings.argo_url
