@@ -2,7 +2,6 @@
 
 require 'byebug'
 require 'config'
-require 'csv'
 require 'faker'
 require 'io/console'
 require 'pry-byebug'

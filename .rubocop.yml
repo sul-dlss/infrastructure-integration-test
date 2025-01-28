@@ -8,7 +8,7 @@ require:
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 3.4
   DisplayCopNames: true
   Include:
     - './Rakefile'
@@ -581,4 +581,14 @@ Style/SafeNavigationChainLength: # new in 1.68
 Style/SendWithLiteralMethodName: # new in 1.64
   Enabled: true
 Style/SuperArguments: # new in 1.64
+  Enabled: true
+Lint/ArrayLiteralInRegexp: # new in 1.71
+  Enabled: true
+Lint/ConstantReassignment: # new in 1.70
+  Enabled: true
+Lint/SharedMutableDefault: # new in 1.70
+  Enabled: true
+Style/HashSlice: # new in 1.71
+  Enabled: true
+Style/ItAssignment: # new in 1.70
   Enabled: true
