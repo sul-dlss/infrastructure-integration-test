@@ -13,6 +13,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # remove modal for deposit in progress, if present, waiting a bit for some rendering
     # click_link_or_button 'No' if page.has_text?('Continue your deposit', wait: Settings.timeouts.h2_terms_modal_wait)
 
+    # Go to the dashboard
+    click_link_or_button 'Enter here'
+
     # CREATE COLLECTION
     click_link_or_button 'Create a new collection'
     # Checks for specific content in create collection view
@@ -37,7 +40,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # end
 
     # click_deposit_and_handle_terms_modal
-    find('.nav-link', text: 'Deposit').click
+    find('.nav-link', text: 'Deposit', exact_text: true).click
     expect(page).to have_text('Submit your collection')
     click_link_or_button 'Deposit', class: 'btn-primary'
 
@@ -52,7 +55,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     puts " *** h3 collection creation druid: #{collection_druid} ***" # useful for debugging
 
     # Create a Work in the collection
-    visit Settings.h3_url
+    visit "#{Settings.h3_url}/dashboard"
 
     click_link('Deposit to this collection', href: "/works/new?collection_druid=#{collection_druid.sub(':', '%3A')}")
 
@@ -86,8 +89,16 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     fill_in 'Title of deposit', with: item_title
     fill_in 'Contact email', with: user_email
 
-    click_link_or_button 'Next'
-    choose 'Name'
+    # Click Next to go to contributors tab
+    click_link_or_button('Next')
+    expect(page).to have_css('.nav-link.active', text: 'Contributors')
+    expect(page).to have_css('.h4', text: 'Contributors')
+
+    # Enter a contributor
+    select('Creator', from: 'work_contributors_attributes_0_person_role')
+    within('.orcid-section') do
+      find('label', text: 'No').click
+    end
     fill_in 'First name', with: 'Dana'
     fill_in 'Last name', with: 'Scully'
 
@@ -102,10 +113,11 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # find('.nav-link', text: 'License').click
     # select 'CC-BY-4.0 Attribution International', from: 'License'
 
-    find('.nav-link', text: 'Terms of deposit').click
-    find('p', text: 'You agreed') || all('input[type="checkbox"]').each(&:click)
+    within('#main-container') do
+      expect(page).to have_no_text('Terms of deposit')
+    end
 
-    find('.nav-link', text: 'Deposit').click
+    find('.nav-link', text: 'Deposit', exact_text: true).click
     click_link_or_button 'Deposit', class: 'btn-primary'
 
     #   # if you have previously agreed to the terms within the last year, there will be no checkbox
@@ -142,7 +154,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # sleep 5
 
     # create a new version
-    visit Settings.h3_url
+    visit "#{Settings.h3_url}/dashboard"
     click_link_or_button item_title
     click_link_or_button 'Edit or deposit'
     find('.nav-link', text: 'Abstract & keywords').click
