@@ -6,7 +6,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
 
   before do
-    authenticate!(start_url: "#{Settings.h3_url}/", expected_text: /Dashboard|Continue your deposit/)
+    authenticate!(start_url: "#{Settings.h3_url}/", expected_text: /Enter here/)
   end
 
   scenario do
