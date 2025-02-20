@@ -157,7 +157,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     visit "#{Settings.h3_url}/dashboard"
     click_link_or_button item_title
     click_link_or_button 'Edit or deposit'
-    find('.nav-link', text: 'Abstract & keywords').click
+    find('.nav-link', text: 'Abstract and keywords').click
     #   click_link_or_button "Edit #{item_title}"
     #   choose('No') # Do you want to create a new version of this deposit?
     #   fill_in 'What\'s changing?', with: 'abstract'
