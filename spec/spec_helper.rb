@@ -71,7 +71,7 @@ RSpec.configure do |config|
 
       page.save_screenshot(screenshot_path) # rubocop:disable Lint/Debugger
 
-      puts "📸 '#{example.full_description}' failed. Screenshot: #{screenshot_path}"
+      puts "📸 '#{example.full_description}' failed (url: '#{page.current_url}'). Screenshot: #{screenshot_path}"
     end
   rescue StandardError => e
     puts "⚠️ error taking screenshot for failed test: #{e}"
