@@ -72,6 +72,7 @@ RSpec.describe 'SDR deposit' do
         raise 'Error opening opening file modal'
       end
     rescue StandardError => e
+      # we think this happens due to network file system lag.  retrying usually works.
       puts "download attempt failed (link click text=#{gemfile_pres_link_text}): #{e.class}; #{e.inspect}; #{e}"
 
       puts "sleeping and retrying (retries_count=#{retries_count})"
@@ -102,6 +103,7 @@ RSpec.describe 'SDR deposit' do
         raise 'Error opening opening file modal'
       end
     rescue StandardError => e
+      # we think this happens due to network file system lag.  retrying usually works.
       puts "download attempt failed (link click text=#{gemfile_lock_stacks_link_text}): #{e.class}; #{e.inspect}; #{e}"
 
       puts "sleeping and retrying (retries_count=#{retries_count})"
