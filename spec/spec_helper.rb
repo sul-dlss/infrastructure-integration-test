@@ -60,6 +60,23 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  # cribbed from https://gist.github.com/osulyanov/10609515 and https://rspec.info/documentation/3.13/rspec-core/RSpec/Core/Example.html
+  # we may have used this in the past, but it had no commits in 4 years as of 2025: https://github.com/mattheworiordan/capybara-screenshot
+  config.after do |example|
+    if example.exception.present?
+      filename = File.basename(example.file_path).sub(/.rb$/, '') # /foo/bar.rb -> bar
+      line_number = example.location.match(/:(\d+)$/)&.match(1) # ./path/to/spec.rb:17 -> 17
+      screenshot_name = "failure-auto-screenshot-#{DateTime.now.strftime('%Y%m%d-%H%M%S')}-#{filename}-#{line_number}.png"
+      screenshot_path = "tmp/#{screenshot_name}"
+
+      page.save_screenshot(screenshot_path) # rubocop:disable Lint/Debugger
+
+      puts "📸 '#{example.full_description}' failed. Screenshot: #{screenshot_path}"
+    end
+  rescue StandardError => e
+    puts "⚠️ error taking screenshot for failed test: #{e}"
+  end
+
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
   # compatibility in RSpec 3). It causes shared context metadata to be
