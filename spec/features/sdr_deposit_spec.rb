@@ -56,6 +56,8 @@ RSpec.describe 'SDR deposit' do
     # Wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')
 
+    # We think this is needed due to network file system lag (between write to disk finishing, and
+    # initial visibility to client VMs).  waiting briefly usually works, so retry for a bit.
     retries_count = 0
     begin
       # Download Gemfile (preserved=true) from Preservation
@@ -72,7 +74,6 @@ RSpec.describe 'SDR deposit' do
         raise 'Error opening opening file modal'
       end
     rescue StandardError => e
-      # we think this happens due to network file system lag.  retrying usually works.
       puts "download attempt failed (link click text=#{gemfile_pres_link_text}): #{e.class}; #{e.inspect}; #{e}"
 
       puts "sleeping and retrying (retries_count=#{retries_count})"
@@ -87,6 +88,8 @@ RSpec.describe 'SDR deposit' do
 
     click_link_or_button 'Cancel'
 
+    # We think this is needed due to network file system lag (between write to disk finishing, and
+    # initial visibility to client VMs).  waiting briefly usually works, so retry for a bit.
     retries_count = 0
     begin
       # Download Gemfile.lock (shelve=true) from Stacks
@@ -103,7 +106,6 @@ RSpec.describe 'SDR deposit' do
         raise 'Error opening opening file modal'
       end
     rescue StandardError => e
-      # we think this happens due to network file system lag.  retrying usually works.
       puts "download attempt failed (link click text=#{gemfile_lock_stacks_link_text}): #{e.class}; #{e.inspect}; #{e}"
 
       puts "sleeping and retrying (retries_count=#{retries_count})"
@@ -139,11 +141,13 @@ RSpec.describe 'SDR deposit' do
       download_error = e
     end
 
+    # We've seen both of these behaviors on different runs against the same deployment
     if download_error.present?
+      # selenium-webdriver doesn't expose response info, so here's a workaround for detecting 404 behavior
       expect(download_error.to_s).to include('Reached error page: about:neterror?e=fileNotFound')
       visit "#{start_url}/view/#{druid}"
     else
-      # This file is downloaded, but contain a 404 error message. (This is just how Argo currently operates.)
+      # This file is downloaded, but contains a 404 error message.
       expect(download_content).to include '404 Not Found'
       click_link_or_button 'Cancel'
     end

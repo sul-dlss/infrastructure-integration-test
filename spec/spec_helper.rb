@@ -60,8 +60,10 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  # cribbed from https://gist.github.com/osulyanov/10609515 and https://rspec.info/documentation/3.13/rspec-core/RSpec/Core/Example.html
-  # we may have used this in the past, but it had no commits in 4 years as of 2025: https://github.com/mattheworiordan/capybara-screenshot
+  # When a test fails, try to take a screenshot of the page right after the failure, and print the URL where the failure occurred
+  #
+  # Cribbed from https://gist.github.com/osulyanov/10609515 and https://rspec.info/documentation/3.13/rspec-core/RSpec/Core/Example.html
+  # We may have used this gem in the past, but it had no commits in 4 years as of feb 2025: https://github.com/mattheworiordan/capybara-screenshot
   config.after do |example|
     if example.exception.present?
       filename = File.basename(example.file_path).sub(/.rb$/, '') # /foo/bar.rb -> bar
