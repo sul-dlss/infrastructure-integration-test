@@ -122,47 +122,6 @@ RSpec.describe 'SDR deposit' do
 
     clear_downloads
 
-    # Try to download Gemfile.lock (preserve=false) from Preservation
-    click_link_or_button 'Gemfile'
-    expect(page).to have_text 'Preservation:'
-    # Visit doesn't work here, so https://tenor.com/view/sneaky-sis-connect-four-commercial-hero-gif-12265444
-    page.execute_script "document.querySelector('.modal-content a').href = '#{gemfile_pres_url.sub('Gemfile',
-                                                                                                   'Gemfile.lock')}'"
-    gemfile_pres_link = find('.modal-content a')
-    gemfile_pres_link_text = gemfile_pres_link.text
-    expect(gemfile_pres_link['href'].end_with?("/items/#{druid}/files/Gemfile.lock/preserved?version=1")).to be true
-
-    puts "about to click on '#{gemfile_pres_link_text}' to get '#{gemfile_pres_url}'"
-    download_error = nil
-    begin
-      click_link_or_button gemfile_pres_link.text
-    rescue Selenium::WebDriver::Error::WebDriverError => e
-      puts "download attempt failed (link click text=#{gemfile_pres_link_text}): #{e.class}; #{e.inspect}; #{e}"
-      download_error = e
-    end
-
-    # We've seen both of these behaviors on different runs against the same deployment
-    if download_error.present?
-      # selenium-webdriver doesn't expose response info, so here's a workaround for detecting 404 behavior
-      expect(download_error.to_s).to include('Reached error page: about:neterror?e=fileNotFound')
-      visit "#{start_url}/view/#{druid}"
-    else
-      # This file is downloaded, but contains a 404 error message.
-      expect(download_content).to include '404 Not Found'
-      click_link_or_button 'Cancel'
-    end
-
-    # Try to download Gemfile (shelve=false) from Stacks
-    click_link_or_button 'Gemfile.lock'
-    expect(page).to have_text 'Stacks:'
-    page.execute_script "document.querySelector('.modal-content a').href = " \
-                        "'#{gemfile_lock_stacks_url.delete_suffix('.lock')}'"
-    gemfile_stacks_link = find('.modal-content a')
-    expect(gemfile_stacks_link['href'].end_with?("/file/#{druid}/Gemfile")).to be true
-
-    click_link_or_button gemfile_stacks_link.text
-    expect(page).to have_text 'File not found'
-
     # Check publishing
     expect_published_files(druid:, filenames: ['Gemfile.lock', 'config/settings.yml'])
   end

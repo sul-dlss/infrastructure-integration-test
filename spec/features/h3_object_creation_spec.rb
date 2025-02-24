@@ -40,9 +40,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # end
 
     # click_deposit_and_handle_terms_modal
-    find('.nav-link', text: 'Deposit', exact_text: true).click
-    expect(page).to have_text('Submit your collection')
-    click_link_or_button 'Deposit', class: 'btn-primary'
+    find('.nav-link', text: 'Save your collection').click
+    expect(page).to have_text('Save your collection')
+    click_link_or_button 'Save', class: 'btn-primary'
 
     # expect(page).to have_text('You have successfully deposited your collection')
 
@@ -165,8 +165,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     #   click_deposit_and_handle_terms_modal
 
     #   expect(page).to have_text 'You have successfully deposited your work'
-    find('.nav-link', text: 'Deposit').click
-    click_link_or_button 'Deposit', class: 'btn-primary'
+    find('.nav-link', text: 'Deposit', exact_text: true).click
+    fill_in 'What\'s changing?', with: 'changing abstract'
+    click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
 
     expect(page).to have_text(item_title)
     reload_page_until_timeout!(text: 'Deposited')

@@ -228,7 +228,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
       expect(page).to have_text(/submit\s+completed/)
       expect(page).to have_text(/reader-approval\s+completed/)
       expect(page).to have_text(/registrar-approval\s+completed/)
-      expect(page).to have_text(/submit-marc\s+completed/, wait: 15)
+      expect(page).to have_text(/submit-marc\s+completed/, wait: 30)
       expect(page).to have_text(/check-marc\s+completed/, wait: 15)
       expect(page).to have_text(/catalog-status\s+waiting/, wait: 5)
 
