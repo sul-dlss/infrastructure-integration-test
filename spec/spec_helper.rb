@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require 'byebug'
 require 'config'
 require 'csv'
+require 'debug'
 require 'faker'
 require 'io/console'
-require 'pry-byebug'
 require 'rubyXL'
 require 'sdr_client'
 require 'selenium-webdriver'
