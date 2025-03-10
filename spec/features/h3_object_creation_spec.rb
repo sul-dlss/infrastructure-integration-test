@@ -30,7 +30,8 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # choose 'Delay release'
 
     # Select license
-    # select 'CC0-1.0', from: 'collection_required_license'
+    find('.nav-link', text: 'License').click
+    select 'CC0-1.0', from: 'collection_license'
 
     # Adds user to depositor field
     # click_link_or_button '+ Add another depositor'
@@ -48,9 +49,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     # Checks if title is on resulting display
 
-    expect(page).to have_text(collection_title)
     #   expect(page).to have_text('+ Deposit to this collection')
 
+    expect(page).to have_css('h1', text: collection_title)
     collection_druid = page.current_url.split('/').last
     puts " *** h3 collection creation druid: #{collection_druid} ***" # useful for debugging
 
@@ -118,10 +119,11 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     end
 
     find('.nav-link', text: 'Deposit', exact_text: true).click
-    click_link_or_button 'Deposit', class: 'btn-primary'
 
-    #   # if you have previously agreed to the terms within the last year, there will be no checkbox
-    #   check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms', wait: 0)
+    # if you have previously agreed to the terms within the last year, there will be no checkbox
+    check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms', wait: 0)
+
+    click_link_or_button 'Deposit', class: 'btn-primary'
 
     #   click_deposit_and_handle_terms_modal
 
@@ -130,7 +132,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     #   click_link_or_button item_title
 
     # Checks if title is on resulting display
-    expect(page).to have_text(item_title)
+    expect(page).to have_css('h1', text: item_title)
     reload_page_until_timeout!(text: 'Deposited')
 
     work_druid = page.current_url.split('/').last
@@ -166,10 +168,10 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     #   expect(page).to have_text 'You have successfully deposited your work'
     find('.nav-link', text: 'Deposit', exact_text: true).click
-    fill_in 'What\'s changing?', with: 'changing abstract'
+    # fill_in 'What\'s changing?', with: 'changing abstract'
     click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
 
-    expect(page).to have_text(item_title)
+    expect(page).to have_css('h1', text: item_title)
     reload_page_until_timeout!(text: 'Deposited')
 
     # Opens Argo detail page
