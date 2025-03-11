@@ -121,7 +121,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     find('.nav-link', text: 'Deposit', exact_text: true).click
 
     # if you have ever agreed to the terms, there will be no checkbox
-    check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms', wait: 0)
+    check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms')
 
     click_link_or_button 'Deposit', class: 'btn-primary'
 
