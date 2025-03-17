@@ -60,7 +60,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     # find the new object
     expect(page).to have_text('Home page')
     click_link_or_button 'My tasks'
-    fill_in 'searchform:sub1:searchField', with: druid
+    fill_in 'processAllBox:searchform:sub1:searchField', with: druid
     click_link_or_button 'Search'
 
     # upload the test image
@@ -69,14 +69,16 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     # when the image finishes uploading, the "Select files" input will re-appear
     #  and we can continue with the test
     expect(page).to have_text('Select files')
-    click_link_or_button 'Overview'
+    within '#uploadform' do
+      click_link_or_button 'Overview'
+    end
     expect(page).to have_text('stanford-logo.tiff')
     click_link_or_button 'Finish the edition of this task'
 
     # wait for goobi to do some back-end processing of the uploaded image
     # and then find object again to continue processing
     sleep 2
-    fill_in 'searchform:sub1:searchField', with: druid
+    fill_in 'processAllBox:searchform:sub1:searchField', with: druid
     click_link_or_button 'Search'
     expect(page).to have_text 'Final QA Validation'
 
