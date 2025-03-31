@@ -92,13 +92,14 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     # Click Next to go to contributors tab
     click_link_or_button('Next')
-    expect(page).to have_css('.nav-link.active', text: 'Contributors')
-    expect(page).to have_css('.h4', text: 'Contributors')
+    expect(page).to have_css('.nav-link.active', text: 'Authors / Contributors')
+    expect(page).to have_css('.h4', text: 'Authors / Contributors')
 
     # Enter a contributor
-    select('Creator', from: 'work_contributors_attributes_0_person_role')
+    # select('Individual', from: 'work_contributors_attributes_0_role_type_person')
+    find('label', text: 'Individual').click
     within('.orcid-section') do
-      find('label', text: 'No').click
+      find('label', text: 'Enter name manually').click
     end
     fill_in 'First name', with: 'Dana'
     fill_in 'Last name', with: 'Scully'
@@ -168,7 +169,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     #   expect(page).to have_text 'You have successfully deposited your work'
     find('.nav-link', text: 'Deposit', exact_text: true).click
-    # fill_in 'What\'s changing?', with: 'changing abstract'
+    fill_in 'What\'s changing?', with: 'changing abstract'
     click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
 
     expect(page).to have_css('h1', text: item_title)
