@@ -30,7 +30,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
 
     click_link_or_button 'New Bulk Action'
     expect(page).to have_text 'New Bulk Action'
-    select 'Export tags to CSV', from: 'action_type'
+    select 'Export tags', from: 'action_type'
     expect(page).to have_text 'Download tags as CSV (comma-separated values) for druids specified below'
     find('textarea#druids').fill_in(with: bulk_druids.join("\n"))
     find('textarea#description').fill_in(with: export_tag_description)
@@ -86,7 +86,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
 
     click_link_or_button 'New Bulk Action'
     expect(page).to have_text 'New Bulk Action'
-    select 'Import tags from CSV', from: 'action_type'
+    select 'Import tags', from: 'action_type'
     expect(page).to have_text 'Upload tags as CSV (comma-separated values)'
     find('input#csv_file').attach_file(upload_csv_path)
     find('textarea#description').fill_in(with: import_tag_description)

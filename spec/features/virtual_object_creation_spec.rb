@@ -41,7 +41,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     expect(page).to have_text 'Bulk Actions'
     click_link_or_button 'New Bulk Action'
     expect(page).to have_text 'New Bulk Action'
-    select 'Create virtual object(s)', from: 'action_type'
+    select 'Create virtual object', from: 'action_type'
     expect(page).to have_text 'Create one or more virtual objects'
     find('input#csv_file').attach_file(csv_path)
     find('textarea#description').fill_in(with: virtual_objects_description)
