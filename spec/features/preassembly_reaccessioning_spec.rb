@@ -279,44 +279,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     expect(image_response.status).to eq(200)
     expect(image_response.headers['content-type']).to include('image/jpeg')
 
-    # The below confirms that preservation replication is working: we only replicate a
-    # Moab version once it's been written successfully to on prem storage roots, and
-    # we only log an event to dor-services-app after a version has successfully replicated
-    # to a cloud endpoint.  So, confirming that both versions of our test object have
-    # replication events logged for all three cloud endpoints is a good basic test of the
-    # entire preservation flow.
-    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
-
-    latest_s3_key = "#{druid_tree_str}.v000#{latest_version}.zip"
-    reload_page_until_timeout! do
-      click_link_or_button 'Events' # expand the Events section
-
-      # this is a hack that forces the event section to scroll into view; the section
-      # is lazily loaded, and won't actually be requested otherwise, even if the button
-      # is clicked to expand the event section.
-      page.execute_script 'window.scrollBy(0,100);'
-
-      # events are loaded lazily, give the network a few moments
-      page.has_text?(latest_s3_key, wait: 3)
-    end
-
-    # the event log should eventually contain an event for replication of each version that
-    # this test created to every endpoint we archive to
-    poll_for_matching_events!(prefixed_druid) do |events|
-      (1..latest_version).all? do |cur_version|
-        cur_s3_key = "#{druid_tree_str}.v000#{cur_version}.zip"
-
-        %w[aws_s3_west_2 ibm_us_south aws_s3_east_1].all? do |endpoint_name|
-          events.any? do |event|
-            event[:event_type] == 'druid_version_replicated' &&
-              event[:data]['parts_info'] &&
-              event[:data]['parts_info'].size == 1 && # we only expect one part for this small object
-              event[:data]['parts_info'].first['s3_key'] == cur_s3_key &&
-              event[:data]['endpoint_name'] == endpoint_name
-          end
-        end
-      end
-    end
+    visit_argo_and_confirm_event_display!(druid:, version: latest_version)
+    confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: latest_version)
   end
 end

@@ -3,6 +3,65 @@
 require 'dor/services/client'
 
 module EventHelpers
+  TARGET_ENDPOINT_NAMES = %w[aws_s3_west_2 gcp_s3_south_1 aws_s3_east_1].freeze
+
+  # @param [String] druid the druid to check for replication events, will be normalized to the prefixed version
+  # @param [String,int] version the version to check for successful replication (naively assumes <= 9)
+  def visit_argo_and_confirm_event_display!(druid:, version:)
+    prefixed_druid = druid.start_with?('druid:') ? druid : "druid:#{druid}"
+    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+    druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
+
+    latest_s3_key = "#{druid_tree_str}.v000#{version}.zip"
+    reload_page_until_timeout! do
+      click_link_or_button 'Events' # expand the Events section
+
+      # this is a hack that forces the event section to scroll into view; the section
+      # is lazily loaded, and won't actually be requested otherwise, even if the button
+      # is clicked to expand the event section.
+      page.execute_script 'window.scrollBy(0,100);'
+
+      # events are loaded lazily, give the network a few moments
+      page.has_text?(latest_s3_key, wait: 3)
+    end
+  end
+
+  # The event log should eventually contain an event for replication of each version that
+  # the test created, to every endpoint we archive to. Confirm the expected events exist.
+  # @param [String] druid the druid to check for replication events, will be normalized to the prefixed version
+  # @param [String,int] from_version the lowest version to check for successful replication, inclusive
+  # @param [String,int] to_version the highest version to check for successful replication, inclusive (naively assumes <= 9)
+  def confirm_archive_zip_replication_events!(druid:, from_version:, to_version:) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    prefixed_druid = druid.start_with?('druid:') ? druid : "druid:#{druid}"
+    druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
+
+    # The below confirms that preservation replication is working: we only replicate a
+    # Moab version once it's been written successfully to on prem storage roots, and
+    # we only log an event to dor-services-app after a version has successfully replicated
+    # to a cloud endpoint.  So, confirming that all versions of a test object have
+    # replication events logged for all expected cloud endpoints is a good basic test of the
+    # entire preservation flow.
+    poll_for_matching_events!(prefixed_druid) do |events|
+      (from_version..to_version).all? do |cur_version|
+        cur_s3_key = "#{druid_tree_str}.v000#{cur_version}.zip"
+
+        puts "searching events for #{cur_s3_key} replication to all of #{TARGET_ENDPOINT_NAMES}"
+        events_were_found = TARGET_ENDPOINT_NAMES.all? do |endpoint_name|
+          events.any? do |event|
+            event[:event_type] == 'druid_version_replicated' &&
+              event[:data]['parts_info'] &&
+              event[:data]['parts_info'].size == 1 && # we only expect one part for our small test objects
+              event[:data]['parts_info'].first['s3_key'] == cur_s3_key &&
+              event[:data]['endpoint_name'] == endpoint_name
+          end
+        end
+
+        puts("#{cur_s3_key} replication events found for all endpoints") if events_were_found
+        events_were_found
+      end
+    end
+  end
+
   # pass in a block that returns true if the event list has the desired event(s)
   def poll_for_matching_events!(prefixed_druid)
     Dor::Services::Client.configure(url: Settings.dor_services.url, token: Settings.dor_services.token)
