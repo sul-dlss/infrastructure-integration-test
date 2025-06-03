@@ -120,11 +120,11 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     end
 
     find('.nav-link', text: 'Deposit', exact_text: true).click
+    expect(page).to have_text('Submit your deposit')
 
     # if you have ever agreed to the terms, there will be no checkbox
-    check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms')
-
-    click_link_or_button 'Deposit', class: 'btn-primary'
+    check('I agree to the SDR Terms of Deposit') if page.has_css?('#work_agree_to_terms', visible: true)
+    click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
 
     #   click_deposit_and_handle_terms_modal
 
@@ -169,7 +169,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     #   expect(page).to have_text 'You have successfully deposited your work'
     find('.nav-link', text: 'Deposit', exact_text: true).click
+    expect(page).to have_text('Submit your deposit')
     fill_in 'What\'s changing?', with: 'changing abstract'
+
     click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
 
     expect(page).to have_css('h1', text: item_title)
