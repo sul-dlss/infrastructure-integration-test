@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use H3 to create a collection and an item object belonging to it' do
+RSpec.describe 'Use H3 to create a collection and an item object belonging to it and version it' do
   let(:collection_title) { random_phrase }
   let(:item_title) { "SUL Logo for #{collection_title}" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
@@ -89,9 +89,11 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     expect(page).to have_text('Welcome to Argo!')
 
     visit "#{Settings.argo_url}/view/#{work_druid}"
-    expect(page).to have_text('v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned')
+    expect(page).to have_text('Initial version (Public version 1)') # we have an initial public version 1 in Argo
+    expect_text_on_purl_page(druid: work_druid, text: 'Version 1') # check the version display on PURL
 
-    # create a new version
+    # back to H3, create a new version that only changes metadata, thus not creating a user version
     visit "#{Settings.h3_url}/dashboard"
 
     click_link_or_button item_title
@@ -115,5 +117,40 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
                                                   workflow: 'accessionWF',
                                                   workflow_retry_text: 'Error: shelve : problem with shelve',
                                                   retry_wait: 10)
+    expect(page).to have_text('changing abstract (Public version 1)') # Argo still on user version 1 since only metadata changed
+    expect(page).to have_no_text('Public version 2') # and no user version 2
+    expect_text_on_purl_page(druid: work_druid, text: 'Version 1') # PURL also still only shows Version 1
+    do_not_expect_text_on_purl_page(druid: work_druid, text: 'Version 2') # and no user version 2
+
+    # back to H3, create a new version that changes a file, thus creating a user version
+    visit "#{Settings.h3_url}/dashboard"
+
+    click_link_or_button item_title
+    click_link_or_button 'Edit or deposit'
+
+    # Add a new file
+    find('.dropzone').drop('spec/fixtures/vision_for_stanford.jpg')
+    expect(page).to have_text('vision_for_stanford.jpg')
+
+    find('.nav-link', text: 'Deposit', exact_text: true).click
+    expect(page).to have_text('Submit your deposit')
+    fill_in 'What\'s changing?', with: 'adding a file'
+
+    click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
+
+    expect(page).to have_css('h1', text: item_title)
+    reload_page_until_timeout!(text: 'Deposited')
+
+    # Opens Argo detail page
+    visit "#{Settings.argo_url}/view/#{work_druid}"
+    # wait for accessioningWF to finish; retry if error on shelving step, likely caused by a race condition
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v3 Accessioned',
+                                                  workflow: 'accessionWF',
+                                                  workflow_retry_text: 'Error: shelve : problem with shelve',
+                                                  retry_wait: 10)
+    expect(page).to have_text('adding a file (Public version 2)') # now we are on user version 2 since we added a file
+    expect(page).to have_no_text('Public version 3') # and no user version 3
+    expect_text_on_purl_page(druid: work_druid, text: 'Version 2') # PURL now shows user version 2
+    do_not_expect_text_on_purl_page(druid: work_druid, text: 'Version 3') # and no user version 3
   end
 end

@@ -14,6 +14,12 @@ module PurlHelpers
     end
   end
 
+  def do_not_expect_text_on_purl_page(druid:, text:)
+    bare_druid = druid.delete_prefix('druid:')
+    visit "#{Settings.purl_url}/#{bare_druid}"
+    page.has_no_text?(text)
+  end
+
   def expect_link_on_purl_page(druid:, text:, href:)
     bare_druid = druid.delete_prefix('druid:')
     visit "#{Settings.purl_url}/#{bare_druid}"
