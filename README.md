@@ -114,6 +114,10 @@ You may want to lower the timeout value of `Settings.timeouts.post_authenticatio
 
 ## Other Configuration
 
+### Globus
+
+The H3 Globus integration test uses your Globus account to upload files.  You may need to log into Globus at least once to have this ready to go.  During the test, you will also get a second auth request coming from the Globus login, which you need to accept.  Your H3 Globus endpoint ("/uploads/SUNETID/new") should also be empty when you start the test.  This should be true unless a previous integration run failed mid-way or you are actually in the middle of using Globus in qa/stage to accession content.  If necessary, just delete the "new" folder or the files within it manually in the Globus UI and then try again.
+
 ### Set SUNet Credentials
 
 If you tire of typing in your SUNet credentials over and over, you may add them to `config/settings.local.yml` (ignored by git). Copy the dummy values from `config/settings.yml` to get started. Do *not* add this file to version control, if you do this!
