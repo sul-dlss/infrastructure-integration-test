@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use H3 to create a collection and an item object belonging to it with files from globus' do
-  # Including "Integration Test" in the title causes H3 to use the configured integration test
-  # globus endpoint, which already has files.
-  let(:collection_title) { "#{random_phrase} Integration Test" }
-  let(:item_title) { "My Icon Collection for #{collection_title}" }
+  let(:collection_title) { random_phrase }
+  let(:item_title) { "Globus Test Item for #{collection_title}" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }
+  let(:filename) { 'vision_for_stanford.jpg' }
 
   before do
     authenticate!(start_url: "#{Settings.h3_url}/", expected_text: /Enter here/)
@@ -42,9 +41,38 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     click_link('Deposit to this collection', href: "/works/new?collection_druid=#{collection_druid.sub(':', '%3A')}")
 
-    # there is a pre-set endpoint with the globus files ready to go when the title includes "Integration Test"
     click_link_or_button 'Use Globus to transfer files'
+    click_link_or_button 'Your computer' # Tell the H3 UI we will upload a file via the Globus UI
+
+    page.within_window(page.windows.last) do
+      # Now in the Globus UI, which should have opened in a new window, choose Stanford
+      find_by_id('identity_provider-selectized').click
+      find('.selectize-dropdown .option', text: 'Stanford University').click
+      click_link_or_button 'Continue'
+      # Now you need to auth again for Globus, yay!
+
+      # the Globus upload button isn't ready until the "empty" text appears
+      # but this means this folder needs to start as empty
+      # which it should if the previous test run succeeded
+      # and you aren't in the middle of using globus for H3 in stage/qa
+      expect(page).to have_text('This folder is empty.')
+      # select upload button
+      find('span', text: 'Upload').click
+
+      # Attaching file directly to the upload-files input
+      attach_file('upload-files', "spec/fixtures/#{filename}", make_visible: true)
+
+      # wait for the upload to be complete: the directory list should refresh when done and show the filename
+      within('.directory-content') do
+        expect(page).to have_content(filename)
+      end
+    end
+
+    # Back in the H3 window, tell it we are done
     click_link_or_button 'Globus file transfer complete'
+
+    # filename is on the H3 page
+    expect(page).to have_text(filename)
 
     click_link_or_button 'Next'
     fill_in 'Title of deposit', with: item_title
@@ -91,6 +119,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     visit "#{Settings.argo_url}/view/#{work_druid}"
     reload_page_until_timeout!(text: 'v1 Accessioned')
-    expect(page).to have_text('my-icons-collection/license/license.pdf')
+    expect(page).to have_text(filename) # file made it from globus!
+
+    # check PURL
+    expect_text_on_purl_page(druid: work_druid, text: item_title)
   end
 end
