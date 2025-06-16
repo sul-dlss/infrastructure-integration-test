@@ -7,13 +7,10 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
   let(:filename) { 'vision_for_stanford.jpg' }
 
   before do
-    authenticate!(start_url: "#{Settings.h3_url}/", expected_text: /Enter here/)
+    authenticate!(start_url: "#{Settings.h3_url}/dashboard", expected_text: /Dashboard/)
   end
 
   scenario do
-    # Go to the dashboard
-    click_link_or_button 'Enter here'
-
     # CREATE COLLECTION
     click_link_or_button 'Create a new collection'
     # Checks for specific content in create collection view
