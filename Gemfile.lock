@@ -64,7 +64,7 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.6.2)
-    dor-services-client (15.13.0)
+    dor-services-client (15.15.0)
       activesupport (>= 7.0.0)
       cocina-models (~> 0.104.1)
       deprecation
@@ -181,7 +181,7 @@ GEM
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.4)
+    rspec-core (3.13.5)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -234,7 +234,7 @@ GEM
       launchy
       zeitwerk
     securerandom (0.4.1)
-    selenium-webdriver (4.33.0)
+    selenium-webdriver (4.34.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
