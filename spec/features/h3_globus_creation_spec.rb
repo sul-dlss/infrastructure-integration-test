@@ -56,6 +56,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
       # select upload button
       find('span', text: 'Upload').click
 
+      click_link_or_button 'Continue' if page.has_text? 'Authentication/Consent is required'
+      click_link_or_button 'Allow' if page.has_text? 'Globus Web App would like to'
+
       # Attaching file directly to the upload-files input
       attach_file('upload-files', "spec/fixtures/#{filename}", make_visible: true)
 
