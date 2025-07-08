@@ -60,7 +60,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     # find the new object
     expect(page).to have_text('Home page')
     click_link_or_button 'My tasks'
-    fill_in 'processAllBox:searchform:sub1:searchField', with: druid
+    fill_in 'search', with: druid
     click_link_or_button 'Search'
 
     # upload the test image
@@ -78,7 +78,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     # wait for goobi to do some back-end processing of the uploaded image
     # and then find object again to continue processing
     sleep 2
-    fill_in 'processAllBox:searchform:sub1:searchField', with: druid
+    fill_in 'search', with: druid
     click_link_or_button 'Search'
     expect(page).to have_text 'Final QA Validation'
 
