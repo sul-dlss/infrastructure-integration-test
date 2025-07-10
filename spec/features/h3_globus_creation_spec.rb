@@ -38,6 +38,18 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     click_link('Deposit to this collection', href: "/works/new?collection_druid=#{collection_druid.sub(':', '%3A')}")
 
+    # Set work title before saving draft
+    find('.nav-link', text: 'Title and contact').click
+    fill_in 'Title of deposit', with: item_title
+    fill_in 'Contact email', with: user_email
+    click_link_or_button 'Save as draft'
+
+    expect(page).to have_css('h1', text: item_title)
+    expect(page).to have_text('Draft - Not deposited')
+    work_druid = page.current_url.split('/').last
+    puts " *** h3 work draft druid: #{work_druid} ***" # useful for debugging
+
+    click_link_or_button 'Edit or deposit'
     click_link_or_button 'Use Globus to transfer files'
     click_link_or_button 'Your computer' # Tell the H3 UI we will upload a file via the Globus UI
 
@@ -74,12 +86,8 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     # filename is on the H3 page
     expect(page).to have_text(filename)
 
-    click_link_or_button 'Next'
-    fill_in 'Title of deposit', with: item_title
-    fill_in 'Contact email', with: user_email
-
-    # Click Next to go to contributors tab
-    click_link_or_button('Next')
+    # Skip to authors / contributors as we already entered title and contact for the draft
+    find('.nav-link', text: 'Authors / Contributors').click
     expect(page).to have_css('.nav-link.active', text: 'Authors / Contributors')
     expect(page).to have_css('.h4', text: 'Authors / Contributors')
 
