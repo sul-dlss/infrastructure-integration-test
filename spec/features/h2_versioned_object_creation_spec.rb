@@ -91,8 +91,8 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
     expect(page).to have_text('Initial version (Public version 1)')
 
     # give preservation a chance to catch up before we create a new version
-    #  since the shelving step does diffs that depend on files being visible in preservation
-    sleep 5
+    # since the shelving step does diffs that depend on files being visible in preservation
+    sleep 40
 
     # Deposit without creating a new user version
     visit "#{Settings.h2_url}/dashboard"
@@ -114,6 +114,8 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
 
     expect(page).to have_text('abstract (Public version 1)')
 
+    sleep 20
+
     # Deposit with creating a new user version
     visit "#{Settings.h2_url}/dashboard"
     click_link_or_button "Edit #{item_title}"
@@ -127,6 +129,11 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
     click_deposit_and_handle_terms_modal
 
     expect(page).to have_text 'You have successfully deposited your work'
+
+    # We can sometimes see ShelvableFilesStager::FileNotFound errors in
+    # dor-services-app if we don't wait a moment here. This results in the
+    # workflow gettings stuck in preservationIngestWF at transfer-object
+    sleep 20
 
     # Opens Argo detail page
     visit "#{Settings.argo_url}/view/#{bare_druid}"
@@ -156,6 +163,8 @@ RSpec.describe 'Use H2 to create a collection and a versioned work belonging to 
     visit "#{Settings.purl_url}/#{bare_druid}/version/1?version_feature=true"
     expect(page).to have_text('This version has been withdrawn')
     expect(page).to have_no_text('Versions')
+
+    sleep 20
 
     # Now restore it.
     visit "#{Settings.argo_url}/view/#{bare_druid}"
