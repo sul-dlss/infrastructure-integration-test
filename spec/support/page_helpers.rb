@@ -29,7 +29,7 @@ module PageHelpers
       loop do
         break if block_given? ? yield(page) : page.has_text?(expected_text, wait: 1)
 
-        if page.has_css?('.alert-danger', wait: 0) && page.has_text?(workflow_retry_text)
+        if page.has_css?('.alert-danger', wait: 0) && has_any_text?(workflow_retry_text)
           click_link_or_button workflow
           select 'Rerun', from: 'status'
           confirm_message = 'You have selected to manually change the status. '
@@ -43,6 +43,11 @@ module PageHelpers
         page.refresh
       end
     end
+  end
+
+  # Check if the page has any of the provided texts, can pass in any number
+  def has_any_text?(*texts)
+    texts.flatten.any? { |text| page.has_text?(text, wait: 1) }
   end
 end
 

@@ -140,10 +140,12 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     # Opens Argo detail page
     visit "#{Settings.argo_url}/view/#{work_druid}"
-    # wait for accessioningWF to finish; retry if error on shelving step, likely caused by a race condition
+    # wait for accessioningWF to finish; retry if error on start-accession or shelving step, likely caused by a race condition
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v3 Accessioned',
                                                   workflow: 'accessionWF',
-                                                  workflow_retry_text: 'Error: shelve : problem with shelve',
+                                                  workflow_retry_text:
+                                                    ["Error: start-accession : #{work_druid} not found in Preservation",
+                                                     'Error: shelve : problem with shelve'],
                                                   retry_wait: 10)
     expect(page).to have_text('adding a file (Public version 2)') # now we are on user version 2 since we added a file
     expect(page).to have_no_text('Public version 3') # and no user version 3

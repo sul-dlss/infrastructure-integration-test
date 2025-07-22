@@ -105,11 +105,13 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     # with all files there, and an ocrWF, organized into specified resources
     visit "#{Settings.argo_url}/view/#{druid}"
 
+    # wait for accessioningWF to finish; retry if error on technical-metadata step, likely caused by a race condition
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
+                                                  workflow: 'accessionWF',
+                                                  workflow_retry_text: 'technical-metadata : Problem with technical-metadata',
+                                                  retry_wait: 10)
     # Check that ocrWF ran
     reload_page_until_timeout!(text: 'ocrWF')
-
-    # Wait for the second version accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned')
 
     # Check that the version description is correct for the second version
     reload_page_until_timeout!(text: 'Start OCR workflow')
