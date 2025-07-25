@@ -41,6 +41,7 @@ RSpec.describe 'SDR deposit' do
     # Tests existence of technical metadata
     expect(page).to have_text 'Technical metadata'
     click_link_or_button 'Technical metadata'
+    sleep(5)
 
     # this is a hack that forces the techMD section to scroll into view; the section
     # is lazily loaded, and won't actually be requested otherwise, even if the button
