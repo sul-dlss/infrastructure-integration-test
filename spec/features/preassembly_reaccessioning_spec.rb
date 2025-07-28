@@ -97,6 +97,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     click_link_or_button 'Download'
     wait_for_download
+    puts "Download is #{download}: #{File.read(download)}"
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
     # delete the downloaded YAML file, so we don't pick it up by mistake during the re-accession

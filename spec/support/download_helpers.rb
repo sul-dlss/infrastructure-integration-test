@@ -24,6 +24,8 @@ module DownloadHelpers
     Timeout.timeout(TIMEOUT, StandardError, 'timed out waiting for download') do
       sleep 0.1 until downloaded?
     end
+    # wait a bit longer to ensure the download is complete
+    sleep 0.5
   end
 
   def downloaded?

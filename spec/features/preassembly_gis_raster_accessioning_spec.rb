@@ -104,6 +104,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
 
     click_link_or_button 'Download'
     wait_for_download
+    puts "Download is #{download}: #{File.read(download)}"
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
 

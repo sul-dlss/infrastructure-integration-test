@@ -110,6 +110,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
 
     click_link_or_button 'Download'
     wait_for_download
+    puts "Download is #{download}: #{File.read(download)}"
     yaml = YAML.load_file(download)
     expect(yaml[:status]).to eq 'success'
     # delete the downloaded YAML file, so we don't pick it up by mistake during the re-accession
