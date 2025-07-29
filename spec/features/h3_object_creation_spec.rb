@@ -38,7 +38,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     click_link('Deposit to this collection', href: "/works/new?collection_druid=#{collection_druid.sub(':', '%3A')}")
 
     # Work Deposit view
-    find('.dropzone').drop('spec/fixtures/sul-logo.png')
+    attach_file('spec/fixtures/sul-logo.png', class: 'dz-hidden-input', make_visible: true)
 
     expect(page).to have_text('sul-logo.png')
 
