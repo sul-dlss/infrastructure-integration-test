@@ -62,8 +62,12 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
                                                   workflow: 'gisAssemblyWF',
                                                   workflow_retry_text: 'Error: extract-boundingbox',
                                                   retry_wait: 5) do |page|
-      click_link_or_button 'Reindex'
+      page.driver.with_playwright_page do |page|
+        page.locator('.btn', hasText: 'Reindex').click
+      end
+
       sleep 5
+
       # verify the gisAssemblyWF workflow completes
       page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
     end
@@ -83,15 +87,53 @@ RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' d
     # look for expected files produced by GIS workflows
     files = all('tr.file')
     expect(files.size).to eq 9
-    expect(files[0].text).to match(%r{AirMonitoringStations.shp application/vnd.shp 8.14 KB})
-    expect(files[1].text).to match(%r{AirMonitoringStations.shx application/vnd.shx 2.39 KB})
-    expect(files[2].text).to match(%r{AirMonitoringStations.dbf application/vnd.dbf 40.8 KB})
-    expect(files[3].text).to match(%r{AirMonitoringStations.prj text/plain 468 Bytes})
-    expect(files[4].text).to match(%r{preview.jpg image/jpeg 2\d.\d KB})
-    expect(files[5].text).to match(%r{AirMonitoringStations.shp.xml application/xml 6\d.\d KB})
-    expect(files[6].text).to match(%r{AirMonitoringStations-iso19139.xml application/xml 2\d.\d KB})
-    expect(files[7].text).to match(%r{AirMonitoringStations-iso19110.xml application/xml 1\d.\d KB})
-    expect(files[8].text).to match(%r{AirMonitoringStations-fgdc.xml application/xml 5.\d+ KB})
+
+    cells = files[0].all('td')
+    expect(cells.size).to eq 9
+    expect(cells[0].text).to eq 'AirMonitoringStations.shp'
+    expect(cells[1].text).to eq 'application/vnd.shp'
+    expect(cells[2].text).to eq '8.14 KB'
+
+    cells = files[1].all('td')
+    expect(cells.size).to eq 9
+    expect(cells[0].text).to eq 'AirMonitoringStations.shx'
+    expect(cells[1].text).to eq 'application/vnd.shx'
+    expect(cells[2].text).to eq '2.39 KB'
+
+    cells = files[2].all('td')
+    expect(cells[0].text).to eq 'AirMonitoringStations.dbf'
+    expect(cells[1].text).to eq 'application/vnd.dbf'
+    expect(cells[2].text).to eq '40.8 KB'
+
+    cells = files[3].all('td')
+    expect(cells[0].text).to eq 'AirMonitoringStations.prj'
+    expect(cells[1].text).to eq 'text/plain'
+    expect(cells[2].text).to eq '468 Bytes'
+
+    cells = files[4].all('td')
+    expect(cells[0].text).to eq 'preview.jpg'
+    expect(cells[1].text).to eq 'image/jpeg'
+    expect(cells[2].text).to match '2\d.\d KB'
+
+    cells = files[5].all('td')
+    expect(cells[0].text).to eq 'AirMonitoringStations.shp.xml'
+    expect(cells[1].text).to eq 'application/xml'
+    expect(cells[2].text).to match '6\d.\d KB'
+
+    cells = files[6].all('td')
+    expect(cells[0].text).to eq 'AirMonitoringStations-iso19139.xml'
+    expect(cells[1].text).to eq 'application/xml'
+    expect(cells[2].text).to match '2\d.\d KB'
+
+    cells = files[7].all('td')
+    expect(cells[0].text).to eq 'AirMonitoringStations-iso19110.xml'
+    expect(cells[1].text).to eq 'application/xml'
+    expect(cells[2].text).to match '1\d.\d KB'
+
+    cells = files[8].all('td')
+    expect(cells[0].text).to eq 'AirMonitoringStations-fgdc.xml'
+    expect(cells[1].text).to eq 'application/xml'
+    expect(cells[2].text).to match '5.\d+ KB'
 
     # verify that the content type is "geo"
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')

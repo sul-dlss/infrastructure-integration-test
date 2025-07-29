@@ -7,7 +7,8 @@ require 'faker'
 require 'io/console'
 require 'rubyXL'
 require 'sdr_client'
-require 'selenium-webdriver'
+# require 'selenium-webdriver'
+require 'capybara-playwright-driver'
 
 $sdr_env = ENV.fetch('SDR_ENV', 'stage')
 root = Pathname.new(File.expand_path('../', __dir__))

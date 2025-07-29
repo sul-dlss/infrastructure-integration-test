@@ -10,3 +10,4 @@ downloads
 
 # configs to hold sensitive values
 config/**/*.local.yml
+node_modules/**/*
