@@ -13,6 +13,14 @@ The tests depend on having Firefox (default) or Chrome downloaded.
 1. `bundle install`
 1. `bin/rake webdrivers:geckodriver:update`
 
+### Install the Playwright CLI
+
+```
+export PLAYWRIGHT_CLI_VERSION=$(bundle exec ruby -e 'require "playwright"; puts Playwright::COMPATIBLE_PLAYWRIGHT_VERSION.strip')
+yarn add -D "playwright@$PLAYWRIGHT_CLI_VERSION"
+yarn run playwright install
+```
+
 See the `Other Configuration` section below for
 - instructions on using Chrome
 - tweaking default selenium browser settings.

@@ -5,6 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'activesupport'
 gem 'capybara'
+gem 'capybara-playwright-driver'
 gem 'capybara_table'
 gem 'config'
 gem 'csv'
@@ -23,5 +24,4 @@ gem 'rubocop-rspec'
 gem 'rubocop-rspec_rails'
 gem 'rubyXL' # for updating Excel spreadsheets
 gem 'sdr-client', '~> 2.0'
-gem 'selenium-webdriver'
-gem 'websocket' # required by selenium-webdrivers; a ruby upgrade somehow obscured this dependency
+gem 'websocket' # required by capybara-playwright-driver; a ruby upgrade somehow obscured this dependency
