@@ -24,4 +24,4 @@ gem 'rubocop-rspec_rails'
 gem 'rubyXL' # for updating Excel spreadsheets
 gem 'sdr-client', '~> 2.0'
 gem 'selenium-webdriver'
-gem 'websocket' # required by selenium-webdrivers; a ruby upgrade somehow obscured this dependency
+gem 'websocket' # required by selenium-webdriver; a ruby upgrade somehow obscured this dependency
