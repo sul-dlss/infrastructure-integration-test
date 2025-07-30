@@ -19,6 +19,9 @@ module PageHelpers
   # This method provides a way to retry a workflow step if the workflow fails with a specific error message.
   # It will stop retrying when the passed in block returns true, or if no block is given, when
   # workflow_retry_text is found in the page.
+  # @param expected_text [String,Regexp] the text that will end the refresh loop, if present and no block is provided.
+  # @param workflow [String] the workflow in which a step may need to be retried
+  # @param workflow_retry_text [String,Regexp] alert text that'll trigger retry of the last failed step of the specified workflow
   # @yieldparam page [Capybara::Node::Document] the currrent page, from which we're retrying the workflow
   # @yieldreturn [boolean] done retrying the workflow if true, otherwise continue
   def reload_page_until_timeout_with_wf_step_retry!(expected_text: '',
