@@ -11,7 +11,6 @@ The tests use Ruby 3.4.
 The tests depend on having Firefox (default) or Chrome downloaded.
 
 1. `bundle install`
-1. `bin/rake webdrivers:geckodriver:update`
 
 See the `Other Configuration` section below for
 - instructions on using Chrome
@@ -125,7 +124,6 @@ If you tire of typing in your SUNet credentials over and over, you may add them 
 ### Use Chrome Browser
 
 1. `bundle install`
-1. `bin/rake webdrivers:chromedriver:update`
 1. Set `browser.driver` to `chrome` in `config/settings.local.yml`
 
 ### Change Browser Window Size
