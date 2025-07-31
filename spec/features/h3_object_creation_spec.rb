@@ -142,9 +142,18 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     visit "#{Settings.argo_url}/view/#{work_druid}"
     # wait for accessioningWF to finish; retry if error on shelving step, likely caused by a race condition
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v3 Accessioned',
-                                                  workflow: 'accessionWF',
-                                                  workflow_retry_text: 'Error: shelve : problem with shelve',
-                                                  retry_wait: 10)
+                                                  workflow: nil,
+                                                  retry_wait: 10) do |page|
+      if page.has_text?('v3 Accessioned')
+        next true # done retrying, success
+      elsif page.has_text?(/(Error: shelve : problem with shelve)|(start-accession : druid:.* not found in Preservation)/, wait: 1) # rubocop:disable Layout/LineLength
+        next 'accessionWF' # these messages are for accessionWF steps
+      elsif page.has_text?(/transfer-object : Error transferring bag .* for druid:/, wait: 1)
+        next 'preservationIngestWF' # this message is for a preservationIngestWF step
+      else
+        next false # unexpected error message, will keep retrying with the last retried workflow
+      end
+    end
     expect(page).to have_text('adding a file (Public version 2)') # now we are on user version 2 since we added a file
     expect(page).to have_no_text('Public version 3') # and no user version 3
     expect_text_on_purl_page(druid: work_druid, text: 'Version 2') # PURL now shows user version 2

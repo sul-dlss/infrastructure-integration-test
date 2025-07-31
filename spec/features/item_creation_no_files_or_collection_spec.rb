@@ -93,8 +93,17 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
 
     # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
-                                                  workflow: 'accessionWF',
-                                                  workflow_retry_text: 'Version mismatch',
-                                                  retry_wait: 2)
+                                                  workflow: nil,
+                                                  retry_wait: 2) do |page|
+      if page.has_text?('v2 Accessioned')
+        next true # done retrying, success
+      elsif page.has_text?('Version mismatch', wait: 1)
+        next 'accessionWF' # this message is for accessionWF steps
+      elsif page.has_text?(/transfer-object : Error transferring bag .* for druid:/, wait: 1)
+        next 'preservationIngestWF' # this message is for a preservationIngestWF step
+      else
+        next false # unexpected error message, will keep retrying with the last retried workflow
+      end
+    end
   end
 end
