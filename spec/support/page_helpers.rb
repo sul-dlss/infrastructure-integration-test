@@ -36,7 +36,6 @@ module PageHelpers
                                                     retry_wait: 5)
     Timeout.timeout(Settings.timeouts.workflow) do
       loop do
-        # break if block_given? ? yield(page) : page.has_text?(expected_text, wait: 1)
         if block_given?
           yield_val = yield(page)
           break if yield_val == true
