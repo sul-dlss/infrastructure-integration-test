@@ -81,7 +81,11 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     expect(page).to have_text 'Success! Your job is queued. ' \
                               'A link to job output will be emailed to you upon completion.'
 
-    # go to job details page, download result
+    # go to job details page, download result. we should land on /job_runs, but sometimes
+    # selenium or capybara trips over itself, doesn't see first link in page as active and clickable,
+    # so doesn't scroll up to it, and times out waiting for the first link to be clickable. reloading
+    # the page and JS scroll up didn't seem to work (manual scroll up did). so just re-visit the URL.
+    visit "#{Settings.preassembly.url}/job_runs"
     first('td > a').click
     expect(page).to have_text preassembly_project_name
 
@@ -106,7 +110,17 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     reload_page_until_timeout!(text: 'ocrWF')
 
     # Wait for the second version accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned')
+    reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned', workflow: nil) do |page|
+      if page.has_text?('v2 Accessioned')
+        next true # done retrying, success
+      elsif page.has_text?(/technical-metadata : Problem with technical-metadata-service.*-generated.pdf not found/, wait: 1)
+        next 'accessionWF' # this message is for an accessionWF step
+      elsif page.has_text?(/transfer-object : Error transferring bag .* for druid:/, wait: 1)
+        next 'preservationIngestWF' # this message is for a preservationIngestWF step
+      else
+        next false # unexpected error message, will keep retrying with the last retried workflow
+      end
+    end
 
     # Check that the version description is correct for the second version
     reload_page_until_timeout!(text: 'Start OCR workflow')
