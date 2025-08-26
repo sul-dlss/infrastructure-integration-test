@@ -276,7 +276,25 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
     canvas = JSON.parse(Faraday.get(canvas_url).body)
     image_url = canvas.dig('images', 0, 'resource', '@id')
-    image_response = Faraday.get(image_url)
+
+    # In late August 2025, during a versioning work cycle on the Access side, we
+    # started noticing that the image URL returned a 404 initially but
+    # eventually returned 200. Likely related to filesystem latency.
+    # "Eventually" meaning roughly 9-10 minutes. To allow this test to pass,
+    # wait a considerably longer time and print out messages so the developer
+    # knows what's going on. Hopefully we can jettison this at some point.
+    sleep_duration = 15
+    counter = 0
+    while counter <= 100
+      image_response = Faraday.get(image_url)
+      puts "stacks image response at #{sleep_duration * counter}s: #{image_response.status}"
+
+      break if image_response.status == 200
+
+      counter += 1
+      sleep sleep_duration
+    end
+
     expect(image_response.status).to eq(200)
     expect(image_response.headers['content-type']).to include('image/jpeg')
 
