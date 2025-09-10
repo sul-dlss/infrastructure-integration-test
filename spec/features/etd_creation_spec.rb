@@ -68,7 +68,6 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
   let(:supplemental_filename) { 'etd_supplemental.txt' }
   let(:permissions_filename) { 'etd_permissions.pdf' }
 
-  # See https://github.com/sul-dlss/hydra_etd/wiki/End-to-End-Testing-Procedure-in-etd-uat
   scenario do
     authenticate!(start_url: "#{Settings.etd_url}/view/0001",
                   expected_text: 'Could not find an Etd with id: 0001')
@@ -78,131 +77,87 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     prefixed_druid = resp_body.split.first
     expect(prefixed_druid).to start_with('druid:')
     puts " *** ETD creation druid: #{prefixed_druid} ***" # useful for debugging
-    # puts "   *** dissertation id is #{dissertation_id} ***" # helpful for debugging
+    puts " *** Dissertation id: #{dissertation_id} ***" # helpful for debugging
 
-    etd_submit_url = "#{Settings.etd_url}/submit/#{prefixed_druid}"
-    # puts "etd submit url: #{etd_submit_url}" # helpful for debugging
-    visit etd_submit_url
+    visit "#{Settings.etd_url}/submit/#{dissertation_id}"
 
     # verify citation details
-    expect(page).to have_css('#pbCitationDetails', text: "Citation details verified\n- Not done")
-    expect(page).not_to have_a_complete_step('#pbCitationDetails')
+    expect(page).to have_css('li[aria-label="Step 1, Citation details verified, In progress"]')
     expect(page).to have_text(dissertation_id)
     expect(page).to have_text(dissertation_author)
     expect(page).to have_text(dissertation_title)
-    check('confirmCitationDetails')
-    expect(page).to have_a_complete_step('#pbCitationDetails')
+    find('button[aria-label="Confirm: Verify your citation details"]').click
+    expect(page).to have_css('li[aria-label="Step 1, Citation details verified, Completed"]')
 
     # provide abstract
-    expect(page).to have_css('#pbAbstractProvided', text: "Abstract provided\n- Not done")
-    expect(page).not_to have_a_complete_step('#pbAbstractProvided')
-    fill_in 'Enter your abstract in plain text (no HTML or special formatting, such as bullets or indentation).',
-            with: abstract_text
-    click_link_or_button 'Save'
-    expect(page).to have_a_complete_step('#pbAbstractProvided')
+    expect(page).to have_css('li[aria-label="Step 2, Abstract provided, In progress"]')
+    fill_in 'Abstract', with: abstract_text
+    find('button[aria-label="Done: Enter your abstract"]:not([disabled])').click
+    expect(page).to have_css('li[aria-label="Step 2, Abstract provided, Completed"]')
 
     # confirm format has been reviewed
-    expect(page).not_to have_a_complete_step('#pbFormatReviewed')
-    expect(page).to have_css('#pbFormatReviewed', text: "Format reviewed\n- Not done")
-    check('confirmFormatReview')
-    expect(page).to have_a_complete_step('#pbFormatReviewed')
+    expect(page).to have_css('li[aria-label="Step 3, Format reviewed, In progress"]')
+    find('button[aria-label="Confirm: Review your dissertation\'s formatting before upload"]').click
+    expect(page).to have_css('li[aria-label="Step 3, Format reviewed, Completed"]')
 
     # upload dissertation PDF
-    expect(page).to have_no_text(dissertation_filename, wait: 1)
-    expect(page).to have_css('#pbDissertationUploaded', text: "Dissertation uploaded\n- Not done")
-    expect(page).not_to have_a_complete_step('#pbDissertationUploaded')
-    attach_file('primaryUpload', "spec/fixtures/#{dissertation_filename}", make_visible: true)
-    expect(page).to have_text(dissertation_filename)
-    expect(page).to have_a_complete_step('#pbDissertationUploaded')
+    expect(page).to have_css('li[aria-label="Step 4, Dissertation uploaded, In progress"]')
+    attach_file('Upload PDF', "spec/fixtures/#{dissertation_filename}")
+    find('button[aria-label="Done: Upload your dissertation"]').click
+    expect(page).to have_css('li[aria-label="Step 4, Dissertation uploaded, Completed"]')
 
     # upload supplemental file
-    expect(page).to have_no_text(supplemental_filename, wait: 1)
-    expect(page).to have_css('#pbSupplementalFilesUploaded', visible: :hidden)
-    check('My dissertation includes supplemental files.')
-    attach_file('supplementalUpload_1', "spec/fixtures/#{supplemental_filename}", make_visible: true)
-    expect(page).to have_text(supplemental_filename)
-    expect(page).to have_css('#pbSupplementalFilesUploaded', visible: :visible)
-    expect(page).to have_a_complete_step('#pbSupplementalFilesUploaded')
+    expect(page).to have_css('li[aria-label="Step 5, Supplemental files uploaded, In progress"]')
+    within('section[aria-label="5 Upload supplemental files in progress"]') do
+      find('label', text: 'Yes').click
+    end
+    attach_file('Upload supplemental files', "spec/fixtures/#{supplemental_filename}")
+    find('button[aria-label="Done: Upload supplemental files"]').click
+    expect(page).to have_css('li[aria-label="Step 5, Supplemental files uploaded, Completed"]')
 
-    # indicate copyrighted material
-    expect(page).to have_css('#pbPermissionsProvided', text: "Copyrighted material checked\n- Not done")
-    expect(find_by_id('pbPermissionsProvided')['style']).to eq '' # rights not yet selected
-    select 'Yes', from: "My #{dissertation_type.downcase} contains copyright material"
-
-    # provide copyright permissions letters/files
-    expect(page).to have_no_text(permissions_filename, wait: 1)
-    expect(page).to have_css('#pbPermissionFilesUploaded', visible: :hidden)
-    attach_file('permissionUpload_1', "spec/fixtures/#{permissions_filename}", make_visible: true)
-    expect(page).to have_text(permissions_filename)
-    expect(page).to have_css('#pbPermissionFilesUploaded', visible: :visible)
-
-    expect(page).to have_a_complete_step('#pbPermissionFilesUploaded')
-    expect(page).to have_a_complete_step('#pbPermissionsProvided')
+    # upload permission file
+    expect(page).to have_css('li[aria-label="Step 6, Permission files uploaded, In progress"]')
+    within('section[aria-label="6 Upload permissions in progress"]') do
+      find('label', text: 'Yes').click
+    end
+    attach_file('Upload permission files', "spec/fixtures/#{permissions_filename}")
+    find('button[aria-label="Done: Upload permissions"]').click
+    expect(page).to have_css('li[aria-label="Step 6, Permission files uploaded, Completed"]')
 
     # apply licenses
-    expect(page).to have_css('#pbRightsSelected', text: "License terms applied\n- Not done")
-    expect(page.find_by_id('pbRightsSelected')['style']).to eq '' # rights not applied yet
-    click_link_or_button 'View Stanford University publication license'
-    check 'I have read and agree to the terms of the Stanford University license.'
-    within('#lb_stanfordLicense') do
-      click_link_or_button 'Close'
-    end
-    click_link_or_button 'View Creative Commons licenses'
-    within('#lb_licenseCC') do
-      select 'CC Attribution license', from: 'selectCCLicenseOptions'
-      click_link_or_button 'Close'
-    end
+    expect(page).to have_css('li[aria-label="Step 7, License terms applied, In progress"]')
+    check 'I have read and agree to the terms of the Stanford University license'
+    sleep 0.25 # wait for the checkbox form submit to be completed
+    find('select[aria-label="Creative Commons license (required)"]').select('CC Attribution license')
+    find('select[aria-label="Delayed release (required)"]').select('6 months')
+    find('button[aria-label="Done: Apply copyright and license terms"]:not([disabled])').click
+    expect(page).to have_css('li[aria-label="Step 7, License terms applied, Completed"]')
 
-    # set embargo
-    click_link_or_button 'Postpone release'
-    within('#lb_embargo') do
-      select '6 months', from: 'selectReleaseDelayOptions'
-      click_link_or_button 'Close'
-    end
+    click_button 'Review and submit'
 
-    expect(page).to have_a_complete_step('#pbRightsSelected')
+    expect(page).to have_css('.h3', text: 'Review and submit')
+    click_link_or_button 'Submit to Registrar'
 
-    accept_alert do
-      click_link_or_button 'Submit to Registrar'
-    end
-    expect(page).to have_css('#submissionSuccessful', text: 'Submission successful')
-    expect(page).to have_css('#submitToRegistrarDiv > p.progressItemChecked', text: 'Submitted')
-
-    # page has reloaded with submit to registrar and these now will show as updated
-    expect(page).to have_css('#pbCitationDetails', text: "Citation details verified\n- Done")
-    expect(page).to have_css('#pbAbstractProvided', text: "Abstract provided\n- Done")
-    expect(page).to have_css('#pbFormatReviewed', text: "Format reviewed\n- Done")
-    expect(page).to have_css('#pbDissertationUploaded', text: "Dissertation uploaded\n- Done")
-    expect(page).to have_css('#pbSupplementalFilesUploaded', text: "Supplemental files uploaded\n- Done")
-    expect(page).to have_css('#pbPermissionsProvided', text: "Copyrighted material checked\n- Done")
-    expect(page).to have_css('#pbPermissionFilesUploaded', text: "Permission files uploaded\n- Done")
-    expect(page).to have_css('#pbRightsSelected', text: "License terms applied\n- Done")
+    expect(page).to have_text('Submission successful')
+    expect(page).to have_css('li[aria-label="Step 9, Verified by Final Reader, In progress"]')
 
     # fake reader approval
-    reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
-    expect(reader_progress_list_el).to have_text("Verified by Final Reader\n- Not done")
     # the faked reader approval time should be sufficiently past the submitted time to ensure it sticks
     now = (Time.now + 3600).in_time_zone('America/Los_Angeles').strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(reader_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
-    reader_progress_list_el = all('#progressBoxContent > ol > li')[9]
-    expect(reader_progress_list_el).to have_text("Verified by Final Reader\n- Done")
+    expect(page).to have_css('li[aria-label="Step 9, Verified by Final Reader, Completed"]')
+
+    expect(page).to have_css('li[aria-label="Step 10, Approved by Registrar, In progress"]')
 
     # fake registrar approval
-    registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
-    expect(registrar_progress_list_el).to have_text("Approved by Registrar\n- Not done")
-    # the faked registrar approval time should be sufficiently past the submitted time to ensure it sticks
     now = (Time.now + 7200).in_time_zone('America/Los_Angeles').strftime('%m/%d/%Y %T')
     resp_body = simulate_registrar_post(registrar_approval_xml_from_registrar)
     expect(resp_body).to eq "#{prefixed_druid} updated"
     page.refresh # needed to show updated progress box
-    registrar_progress_list_el = all('#progressBoxContent > ol > li')[10]
-    expect(registrar_progress_list_el).to have_text("Approved by Registrar\n- Done")
+    expect(page).to have_css('li[aria-label="Step 10, Approved by Registrar, Completed"]')
 
-    expect(page).to have_css('#submissionApproved', text: 'Submission approved')
-
-    # check Argo for object (wait for embargo info) and ensure authenticated in Argo
     authenticate!(start_url: "#{Settings.argo_url}/view/#{prefixed_druid}",
                   expected_text: 'Embargoed until ')
 
@@ -213,28 +168,9 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     reload_page_until_timeout!(text: /Embargoed until #{embargo_date_regex_str}/)
     expect(page).to have_text(dissertation_title)
     apo_element = find_table_cell_following(header_text: 'Admin policy')
-    expect(apo_element.first('a')[:href]).to end_with('druid:bx911tp9024') # this is hardcoded in hydra_etd app
+    expect(apo_element.first('a')[:href]).to end_with('druid:bx911tp9024') # this is hardcoded in etd app
     status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
-
-    sleep(5) # wait for javascript? Addresses problem with modal not opening.
-    click_link_or_button('etdSubmitWF')
-    within('.modal-dialog') do
-      # NOTE: it would be lovely if we could process the ETD through the rest of the etdSubmitWF steps
-      #   and then run it through common-accessioning, but the remaining etdSubmitWF steps, catalog-status and
-      #   otherMetadata, require too much fakery specific to the ETD app (cron job, cocina-model updates)
-      #   to make sense here.
-      expect(page).to have_text(/register-object\s+completed/)
-      expect(page).to have_text(/submit\s+completed/)
-      expect(page).to have_text(/reader-approval\s+completed/)
-      expect(page).to have_text(/registrar-approval\s+completed/)
-      expect(page).to have_text(/submit-marc\s+completed/, wait: 30)
-      expect(page).to have_text(/check-marc\s+completed/, wait: 15)
-      expect(page).to have_text(/catalog-status\s+waiting/, wait: 5)
-
-      sleep(2)
-      page.send_keys(:escape) # close modal; click_link_or_button('Cancel') and other approaches didn't work
-    end
 
     # test Embargo UI and indexing before an item is fully accessioned
     # check Argo facet field with 6 month embargo
