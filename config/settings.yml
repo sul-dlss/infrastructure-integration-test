@@ -3,7 +3,6 @@ timeouts:  # in seconds
   workflow: 300
   bulk_action: 200
   post_authentication_text: 5
-  h2_terms_modal_wait: 5 # should show quickly, so can be much shorter than default wait time
   events:
     poll_for: 240
     poll_interval: 2
