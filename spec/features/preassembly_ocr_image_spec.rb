@@ -158,9 +158,7 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     expect_text_on_purl_page(druid:, text: object_label)
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
-    canvas = JSON.parse(Faraday.get(canvas_url).body)
-    image_url = canvas.dig('images', 0, 'resource', '@id')
+    image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
     image_response = Faraday.get(image_url)
     expect(image_response.status).to eq(200)
     expect(image_response.headers['content-type']).to include('image/jpeg')
