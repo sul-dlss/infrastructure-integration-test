@@ -112,9 +112,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
                              href: "#{Settings.searchworks_url}/view/#{bare_object_druid}")
     iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    canvas_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, '@id')
-    canvas = JSON.parse(Faraday.get(canvas_url).body)
-    image_url = canvas.dig('images', 0, 'resource', '@id')
+    image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
     image_response = Faraday.get(image_url)
     expect(image_response.status).to eq(200)
     expect(image_response.headers['content-type']).to include('image/jpeg')
