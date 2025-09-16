@@ -151,22 +151,28 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     click_link_or_button('Submit')
     expect(page).to have_text('Release object job was successfully created.')
 
-    # This section confirms the object has been published to PURL
+    # This section confirms the cocina JSON has been published to PURL
+    cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid}.json").body)
+    description = cocina_json['description']
+    expect(cocina_json['label']).to eq 'Air Monitoring Stations: California, 2001-2003'
+    resource_types = description['form'].select { |form| form['type'] == 'resource type' }
+    expect(resource_types.any? { |resource| resource['value'] == 'cartographic' }).to be true
+    expect(description['title'].first['value']).to eq 'Air Monitoring Stations: California, 2001-2003' # with the new object label
+    expect(description['note'].select { |note| note['type'] == 'abstract' }.first['value']) # abstract
+      .to include('This point shapefile represents all air monitoring stations active in California from 2001 until 2003')
+    forms = description['form'].select { |form| form['type'] == 'form' }
+    expect(forms.any? { |resource| resource['value'] == 'Shapefile' }).to be true # form
+    expect(description['form'].select { |form| form['type'] == 'map projection' }.first['value'])
+      .to eq 'EPSG::3310' # form for native projection
+    genres = description['form'].select { |form| form['type'] == 'genre' }
+    expect(genres.any? { |genre| genre['value'] == 'Geospatial data' }).to be true
+    expect(genres.any? { |genre| genre['value'] == 'cartographic dataset' }).to be true
+
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
     expect_text_on_purl_page(druid:, text: collection_name)
     expect_link_on_purl_page(druid:,
                              text: 'View in EarthWorks',
                              href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
-    expect(page).to have_no_text(object_label) # the original object label has been replaced
-    expect(page).to have_text('Air Monitoring Stations: California, 2001-2003') # with the new object label
-    expect(page).to have_text('This point shapefile represents all air monitoring stations active in ' \
-                              'California from 2001 until 2003') # abstract
-    expect(page).to have_text('cartographic') # type of resource
-    expect(page).to have_text('Shapefile') # form
-    expect(page).to have_text('EPSG::3310') # map data
-    expect(page).to have_text('Geospatial data') # genre
-    expect(page).to have_text('Cartographic dataset') # genre
-
     # click Earthworks link and verify it was released
     click_link_or_button 'View in EarthWorks'
     reload_page_until_timeout!(text: 'Air Monitoring Stations: California, 2001-2003')
