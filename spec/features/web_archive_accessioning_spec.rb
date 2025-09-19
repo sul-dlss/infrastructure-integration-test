@@ -100,7 +100,9 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_text('image/jp2')
     expect(page).to have_text('400 px')
 
-    # Verify that the purl page includes the proper archived website URL
-    expect_link_on_purl_page(druid: seed_druid, text: 'Archived website', href: archived_url)
+    # Confirms the cocina JSON has been published to PURL with the replay URL
+    cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{seed_druid}.json").body)
+    access = cocina_json['description']['access']
+    expect(access['url'].first['value']).to eq archived_url
   end
 end
