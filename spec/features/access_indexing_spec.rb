@@ -63,9 +63,10 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     # choose_rights('Location: Music Library (no-download)')
     # find_access_rights_single_facet_value(object_druid, 'location: music (no-download)')
 
+    # October 2025: CDL turned off, so test commented out.
     # this is last as choose_rights doesn't have a handy way to turn controlled digital lending off.
-    choose_rights(view: 'Stanford', download: 'None', cdl: true)
-    find_access_rights_single_facet_value(object_druid, 'controlled digital lending')
+    # choose_rights(view: 'Stanford', download: 'None', cdl: true)
+    # find_access_rights_single_facet_value(object_druid, 'controlled digital lending')
 
     # TODO: add file level tests
   end

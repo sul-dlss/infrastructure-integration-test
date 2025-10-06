@@ -101,7 +101,24 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     expect(page).to have_text('400 px')
 
     # Confirms the cocina JSON has been published to PURL with the replay URL
-    cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{seed_druid}.json").body)
+    # We sometimes need to wait for the PURL page to be ready, likely related to filesystem latency.
+    # "Eventually" meaning roughly 9-10 minutes. To allow this test to pass,
+    # wait a considerably longer time and print out messages so the developer
+    # knows what's going on. Hopefully we can jettison this at some point.
+    sleep_duration = 15
+    counter = 0
+    while counter <= 100
+      json_url = "#{Settings.purl_url}/#{seed_druid}.json"
+      cocina_json_response = Faraday.get(json_url)
+      puts "stacks json response at #{sleep_duration * counter}s: #{cocina_json_response.status}"
+
+      break if cocina_json_response.status == 200
+
+      counter += 1
+      sleep sleep_duration
+    end
+
+    cocina_json = JSON.parse(cocina_json_response.body)
     access = cocina_json['description']['access']
     expect(access['url'].first['value']).to eq archived_url
   end
