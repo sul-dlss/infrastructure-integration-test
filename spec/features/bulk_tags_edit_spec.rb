@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to edit administrative tags in bulk' do
-  let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_nonproject_tag_ssim%5D%5B%5D=Registered+By" }
+  let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_nonproject_tag_ssimdv%5D%5B%5D=Registered+By+%3A+bergeraj" }
   let(:export_tag_description) { random_phrase }
   let(:import_tag_description) { random_phrase }
   let(:number_of_druids) { 3 }
@@ -75,6 +75,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
     removed_tag = druid_with_removed_tag.pop
 
     replaced_tag = druid_with_changed_tag.pop
+
     edited_tag = random_nouns_array.join(tag_delimiter)
     druid_with_changed_tag << edited_tag
 
