@@ -625,3 +625,12 @@ Capybara/FindAllFirst: # new in 2.22
   Enabled: true
 RSpec/IncludeExamples: # new in 3.6
   Enabled: true
+
+Layout/EmptyLinesAfterModuleInclusion: # new in 1.79
+  Enabled: true
+Naming/PredicateMethod: # new in 1.76
+  Enabled: true
+Style/ArrayIntersectWithSingleElement: # new in 1.81
+  Enabled: true
+Capybara/NegationMatcherAfterVisit: # new in 2.22
+  Enabled: true

@@ -121,6 +121,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
     expect(page).to have_no_text(replaced_tag)
 
     visit "#{Settings.argo_url}/view/#{druid_with_removed_tag.first}"
+    expect(page).to have_text(druid_with_removed_tag.first)
     expect(page).to have_no_text(removed_tag)
   end
 end
