@@ -72,7 +72,7 @@ def find_access_rights_single_facet_value(druid, facet_value)
   click_button 'Search'
   click_link_or_button('Access Rights')
 
-  within '#facet-rights_descriptions_ssim ul.facet-values' do
+  within '#facet-rights_descriptions_ssimdv ul.facet-values' do
     within 'li' do
       find_link(facet_value)
       find('.facet-count', text: 1)

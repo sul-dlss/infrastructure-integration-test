@@ -65,7 +65,7 @@ RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
     fill_in 'Search...', with: object_druid
     click_button 'Search'
     click_link_or_button 'Metadata Source'
-    within '#facet-metadata_source_ssim ul.facet-values' do
+    within '#facet-metadata_source_ssimdv ul.facet-values' do
       within 'li' do
         find_link('Folio')
         find('.facet-count', text: 1)
