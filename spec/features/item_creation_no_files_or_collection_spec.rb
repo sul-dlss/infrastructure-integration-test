@@ -95,6 +95,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
                                                   workflow: nil,
                                                   retry_wait: 2) do |page|
+      sleep 1
       if page.has_text?('v2 Accessioned')
         next true # done retrying, success
       elsif page.has_text?('Version mismatch', wait: 1)

@@ -147,7 +147,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     click_link_or_button 'Manage release'
     select 'Earthworks', from: 'to'
     click_link_or_button('Submit')
-    expect(page).to have_text('Release object job was successfully created.')
+    expect(page).to have_text("Updated release for #{druid}")
 
     # This section confirms the object has been published to PURL
     # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata

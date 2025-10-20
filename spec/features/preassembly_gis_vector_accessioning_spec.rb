@@ -149,7 +149,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     click_link_or_button 'Manage release'
     select 'Earthworks', from: 'to'
     click_link_or_button('Submit')
-    expect(page).to have_text('Release object job was successfully created.')
+    expect(page).to have_text("Updated release for #{druid}")
 
     # This section confirms the cocina JSON has been published to PURL
     cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid}.json").body)
