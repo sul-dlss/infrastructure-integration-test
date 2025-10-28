@@ -21,8 +21,9 @@ module EventHelpers
       # is clicked to expand the event section.
       page.execute_script 'window.scrollBy(0,100);'
 
-      # events are loaded lazily, give the network a few moments
-      page.has_text?(latest_s3_key, wait: 3)
+      expect(page).to have_css('turbo-frame#events[complete]', wait: 5) # wait for events to load
+      all('turbo-frame#events a', text: 'Expand all').each(&:click) # expand all event details
+      page.has_text?(latest_s3_key)
     end
   end
 
