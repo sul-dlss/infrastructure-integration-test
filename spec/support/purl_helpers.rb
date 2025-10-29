@@ -5,6 +5,7 @@ module PurlHelpers
   def expect_text_on_purl_page(druid:, text:, within_frame: false)
     bare_druid = druid.delete_prefix('druid:')
     visit "#{Settings.purl_url}/#{bare_druid}"
+    sleep 1
     if within_frame
       reload_page_until_timeout! do
         within_frame { page.has_text?(text, wait: 2) }
@@ -17,12 +18,14 @@ module PurlHelpers
   def do_not_expect_text_on_purl_page(druid:, text:) # rubocop:disable Naming/PredicateMethod
     bare_druid = druid.delete_prefix('druid:')
     visit "#{Settings.purl_url}/#{bare_druid}"
+    sleep 1
     page.has_no_text?(text)
   end
 
   def expect_link_on_purl_page(druid:, text:, href:)
     bare_druid = druid.delete_prefix('druid:')
     visit "#{Settings.purl_url}/#{bare_druid}"
+    sleep 1
     reload_page_until_timeout! { page.has_link?(text, href:, wait: 2) }
   end
 
