@@ -45,6 +45,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
+    sleep 1
     click_button 'Register'
 
     # wait for object to be registered
