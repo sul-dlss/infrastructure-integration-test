@@ -123,10 +123,9 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     end
 
     # Check that the version description is correct for the second version
-    reload_page_until_timeout!(text: 'Start OCR workflow')
+    reload_page_until_timeout!(text: 'Started OCR workflow')
 
-    # TODO: check that OCR was successful by looking for extra files that were created, and update expectations below
-
+    # Check that OCR was successful by looking for extra files that were created
     files = all('tr.file')
 
     expect(files.size).to eq 2
