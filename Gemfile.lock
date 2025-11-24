@@ -35,7 +35,7 @@ GEM
       xpath (>= 2.1)
     childprocess (5.1.0)
       logger (~> 1.5)
-    cocina-models (0.108.2)
+    cocina-models (0.108.3)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -135,7 +135,7 @@ GEM
     matrix (0.4.3)
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.26.1)
+    minitest (5.26.2)
     multi_json (1.17.0)
     net-http (0.8.0)
       uri (>= 0.11.1)
@@ -291,4 +291,4 @@ DEPENDENCIES
   websocket
 
 BUNDLED WITH
-   2.7.2
+  4.0.0.beta1
