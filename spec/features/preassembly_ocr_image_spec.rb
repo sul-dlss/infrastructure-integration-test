@@ -110,7 +110,8 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
     reload_page_until_timeout!(text: 'ocrWF')
 
     # Wait for the second version accessioningWF to finish
-    reload_page_until_timeout!(text: 'v2 Accessioned')
+    # This can take a while if Abbyy is busy
+    reload_page_until_timeout!(text: 'v2 Accessioned', num_seconds: 15 * 60)
 
     # Check that the version description is correct for the second version
     reload_page_until_timeout!(text: 'Started OCR workflow')
