@@ -53,7 +53,7 @@ GEM
     config (5.6.1)
       deep_merge (~> 1.2, >= 1.2.1)
       ostruct
-    connection_pool (2.5.5)
+    connection_pool (3.0.2)
     csv (3.3.5)
     date (3.5.0)
     debug (1.11.0)
@@ -104,7 +104,7 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erb (6.0.0)
-    faker (3.5.2)
+    faker (3.5.3)
       i18n (>= 1.8.11, < 2)
     faraday (2.14.0)
       faraday-net_http (>= 2.0, < 3.5)
@@ -122,7 +122,7 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.16.0)
+    json (2.17.1)
     jsonpath (1.1.5)
       multi_json
     language_server-protocol (3.17.0.5)
@@ -136,7 +136,7 @@ GEM
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
     minitest (5.26.2)
-    multi_json (1.17.0)
+    multi_json (1.18.0)
     net-http (0.8.0)
       uri (>= 0.11.1)
     nokogiri (1.18.10)
@@ -169,7 +169,7 @@ GEM
       rack (>= 1.3)
     rainbow (3.1.1)
     rake (13.3.1)
-    rdoc (6.16.1)
+    rdoc (6.17.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -234,14 +234,14 @@ GEM
       launchy
       zeitwerk
     securerandom (0.4.1)
-    selenium-webdriver (4.38.0)
+    selenium-webdriver (4.39.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
-    stringio (3.1.8)
-    super_diff (0.17.0)
+    stringio (3.1.9)
+    super_diff (0.18.0)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
@@ -291,4 +291,4 @@ DEPENDENCIES
   websocket
 
 BUNDLED WITH
-  4.0.0.beta2
+  4.0.0
