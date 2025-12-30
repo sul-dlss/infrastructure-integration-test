@@ -16,7 +16,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
       original_warc = File.read(warc_path)
       updated_warc = original_warc.lines
                                   .map do |line|
-        line.start_with?('WARC-Date') ? "WARC-Date: #{start_time.utc.iso8601(3)}\r\n" : line
+                                    line.start_with?('WARC-Date') ? "WARC-Date: #{start_time.utc.iso8601(3)}\r\n" : line
       end.join
       file.write(updated_warc)
       FileUtils.chmod(0o0644, file.path)
