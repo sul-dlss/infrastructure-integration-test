@@ -62,7 +62,7 @@ RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
     reload_page_until_timeout!(text: catalog_object_label_updated) # updated label pulled from folio for new HRID
 
     # look for metadata source facet having an entry of Folio for this druid
-    fill_in 'Search...', with: object_druid
+    fill_in 'Search...', with: "\"#{object_druid}\""
     click_button 'Search'
     click_link_or_button 'Metadata Source'
     within '#facet-metadata_source_ssimdv ul.facet-values' do

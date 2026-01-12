@@ -68,7 +68,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
 end
 
 def find_access_rights_single_facet_value(druid, facet_value)
-  fill_in 'Search...', with: druid
+  fill_in 'Search...', with: "\"#{druid}\""
   click_button 'Search'
   click_link_or_button('Access Rights')
 
