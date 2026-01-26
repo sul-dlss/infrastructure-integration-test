@@ -3,7 +3,8 @@
 require 'dor/services/client'
 
 module EventHelpers
-  TARGET_ENDPOINT_NAMES = %w[aws_s3_west_2 gcp_s3_south_1 aws_s3_east_1].freeze
+  env_name = $sdr_env == 'stage' ? '_stage' : ''
+  TARGET_ENDPOINT_NAMES = ["aws_s3_west_2#{env_name}", 'gcp_s3_south_1', "aws_s3_east_1#{env_name}"].freeze
 
   # @param [String] druid the druid to check for replication events, will be normalized to the prefixed version
   # @param [String,int] version the version to check for successful replication (naively assumes <= 9)
