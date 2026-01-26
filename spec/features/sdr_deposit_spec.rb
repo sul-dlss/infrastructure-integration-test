@@ -89,11 +89,13 @@ RSpec.describe 'SDR deposit' do
 
     click_link_or_button 'Cancel'
 
+    clear_downloads
+
     # We think this is needed due to network file system lag (between write to disk finishing, and
     # initial visibility to client VMs).  waiting briefly usually works, so retry for a bit.
     retries_count = 0
     begin
-      # Download Gemfile.lock (shelve=true) from Stacks
+      # View Gemfile.lock (shelve=true) from Stacks
       click_link_or_button 'Gemfile.lock'
       expect(page).to have_text 'Stacks:'
       gemfile_lock_stacks_link = find('.modal-content a')
@@ -117,11 +119,9 @@ RSpec.describe 'SDR deposit' do
         retry
       end
     end
-    wait_for_download
 
-    click_link_or_button 'Cancel'
-
-    clear_downloads
+    # Return from view of file in browser window to item page
+    visit "#{start_url}/view/#{druid}"
 
     # Check publishing
     expect_published_files(druid:, filenames: ['Gemfile.lock', 'config/settings.yml'])
