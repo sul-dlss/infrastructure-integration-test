@@ -92,6 +92,8 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     # provide abstract
     expect(page).to have_css('li[aria-label="Step 2, Abstract provided, In progress"]')
     fill_in 'Abstract', with: abstract_text
+    # Abstract is not persisted via auto-save until the blur event fires from the textarea element
+    find('body').click
     find('button[aria-label="Done: Enter your abstract"]:not([disabled])').click
     expect(page).to have_css('li[aria-label="Step 2, Abstract provided, Completed"]')
 
