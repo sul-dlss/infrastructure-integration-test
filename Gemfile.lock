@@ -35,7 +35,7 @@ GEM
       xpath (>= 2.1)
     childprocess (5.1.0)
       logger (~> 1.5)
-    cocina-models (0.109.0)
+    cocina-models (0.110.1)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -43,9 +43,10 @@ GEM
       edtf
       equivalent-xml
       i18n
+      json_schemer (~> 2.0)
       jsonpath
+      marc (~> 1.3)
       nokogiri
-      openapi_parser (~> 1.0)
       super_diff
       thor
       zeitwerk (~> 2.1)
@@ -63,9 +64,9 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.6.2)
-    dor-services-client (15.26.0)
+    dor-services-client (15.27.1)
       activesupport (>= 7.0.0)
-      cocina-models (~> 0.109.0)
+      cocina-models (~> 0.110.1)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -114,6 +115,7 @@ GEM
       net-http (~> 0.5)
     faraday-retry (2.4.0)
       faraday (~> 2.0)
+    hana (1.3.7)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -123,6 +125,11 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.18.1)
+    json_schemer (2.5.0)
+      bigdecimal
+      hana (~> 1.3)
+      regexp_parser (~> 2.0)
+      simpleidn (~> 0.2)
     jsonpath (1.1.5)
       multi_json
     language_server-protocol (3.17.0.5)
@@ -132,6 +139,9 @@ GEM
       logger (~> 1.6)
     lint_roller (1.1.0)
     logger (1.7.0)
+    marc (1.4.0)
+      nokogiri (~> 1.0)
+      rexml
     matrix (0.4.3)
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
@@ -147,7 +157,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.0-x86_64-linux-gnu)
       racc (~> 1.4)
-    openapi_parser (1.0.0)
     optimist (3.2.1)
     ostruct (0.6.3)
     parallel (1.27.0)
@@ -226,9 +235,9 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 3.2.2)
     rubyzip (3.2.2)
-    sdr-client (2.27.3)
+    sdr-client (2.28.1)
       activesupport
-      cocina-models (~> 0.109.0)
+      cocina-models (~> 0.110.1)
       config
       dry-monads
       faraday (>= 0.16)
@@ -241,6 +250,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
+    simpleidn (0.2.3)
     stringio (3.2.0)
     super_diff (0.18.0)
       attr_extras (>= 6.2.4)
