@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# for testing changes to dor-services-app mappings to cocina and
-#   testing changes to dor_indexing_app to index access from cocina
+# Integration: Argo facets, Cocina Models mappings, DSA Solr indexing
 RSpec.describe 'Argo rights changes result in correct Access Rights facet value' do
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }

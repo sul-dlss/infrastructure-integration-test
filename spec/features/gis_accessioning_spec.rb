@@ -2,8 +2,9 @@
 
 require 'druid-tools'
 
+# Integration: Argo, DSA, Purl, Earthworks
 # Accession a vector based GIS object
-# NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
+# NOTE: this spec will be skipped unless run on staging, since there is no geoserver in QA
 RSpec.describe 'Create and accession GIS item object', if: $sdr_env == 'stage' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:project_name) { 'Integration Test - GIS' }

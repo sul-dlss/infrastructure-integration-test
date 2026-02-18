@@ -2,6 +2,7 @@
 
 require 'druid-tools'
 
+# Integration: Argo, DSA, Preassembly, ABBYY, Purl
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 # This spec is only run if OCR is enabled in the environment specific settings file

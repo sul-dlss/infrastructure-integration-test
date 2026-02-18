@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: Argo, DSA
 RSpec.describe 'Use Argo to create an item object without any files and no collection' do
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }

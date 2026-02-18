@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: Argo, Modsulator, DSA
 RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)' do
   let(:title1) { random_phrase } # rubocop:disable RSpec/IndexedLet
   let(:title2) { random_phrase } # rubocop:disable RSpec/IndexedLet

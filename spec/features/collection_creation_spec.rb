@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: Argo, DSA
 RSpec.describe 'Use Argo to create a collection' do
   let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }

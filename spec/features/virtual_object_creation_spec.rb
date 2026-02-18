@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: Argo, DSA, Preassembly, Purl
 RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
   # Can be run with more than the default 2 constituents:
   # SETTINGS__NUMBER_OF_CONSTITUENTS=4 bundle exec rspec spec/features/virtual_object_creation_spec.rb
