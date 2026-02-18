@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create an item object with a folio instance HRID' do
+# Integration: Argo, DSA, Folio
+RSpec.describe 'Use Argo to create an item object with a Folio instance HRID' do
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }

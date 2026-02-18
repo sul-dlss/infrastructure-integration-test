@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: Argo, DSA, Preassembly, Purl, Earthworks
 # Use pre-assembly to accession a raster based GIS object
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.gis.robots_content_root

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe 'SDR deposit' do
+# Integration: Argo, DSA, Prescat, SDR API, Stacks
+RSpec.describe 'SDR client deposit to SDR API' do
   let(:start_url) { Settings.argo_url }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
   let(:folio_instance_hrid) { Settings.test_folio_instance_hrid }

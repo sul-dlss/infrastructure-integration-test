@@ -2,6 +2,7 @@
 
 require 'druid-tools'
 
+# Integration: Argo, DSA, Preassembly, Purl
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 RSpec.describe 'Create and re-accession image object via Pre-assembly' do

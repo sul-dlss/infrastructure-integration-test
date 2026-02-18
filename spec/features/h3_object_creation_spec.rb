@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: H3, Argo, DSA, Purl
 RSpec.describe 'Use H3 to create a collection and an item object belonging to it and version it' do
   let(:collection_title) { random_phrase }
   let(:item_title) { "SUL Logo for #{collection_title}" }

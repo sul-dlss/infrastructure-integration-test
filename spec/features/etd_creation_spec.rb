@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Integration: ETD, Argo, DSA
 RSpec.describe 'Create a new ETD with embargo, and then update the embargo date' do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
