@@ -185,6 +185,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     end
 
     # Manage embargo
+    sleep 1
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     click_link_or_button 'Manage embargo'
