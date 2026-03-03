@@ -18,15 +18,15 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     expect(page).to have_text('Untitled collection')
 
     # basic collection information
-    fill_in 'Collection name', with: collection_title
-    fill_in 'Description', with: "H3 Integration tests for #{collection_title}"
-    fill_in 'Contact email', with: user_email
+    fill_in 'collection_title', with: collection_title
+    fill_in 'collection_description', with: "H3 Integration tests for #{collection_title}"
+    fill_in 'collection_contact_emails_attributes_0_email', with: user_email
 
     # Select license
-    find('.nav-link', text: 'License').click
+    find_by_id('license-tab').click
     select 'CC0-1.0', from: 'collection_license'
 
-    find('.nav-link', text: 'Save your collection').click
+    find_by_id('deposit-tab').click
     expect(page).to have_text('Save your collection')
     click_link_or_button 'Save', class: 'btn-primary'
 
@@ -40,9 +40,9 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     click_link('Deposit to this collection', href: "/works/new?collection_druid=#{collection_druid.sub(':', '%3A')}")
 
     # Set work title before saving draft
-    find('.nav-link', text: 'Title and contact').click
-    fill_in 'Title of deposit', with: item_title
-    fill_in 'Contact email', with: user_email
+    find_by_id('title-tab').click
+    fill_in 'work_title', with: item_title
+    fill_in 'work_contact_emails_attributes_0_email', with: user_email
     click_link_or_button 'Save as draft'
 
     expect(page).to have_css('h1', text: item_title)
@@ -88,27 +88,27 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     expect(page).to have_text(filename)
 
     # Skip to authors / contributors as we already entered title and contact for the draft
-    find('.nav-link', text: 'Authors / Contributors').click
+    find_by_id('contributors-tab').click
     expect(page).to have_css('.nav-link.active', text: 'Authors / Contributors')
-    expect(page).to have_css('.h4', text: 'Authors / Contributors')
+    expect(page).to have_css('h2', text: 'Authors / Contributors')
 
     # Enter a contributor
     find('label', text: 'Individual').click
     within('.orcid-section') do
       find('label', text: 'Enter name manually').click
     end
-    fill_in 'First name', with: 'Fox'
-    fill_in 'Last name', with: 'Mulder'
+    fill_in 'work_contributors_attributes_0_first_name', with: 'Fox'
+    fill_in 'work_contributors_attributes_0_last_name', with: 'Mulder'
 
     click_link_or_button 'Next'
-    fill_in 'Abstract', with: "An abstract for #{collection_title} logo"
-    fill_in 'Keywords (one per box)', with: 'Integration test'
+    fill_in 'work_abstract', with: "An abstract for #{collection_title} logo"
+    fill_in 'work_keywords_attributes_0_text', with: 'Integration test'
 
     click_link_or_button 'Next'
     # Selects image type
     choose 'Image'
 
-    find('.nav-link', text: 'Deposit', exact_text: true).click
+    find_by_id('deposit-tab').click
     expect(page).to have_text('Submit your deposit')
 
     # if you have ever agreed to the terms, there will be no checkbox
