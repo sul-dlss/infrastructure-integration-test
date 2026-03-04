@@ -35,7 +35,7 @@ GEM
       xpath (>= 2.1)
     childprocess (5.1.0)
       logger (~> 1.5)
-    cocina-models (0.112.1)
+    cocina-models (0.113.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -63,9 +63,9 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.6.2)
-    dor-services-client (15.30.1)
+    dor-services-client (15.31.0)
       activesupport (>= 7.0.0)
-      cocina-models (~> 0.112.0)
+      cocina-models (~> 0.113.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -87,7 +87,7 @@ GEM
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
-    dry-struct (1.8.0)
+    dry-struct (1.8.1)
       dry-core (~> 1.1)
       dry-types (~> 1.8, >= 1.8.2)
       ice_nine (~> 0.11)
@@ -175,7 +175,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.2)
+    public_suffix (7.0.5)
     racc (1.8.1)
     rack (3.2.5)
     rack-test (2.2.0)
@@ -239,9 +239,9 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 3.2.2)
     rubyzip (3.2.2)
-    sdr-client (2.30.0)
+    sdr-client (2.31.0)
       activesupport
-      cocina-models (~> 0.112.0)
+      cocina-models (~> 0.113.0)
       config
       dry-monads
       faraday (>= 0.16)
