@@ -7,7 +7,7 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
   let(:note) { random_phrase }
 
   before do
-    authenticate!(start_url: Settings.argo_url, expected_text: 'Welcome to Argo!')
+    authenticate!(start_url: "#{Settings.argo_url}/settings/tokens", expected_text: 'Generate new token')
   end
 
   scenario do
