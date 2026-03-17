@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require 'io/console'
+
+results = []
+
+Dir.glob('spec/features/**/*_spec.rb').each do |spec_file| 
+  print "\nready? #{spec_file} [y/n/q] "
+  input = STDIN.getch
+  exit if input =~ /q/i
+  next if input =~ /n/i
+
+  result = system("bundle exec rspec #{spec_file}", out: STDOUT)
+  if result
+    results << "✅ #{spec_file}"
+  else
+    results << "❌ #{spec_file}"
+  end
+end
+
+puts results.join("\n")

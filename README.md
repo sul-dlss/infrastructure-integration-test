@@ -37,6 +37,12 @@ To test in the SDR QA environment, run tests with the `SDR_ENV` environment vari
 SDR_ENV=qa bin/rspec
 ```
 
+If you would prefer to run the tests one by one and be prompted to move on to the next one you can use the following (but you will be prompted to login with Duo for each test):
+
+```
+bin/run
+```
+
 No matter which environment you run tests in, you may be prompted to type in your Stanford credentials and will then need to approve a multi-factor authentication push. If you tire of typing in your credentials, see the `Other Configuration` section below for help securely storing them.
 
 When running the virtual_object_creation test, you can create more than two constituents by running as follows:
