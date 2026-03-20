@@ -2,16 +2,15 @@
 
 # Integration: Argo, DSA, Prescat, SDR API, Stacks
 RSpec.describe 'SDR client deposit to SDR API' do
+  include CleanupHelpers
+  track_created_objects
+
   let(:start_url) { Settings.argo_url }
   let(:source_id) { "testing:#{SecureRandom.uuid}" }
   let(:folio_instance_hrid) { Settings.test_folio_instance_hrid }
 
   before do
     authenticate!(start_url:, expected_text: 'Welcome to Argo!')
-  end
-
-  after do
-    clear_downloads
   end
 
   it 'deposits objects' do

@@ -136,4 +136,35 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  # Suite-level monitoring for test health tracking
+  config.before(:suite) do
+    @suite_start_time = Time.now
+    puts "Starting integration test suite at #{@suite_start_time}"
+  end
+
+  config.after(:suite) do
+    duration = Time.now - @suite_start_time
+    puts "Integration test suite completed in #{duration.round(2)} seconds"
+  end
+
+  # Ensure clean session state between tests
+  config.before(:each) do
+    if defined?(Capybara)
+      Capybara.reset_sessions!
+      Capybara.use_default_driver
+    end
+  end
+
+  config.after(:each) do
+    if defined?(Capybara)
+      Capybara.reset_sessions!
+      page.driver.quit if page.driver.respond_to?(:quit)
+    end
+
+    # Clear authentication state to prevent test interference
+    if defined?(AuthenticationHelpers)
+      AuthenticationHelpers.reset_authentication_state!
+    end
+  end
 end

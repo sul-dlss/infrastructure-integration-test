@@ -2,6 +2,9 @@
 
 # Integration: Argo facets, Cocina Models mappings, DSA Solr indexing
 RSpec.describe 'Argo rights changes result in correct Access Rights facet value' do
+  include CleanupHelpers
+  track_created_objects
+
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -27,6 +30,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
 
     bare_object_druid = find('table a').text
     object_druid = "druid:#{bare_object_druid}"
+    track_druid(object_druid) # Track for cleanup
     puts " *** access indexing druid: #{object_druid} ***" # useful for debugging
 
     visit "#{Settings.argo_url}/view/#{object_druid}"

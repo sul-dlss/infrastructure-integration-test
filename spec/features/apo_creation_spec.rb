@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights' do
+  include CleanupHelpers
+  track_created_objects
+
   let(:apo_title) { "ZZZ Create APO test #{random_phrase}" }
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
   let(:object_label) { "Object Label for APO #{apo_title}" }
@@ -28,6 +31,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     expect(page).to have_text apo_title
     # make sure APO is registered
     apo_druid = find_table_cell_following(header_text: 'DRUID').text
+    track_druid(apo_druid) # Track APO for cleanup
     expect(page).to have_text "APO #{apo_druid} created."
 
     # wait for accessioningWF to finish
@@ -53,6 +57,7 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
 
     bare_object_druid = find('table a').text
     object_druid = "druid:#{bare_object_druid}"
+    track_druid(object_druid) # Track object for cleanup
     puts " *** APO creation druid: #{object_druid} ***" # useful for debugging
 
     visit "#{Settings.argo_url}/view/#{object_druid}"

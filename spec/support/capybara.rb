@@ -57,11 +57,17 @@ Capybara.default_driver = case Settings.browser.driver
 Capybara.default_max_wait_time = Settings.timeouts.capybara
 
 RSpec.configure do |config|
-  # This will output the browser console logs after each feature test
-  config.after(:each, type: :feature) do |_example|
-    Rails.logger.info('Browser log entries from feature spec run include:')
-    Capybara.page.driver.browser.logs.get(:browser).each do |log_entry|
-      Rails.logger.info("* #{log_entry}")
+  # This will output the browser console logs after each failed feature test
+  config.after(:each, type: :feature) do |example|
+    next unless example.exception.present?
+
+    begin
+      puts 'Browser log entries from failed feature spec:'
+      page.driver.browser.logs.get(:browser).each do |log_entry|
+        puts "* #{log_entry}"
+      end
+    rescue => e
+      puts "Could not retrieve browser logs: #{e}"
     end
   end
 end

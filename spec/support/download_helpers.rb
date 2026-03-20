@@ -37,12 +37,33 @@ module DownloadHelpers
   end
 
   def clear_downloads
-    FileUtils.rm_f(downloads)
+    return unless downloads.any?
+
+    begin
+      FileUtils.rm_f(downloads)
+      puts "Cleared #{downloads.length} download files" if downloads.any?
+    rescue => e
+      puts "Warning: Could not clear all downloads: #{e.message}"
+    end
   end
 
   def delete_download(download)
-    FileUtils.rm_f(download)
+    return unless download && File.exist?(download)
+
+    begin
+      FileUtils.rm_f(download)
+      puts "Deleted download file: #{File.basename(download)}"
+    rescue => e
+      puts "Warning: Could not delete download #{download}: #{e.message}"
+    end
   end
 end
 
-RSpec.configure { |config| config.include DownloadHelpers }
+RSpec.configure do |config|
+  config.include DownloadHelpers
+
+  # Automatically clear downloads after each test for better isolation
+  config.after(:each) do
+    clear_downloads if respond_to?(:clear_downloads)
+  end
+end

@@ -2,6 +2,9 @@
 
 # Integration: Argo, DSA
 RSpec.describe 'Use Argo to create an item object without any files and no collection' do
+  include CleanupHelpers
+  track_created_objects
+
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
@@ -38,6 +41,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
 
     bare_object_druid = find('table a').text
     object_druid = "druid:#{bare_object_druid}"
+    track_druid(object_druid) # Track for cleanup
     puts " *** create object no files druid: #{object_druid} ***" # useful for debugging
 
     visit "#{Settings.argo_url}/view/#{object_druid}"
