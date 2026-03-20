@@ -34,7 +34,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
 
     `scp #{updated_warc.path} #{remote_path}`
 
-    raise("unable to scp #{updated_warc_path} to #{remote_path}: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
+    raise("unable to scp #{updated_warc.path} to #{remote_path}: #{$CHILD_STATUS.inspect}") unless $CHILD_STATUS.success?
 
     authenticate!(start_url:, expected_text: 'New one-time registration')
   end

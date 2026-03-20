@@ -11,6 +11,14 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     authenticate!(start_url: "#{Settings.h3_url}/dashboard", expected_text: /Dashboard/)
   end
 
+  after do
+    # Close the Globus UI window opened during the test. Without this, the extra window
+    # persists into subsequent tests and corrupts page.windows ordering.
+    main_window = page.windows.first
+    (page.windows - [main_window]).each { |w| w.close rescue nil }
+    page.switch_to_window(main_window)
+  end
+
   scenario do
     # CREATE COLLECTION
     click_link_or_button 'Create a new collection'

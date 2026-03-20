@@ -77,7 +77,8 @@ RSpec.describe 'SDR client deposit to SDR API' do
       end
     rescue StandardError => e
       puts "download attempt failed (link click text=#{gemfile_pres_link_text}): #{e.class}; #{e.inspect}; #{e}"
-
+      # Dismiss the modal before retrying or falling through, so it doesn't block subsequent tests.
+      click_link_or_button 'Cancel' rescue nil # rubocop:disable Style/RescueModifier
       puts "sleeping and retrying (retries_count=#{retries_count})"
       sleep 10
       retries_count += 1
@@ -111,7 +112,8 @@ RSpec.describe 'SDR client deposit to SDR API' do
       end
     rescue StandardError => e
       puts "download attempt failed (link click text=#{gemfile_lock_stacks_link_text}): #{e.class}; #{e.inspect}; #{e}"
-
+      # Dismiss the modal before retrying or falling through, so it doesn't block subsequent tests.
+      click_link_or_button 'Cancel' rescue nil # rubocop:disable Style/RescueModifier
       puts "sleeping and retrying (retries_count=#{retries_count})"
       sleep 10
       retries_count += 1

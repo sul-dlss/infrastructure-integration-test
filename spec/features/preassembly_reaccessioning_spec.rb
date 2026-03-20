@@ -40,8 +40,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
   after do
     clear_downloads
-    FileUtils.rm_rf(bare_druid)
     unless bare_druid.empty?
+      FileUtils.rm_rf(bare_druid)
       `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
       #{preassembly_bundle_dir}/#{bare_druid}`
     end

@@ -25,6 +25,8 @@ module XlsxHelpers
     sheet_one[3][0].change_contents druid2.delete_prefix('druid:')
     sheet_one[3][3].change_contents title2
     filled_xlsx.write(temp_xlsx)
+    temp_xlsx.flush
+    temp_xlsx.close
     temp_xlsx
   end
 end

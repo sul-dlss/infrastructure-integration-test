@@ -59,6 +59,34 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  # Clean up state left by the previous test before each test.
+  # NOTE: Do NOT call Capybara.reset_sessions! here — that destroys SSO session cookies
+  # (Stanford Shibboleth / Duo trust tokens), forcing interactive Duo MFA re-authentication
+  # before every test. authenticate! is designed to reuse the browser session across tests
+  # (it short-circuits if expected_text is already found on the page).
+  config.before do
+    clear_downloads
+
+    # Dismiss any JS alert/confirm/prompt left open by the previous test.
+    # An unhandled dialog blocks the next `visit` call with UnexpectedAlertOpenError.
+    begin
+      page.driver.browser.switch_to.alert.dismiss
+    rescue Selenium::WebDriver::Error::NoSuchAlertError, StandardError
+      nil # No dialog present — normal case
+    end
+
+    # Close any extra browser windows opened by the previous test (e.g., the Globus UI
+    # popup in h3_globus_creation_spec.rb). Without this, page.windows.last points to the
+    # wrong window in tests that follow.
+    begin
+      main_window = page.windows.first
+      (page.windows - [main_window]).each { |w| w.close rescue nil }
+      page.switch_to_window(main_window) if main_window
+    rescue StandardError
+      nil
+    end
+  end
+
   # When a test fails, try to take a screenshot of the page right after the failure, and print the URL where the failure occurred
   #
   # Cribbed from https://gist.github.com/osulyanov/10609515 and https://rspec.info/documentation/3.13/rspec-core/RSpec/Core/Example.html

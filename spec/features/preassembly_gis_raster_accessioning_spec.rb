@@ -35,8 +35,8 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
 
   after do
     clear_downloads
-    FileUtils.rm_rf(bare_druid)
     unless bare_druid.empty?
+      FileUtils.rm_rf(bare_druid)
       `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
       #{preassembly_bundle_dir}/content && rm -fr #{preassembly_bundle_dir}/manifest.csv`
     end
