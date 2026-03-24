@@ -7,7 +7,7 @@ module PageHelpers
         found = block_given? ? yield : page.has_text?(text, wait: 1)
         if found
           # Do a final synchronous refresh.
-          # refresh_page_with_timeout!
+          # Without this, the last (asynchronous) location.reload() might interfere with subsequent visits.
           puts "Found '#{text}' or block returned true, refreshing page one last time before finishing..."
           page.refresh
           break
