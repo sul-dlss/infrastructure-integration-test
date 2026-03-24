@@ -28,8 +28,8 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     # This part of the registration form is in a turbo frame. The form can be
     # submitted before this frame has been loaded, which causes an HTTP 500
     # error. So make sure the page is fully loaded before submitting the form.
+    expect(page).to have_no_css('turbo-frame[busy]')
     expect(page).to have_text('Initial Workflow')
-    sleep 1
 
     click_link_or_button 'Register', class: 'btn-primary', exact_text: true
 
