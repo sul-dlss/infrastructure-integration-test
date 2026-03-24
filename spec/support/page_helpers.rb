@@ -4,13 +4,24 @@ module PageHelpers
   def reload_page_until_timeout!(text: '', num_seconds: Settings.timeouts.workflow)
     Timeout.timeout(num_seconds) do
       loop do
-        break if block_given? ? yield : page.has_text?(text, wait: 1)
+        found = block_given? ? yield : page.has_text?(text, wait: 1)
+        if found
+          # Do a final synchronous refresh.
+          # refresh_page_with_timeout!
+          puts "Found '#{text}' or block returned true, refreshing page one last time before finishing..."
+          page.refresh
+          break
+        end
 
         # Check for workflow errors and bail out early. There is no recovering
         # from a workflow error. This selector is found on the Argo item page.
         expect(page).to have_no_css('.alert-danger', wait: 0)
 
-        page.refresh
+        puts "Refreshing page to look for '#{text}' or block..."
+        # Non-blocking refresh
+        page.execute_script('location.reload()')
+        # This is async, so give it a chance to complete.
+        sleep 1
       end
     end
   end
@@ -56,7 +67,8 @@ module PageHelpers
           sleep retry_wait
         end
 
-        page.refresh
+        # Non-blocking refresh
+        page.execute_script('location.reload()')
       end
     end
   end

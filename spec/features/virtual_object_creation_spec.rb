@@ -114,6 +114,18 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     # delete the downloaded YAML file, so we don't pick it up by mistake later
     delete_download(download)
 
+    # Check that each constituent has been accessioned in Argo
+    constituent_druids.each do |constituent_druid|
+      puts "Checking that #{constituent_druid} has been accessioned..."
+      visit "#{Settings.argo_url}/view/druid:#{constituent_druid}"
+      reload_page_until_timeout!(text: 'v1 Accessioned')
+    end
+
+    # There is some sort of a discrepancy between how the indexing of 'v1 Accessioned' is indexed
+    # and DSA ItemQueryService determines whether an item is accessioned.
+    # This irons it out.
+    sleep 5
+
     # Create virtual object
     virtual_object_label = random_phrase
     virtual_object_druid = deposit_object(label: virtual_object_label, viewing_direction: 'left-to-right')

@@ -45,9 +45,11 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
     expect(page).to have_text "Bulk job for APO (#{Settings.default_apo}) deleted."
 
     # Open druids and tests for titles
+    puts "Checking that #{druid1} has title '#{title1}'..."
     visit "#{Settings.argo_url}/view/#{druid1}"
     reload_page_until_timeout!(text: title1)
 
+    puts "Checking that #{druid2} has title '#{title2}'..."
     visit "#{Settings.argo_url}/view/#{druid2}"
     reload_page_until_timeout!(text: title2)
   end
