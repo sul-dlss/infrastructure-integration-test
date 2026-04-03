@@ -153,7 +153,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
 
     Timeout.timeout(Settings.timeouts.bulk_action) do
       loop do
-        page.driver.browser.navigate.refresh
+        page.refresh
 
         relevant_bulk_action = find(:xpath, "//tr[td = '#{virtual_objects_description}']")
         within(relevant_bulk_action) do

@@ -17,10 +17,9 @@ module EventHelpers
     reload_page_until_timeout! do
       click_link_or_button 'Events' # expand the Events section
 
-      # this is a hack that forces the event section to scroll into view; the section
-      # is lazily loaded, and won't actually be requested otherwise, even if the button
-      # is clicked to expand the event section.
-      page.execute_script 'window.scrollBy(0,100);'
+      # Scroll to the bottom so the lazily-loaded events section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
       expect(page).to have_css('turbo-frame#events[complete]', wait: 5) # wait for events to load
       all('turbo-frame#events a', text: 'Expand all').each(&:click) # expand all event details

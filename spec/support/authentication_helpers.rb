@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module AuthenticationHelpers
-  mattr_accessor :username, :password
+  class << self
+    attr_accessor :username, :password
+  end
 
   def authenticate!(start_url:, expected_text:)
     ensure_username! # sunet is needed by some tests, even if the user doesn't have to enter user/pass for Stanford web authN
@@ -53,19 +55,19 @@ module AuthenticationHelpers
   end
 
   def ensure_username!
-    self.username ||= username_from_config_or_prompt
+    AuthenticationHelpers.username ||= username_from_config_or_prompt
   end
 
   def ensure_password!
-    self.password ||= password_from_config_or_prompt
+    AuthenticationHelpers.password ||= password_from_config_or_prompt
   end
 
   def submit_credentials_if_needed
     return unless page.has_text?('SUNet ID', wait: Settings.timeouts.post_authentication_text)
 
     ensure_password!
-    fill_in 'SUNet ID', with: username
-    fill_in 'Password', with: password
+    fill_in 'SUNet ID', with: AuthenticationHelpers.username
+    fill_in 'Password', with: AuthenticationHelpers.password
     click_link_or_button 'Login'
   end
 

@@ -154,6 +154,8 @@ GEM
     nokogiri (1.19.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    nokogiri (1.19.2-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.19.2-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.19.2-x86_64-linux-gnu)
@@ -273,6 +275,7 @@ GEM
     zeitwerk (2.7.5)
 
 PLATFORMS
+  arm64-darwin
   ruby
   x86_64-darwin-19
   x86_64-darwin-22

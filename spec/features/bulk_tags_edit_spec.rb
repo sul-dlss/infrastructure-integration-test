@@ -43,7 +43,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
     # wait for bulk action to complete (runs asynchronously)
     Timeout.timeout(Settings.timeouts.bulk_action) do
       loop do
-        page.driver.browser.navigate.refresh
+        page.refresh
 
         relevant_bulk_action = find(:xpath, "//tr[td = '#{export_tag_description}']")
         within(relevant_bulk_action) do
@@ -99,7 +99,7 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk' do
     # wait for bulk action to complete (runs asynchronously)
     Timeout.timeout(Settings.timeouts.bulk_action) do
       loop do
-        page.driver.browser.navigate.refresh
+        page.refresh
 
         relevant_bulk_action = find(:xpath, "//tr[td = '#{import_tag_description}']")
         within(relevant_bulk_action) do

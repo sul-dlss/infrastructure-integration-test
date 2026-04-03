@@ -126,10 +126,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     reload_page_until_timeout! do
       click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-      # this is a hack that forces the event section to scroll into view; the section
-      # is lazily loaded, and won't actually be requested otherwise, even if the button
-      # is clicked to expand the event section.
-      page.execute_script 'window.scrollBy(0,100);'
+      # Scroll to the bottom so the lazily-loaded section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
       # events are loaded lazily, give the network a few moments
       page.has_text?('v1 Accessioned', wait: 2)
@@ -242,10 +241,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     reload_page_until_timeout! do
       click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-      # this is a hack that forces the event section to scroll into view; the section
-      # is lazily loaded, and won't actually be requested otherwise, even if the button
-      # is clicked to expand the event section.
-      page.execute_script 'window.scrollBy(0,100);'
+      # Scroll to the bottom so the lazily-loaded section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
       # events are loaded lazily, give the network a few moments
       page.has_text?("v#{latest_version} Accessioned", wait: 2)
@@ -258,10 +256,9 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
     reload_page_until_timeout! do
       click_link_or_button 'Events' # expand the Events section
 
-      # this is a hack that forces the event section to scroll into view; the section
-      # is lazily loaded, and won't actually be requested otherwise, even if the button
-      # is clicked to expand the event section.
-      page.execute_script 'window.scrollBy(0,100);'
+      # Scroll to the bottom so the lazily-loaded section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
       # events are loaded lazily, give the network a few moments
       page.has_text?("v#{latest_version} Accessioned", wait: 3)
