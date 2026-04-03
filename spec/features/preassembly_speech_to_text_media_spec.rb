@@ -158,10 +158,9 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     reload_page_until_timeout! do
       click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-      # this is a hack that forces the tech metadata section to scroll into view; the section
-      # is lazily loaded, and won't actually be requested otherwise, even if the button
-      # is clicked to expand the event section.
-      page.execute_script 'window.scrollBy(0,100);'
+      # Scroll to the bottom so the lazily-loaded tech metadata section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
       # events are loaded lazily, give the network a few moments
       page.has_text?('v2 Accessioned', wait: 2)

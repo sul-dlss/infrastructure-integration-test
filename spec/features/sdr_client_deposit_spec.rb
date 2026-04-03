@@ -44,10 +44,9 @@ RSpec.describe 'SDR client deposit to SDR API' do
     click_link_or_button 'Technical metadata'
     sleep(5)
 
-    # this is a hack that forces the techMD section to scroll into view; the section
-    # is lazily loaded, and won't actually be requested otherwise, even if the button
-    # is clicked to expand the technical metadata section.
-    page.execute_script 'window.scrollBy(0,100);'
+    # Scroll to the bottom so the lazily-loaded tech metadata section enters the viewport
+    # and the browser fetches its content.
+    page.scroll_to(:bottom)
 
     within('#document-techmd-section') do
       file_listing = find_all('.file')
