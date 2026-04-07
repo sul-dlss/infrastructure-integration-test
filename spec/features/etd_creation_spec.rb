@@ -4,8 +4,8 @@
 RSpec.describe 'Create a new ETD with embargo, and then update the embargo date' do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
-  # dissertation id must be unique; D followed by 9 digits, e.g. D123456789
-  let(:dissertation_id) { format('%10d', Kernel.rand(1..9_999_999_999)) }
+  # dissertation id must be unique; 10 digits, e.g. 0123456789
+  let(:dissertation_id) { format('%10d', Kernel.rand(1_000_000_000..9_999_999_999)) }
   let(:random_title_words) { random_phrase }
   let(:dissertation_title) { "Integration Testing of ETD Processing - #{random_title_words}" }
   let(:random_author_word) { random_noun }
