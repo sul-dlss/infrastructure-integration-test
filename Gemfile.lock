@@ -63,7 +63,7 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.6.2)
-    dor-services-client (15.37.0)
+    dor-services-client (15.38.0)
       activesupport (>= 7.0.0)
       cocina-models (~> 0.116.0)
       deprecation
@@ -148,7 +148,7 @@ GEM
     minitest (6.0.3)
       drb (~> 2.0)
       prism (~> 1.5)
-    multi_json (1.19.1)
+    multi_json (1.20.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
     nokogiri (1.19.2)
@@ -162,7 +162,7 @@ GEM
       racc (~> 1.4)
     optimist (3.2.1)
     ostruct (0.6.3)
-    parallel (1.28.0)
+    parallel (2.0.1)
     parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
@@ -203,11 +203,11 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
-    rubocop (1.86.0)
+    rubocop (1.86.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
-      parallel (~> 1.10)
+      parallel (>= 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
@@ -247,7 +247,7 @@ GEM
       launchy
       zeitwerk
     securerandom (0.4.1)
-    selenium-webdriver (4.41.0)
+    selenium-webdriver (4.43.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -306,4 +306,4 @@ DEPENDENCIES
   websocket
 
 BUNDLED WITH
-  4.0.9
+  4.0.10
