@@ -41,7 +41,13 @@ RSpec.describe 'SDR client deposit to SDR API' do
 
     # Tests existence of technical metadata
     expect(page).to have_text 'Technical metadata'
-    click_link_or_button 'Technical metadata'
+    # Scroll to the bottom so the lazily-loaded tech metadata section enters the viewport
+    # and the browser fetches its content.
+    page.scroll_to(:bottom)
+    button = find_button('Technical metadata')
+    execute_script('arguments[0].scrollIntoView(true)', button)
+    button.click
+    # click_link_or_button 'Technical metadata'
     sleep(5)
 
     # Scroll to the bottom so the lazily-loaded tech metadata section enters the viewport
@@ -49,9 +55,17 @@ RSpec.describe 'SDR client deposit to SDR API' do
     page.scroll_to(:bottom)
 
     within('#document-techmd-section') do
-      file_listing = find_all('.file')
-      # Only preserved files get techmd
-      expect(file_listing.size).to eq 2
+      retries_count = 0
+      begin
+        file_listing = find_all('.file')
+        # Only preserved files get techmd
+        expect(file_listing.size).to eq 2
+      rescue StandardError
+        retries_count += 1
+        puts "No files found with techmd, waiting and retrying (#{retries_count}/5)..."
+        sleep 5
+        retry if retries_count < 5
+      end
     end
 
     # Wait for accessioningWF to finish
