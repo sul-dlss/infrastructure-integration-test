@@ -20,6 +20,8 @@ module DownloadHelpers
   end
 
   def wait_for_download
+    return if downloaded?
+
     # raising StandardError with a helpful message makes failure reporting nicer
     Timeout.timeout(TIMEOUT, StandardError, 'timed out waiting for download') do
       sleep 5 until downloaded?

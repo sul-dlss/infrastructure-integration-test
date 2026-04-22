@@ -129,7 +129,28 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = :random
+  # config.order = :random
+  config.register_ordering(:global) do |examples|
+    submit_examples = examples.select { |ex| ex.file_path.include?('/features/submit/') }
+    review_examples = examples.select { |ex| ex.file_path.include?('/features/review/') }
+    middle_examples = examples - submit_examples - review_examples
+
+    # Tag the last submit example as the boundary
+    last_submit = submit_examples.last
+    last_submit.metadata[:submit_boundary] = true if last_submit
+
+    # Randomize within each bucket so intra-group order dependencies are still surfaced
+    submit_examples.shuffle + middle_examples.shuffle + review_examples.shuffle
+  end
+
+  # Determine if the submit boundary has been reached and pause after it
+  # This allows background processing of submitted examples to complete before the review phase starts.
+  config.after(:each) do |example| # rubocop:disable RSpec/HookArgument
+    if example.metadata[:submit_boundary]
+      puts "\nSubmit phase complete — pausing 60 seconds..."
+      sleep 60
+    end
+  end
 
   # Seed global randomization in this process using the `--seed` CLI option.
   # Setting this allows you to use `--seed` to deterministically reproduce
