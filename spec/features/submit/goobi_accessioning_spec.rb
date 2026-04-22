@@ -87,36 +87,6 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage' 
     click_link_or_button 'Accept editing of this task'
     click_link_or_button 'Finish the edition of this task'
 
-    # visit argo to ensure this object has started accessioning
-    visit "#{Settings.argo_url}/view/#{druid}"
-
-    # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
-
-    # look for expected files
-    files = all('tr.file')
-
-    expect(files.size).to eq 2
-    expect(files.first.text).to match(%r{stanford-logo.tiff image/tiff 1.\d MB})
-    expect(files.last.text).to match(%r{stanford-logo.jp2 image/jp2 1\d\d KB})
-
-    expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
-
-    # This section confirms the object has been published to PURL and has a
-    # valid IIIF manifest
-    # wait for the PURL name to be published by checking for collection name
-    expect_text_on_purl_page(druid:, text: collection_name)
-    expect_text_on_purl_page(druid:, text: 'This work is licensed under an Apache License 2.0')
-    expect_text_on_purl_page(druid:, text: object_label)
-    expect_link_on_purl_page(druid:,
-                             text: 'View in SearchWorks',
-                             href: "#{Settings.searchworks_url}/view/#{bare_object_druid}")
-    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
-    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
-    puts "Checking that the image URL #{image_url} is accessible..."
-    image_response = Faraday.get(image_url)
-    expect(image_response.status).to eq(200)
-    expect(image_response.headers['content-type']).to include('image/jpeg')
+    save_test_data(spec_name: 'goobi_accessioning_spec', data: { 'druid' => druid, 'label' => object_label })
   end
 end

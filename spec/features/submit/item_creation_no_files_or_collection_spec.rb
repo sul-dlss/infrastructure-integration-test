@@ -15,6 +15,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
   end
 
   scenario do
+    ## Step 1: Register
     # fill in registration form
     select 'integration-testing', from: 'Admin Policy'
     # Leaving collection unselected
@@ -36,6 +37,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
 
+    ## Step 2: Close version and Accession
     bare_object_druid = find('table a').text
     object_druid = "druid:#{bare_object_druid}"
     puts " *** create object no files druid: #{object_druid} ***" # useful for debugging
@@ -60,12 +62,14 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     # check no collection
     expect(page).to have_text('None selected')
 
+    ## Step 3: Wait for and verify accessioning
     # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v1 Accessioned',
                                                   workflow: 'accessionWF',
                                                   workflow_retry_text: 'Version mismatch',
                                                   retry_wait: 2)
 
+    ## Step 4: Open a new version and verify
     # open a new version
     click_link_or_button 'Unlock to make changes to this object'
     within '.modal-dialog' do
@@ -93,6 +97,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     expect(page).to have_text('closing version for integration testing')
     page.refresh # solves problem of close version modal re-appearing
 
+    ## Step 5: Wait for and verify accessioning
     # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
                                                   workflow: nil,

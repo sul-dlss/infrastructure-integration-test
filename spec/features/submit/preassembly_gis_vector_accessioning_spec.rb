@@ -116,7 +116,10 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     reload_page_until_timeout! do
       page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
     end
-
+    # verify the gisDeliveryWF workflow completes
+    reload_page_until_timeout! do
+      page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
+    end
     # Wait for accessioningWF to finish
     reload_page_until_timeout!(text: 'v1 Accessioned')
 

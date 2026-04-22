@@ -5,7 +5,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:source_id) { "access-rights-test:#{random_word}" }
+  let(:source_id) { "access-rights-test:#{SecureRandom.uuid}" }
 
   before do
     authenticate!(start_url:,
@@ -70,7 +70,7 @@ def find_access_rights_single_facet_value(druid, facet_value)
   end
 end
 
-def choose_rights(view:, download: nil, location: nil)
+def choose_rights(view:, download: nil, location: nil, cdl: false)
   # go to record view
   within '.index_title' do
     click_link_or_button
@@ -81,14 +81,16 @@ def choose_rights(view:, download: nil, location: nil)
     select view, from: 'item_view_access'
     select download, from: 'item_download_access' if download
     select location, from: 'item_access_location' if location
+    select 'Yes', from: 'Controlled digital lending' if cdl
     click_link_or_button 'Save'
   end
 
   # It takes a few milliseconds for the rights update to take
-  expect(page).to have_text(view_label(view:, location:))
+  expect(page).to have_text(view_label(view:, location:, cdl:))
 end
 
-def view_label(view:, location:)
+def view_label(view:, location:, cdl:)
+  return 'CDL' if cdl
   return "View: Location: #{location}" if location
   return 'View: Citation-only' if view == 'Citation only'
 
