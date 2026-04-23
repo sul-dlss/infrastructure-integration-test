@@ -156,8 +156,8 @@ RSpec.configure do |config|
     SUBMIT_EXAMPLES.pop
     next unless SUBMIT_EXAMPLES.empty?
 
-    puts "\nSubmit phase complete — pausing 60 seconds..."
-    sleep 60
+    puts "\nSubmit phase complete — pausing 2 minuts for accessioning to complete"
+    sleep 120 # Longest accessioning time is currently goobi, ~2 minutes
   end
 
   # Seed global randomization in this process using the `--seed` CLI option.
