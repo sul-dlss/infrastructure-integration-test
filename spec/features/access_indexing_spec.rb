@@ -54,15 +54,6 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     # NOTE: For some reason, moving this test down helped it pass. :shrug:
     choose_rights(view: 'Location based', download: 'Location based', location: 'music')
     find_access_rights_single_facet_value(object_druid, 'location: music')
-
-    # FIXME: in this context, we don't have a no-download option for location specific, but we need it.
-    # this isn't in the pull down; discussed with Andrew:
-    #  "the rights menu is definitely in my domain. I’ll talk with Astrid.
-    #   For the current UI, as long as XML is editable, it’s going to stay as is"
-    # choose_rights('Location: Music Library (no-download)')
-    # find_access_rights_single_facet_value(object_druid, 'location: music (no-download)')
-
-    # TODO: add file level tests
   end
 end
 
