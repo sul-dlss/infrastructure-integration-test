@@ -15,9 +15,18 @@ module DepositHelpers
 
   def token_refresher
     proc do
-      visit "#{Settings.argo_url}/settings/tokens"
-      click_link_or_button 'Generate new token'
-      JSON.parse(find_field('Token').value)['token']
+      retries_count = 0
+      begin
+        visit "#{Settings.argo_url}/settings/tokens"
+        click_link_or_button 'Generate new token'
+        JSON.parse(find_field('Token').value)['token']
+      rescue StandardError
+        retries_count += 1
+        puts "Token generation failed, waiting and retrying (#{retries_count}/5)..."
+        sleep 5
+        retry if retries_count < 5
+        raise
+      end
     end
   end
 

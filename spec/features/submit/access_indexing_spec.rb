@@ -5,7 +5,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
   let(:random_word) { random_phrase }
   let(:object_label) { "Object Label for #{random_word}" }
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:source_id) { "access-rights-test:#{random_word}" }
+  let(:source_id) { "access-rights-test:#{SecureRandom.uuid}" }
 
   before do
     authenticate!(start_url:,
@@ -54,15 +54,6 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     # NOTE: For some reason, moving this test down helped it pass. :shrug:
     choose_rights(view: 'Location based', download: 'Location based', location: 'music')
     find_access_rights_single_facet_value(object_druid, 'location: music')
-
-    # FIXME: in this context, we don't have a no-download option for location specific, but we need it.
-    # this isn't in the pull down; discussed with Andrew:
-    #  "the rights menu is definitely in my domain. I’ll talk with Astrid.
-    #   For the current UI, as long as XML is editable, it’s going to stay as is"
-    # choose_rights('Location: Music Library (no-download)')
-    # find_access_rights_single_facet_value(object_druid, 'location: music (no-download)')
-
-    # TODO: add file level tests
   end
 end
 

@@ -129,7 +129,36 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = :random
+  # config.order = :random
+  SUBMIT_EXAMPLES = []
+  config.register_ordering(:global) do |examples|
+    submit_examples = examples.select { |ex| ex.file_path.include?('/features/submit/') }.shuffle
+    review_examples = examples.select { |ex| ex.file_path.include?('/features/review/') }.shuffle
+    middle_examples = examples - submit_examples - review_examples
+
+    # register_ordering is called for each spec, changing the order on each call,
+    # so we only populate the array once we have both submit and review examples
+    if submit_examples.any? && review_examples.any?
+      SUBMIT_EXAMPLES << submit_examples
+      SUBMIT_EXAMPLES.flatten!
+    end
+
+    submit_examples + middle_examples.shuffle + review_examples.shuffle
+  end
+
+  # Determine if the submit boundary has been reached and pause after it
+  # This allows background processing of submitted examples to complete before the review phase starts.
+  config.after(:each) do |example|
+    next unless example.file_path.include?('/features/submit/')
+
+    # The most reliable way to determine if the submit boundary has been reached is to
+    # check if there are any remaining submit examples in the SUBMIT_EXAMPLES array
+    SUBMIT_EXAMPLES.pop
+    next unless SUBMIT_EXAMPLES.empty?
+
+    puts "\nSubmit phase complete — pausing 60 seconds..."
+    sleep 60
+  end
 
   # Seed global randomization in this process using the `--seed` CLI option.
   # Setting this allows you to use `--seed` to deterministically reproduce
