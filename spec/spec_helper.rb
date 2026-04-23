@@ -130,26 +130,34 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   # config.order = :random
+  SUBMIT_EXAMPLES = []
   config.register_ordering(:global) do |examples|
-    submit_examples = examples.select { |ex| ex.file_path.include?('/features/submit/') }
-    review_examples = examples.select { |ex| ex.file_path.include?('/features/review/') }
+    submit_examples = examples.select { |ex| ex.file_path.include?('/features/submit/') }.shuffle
+    review_examples = examples.select { |ex| ex.file_path.include?('/features/review/') }.shuffle
     middle_examples = examples - submit_examples - review_examples
 
-    # Tag the last submit example as the boundary
-    last_submit = submit_examples.last
-    last_submit.metadata[:submit_boundary] = true if last_submit
+    # register_ordering is called for each spec, changing the order on each call,
+    # so we only populate the array once we have both submit and review examples
+    if submit_examples.any? && review_examples.any?
+      SUBMIT_EXAMPLES << submit_examples
+      SUBMIT_EXAMPLES.flatten!
+    end
 
-    # Randomize within each bucket so intra-group order dependencies are still surfaced
-    submit_examples.shuffle + middle_examples.shuffle + review_examples.shuffle
+    submit_examples + middle_examples.shuffle + review_examples.shuffle
   end
 
   # Determine if the submit boundary has been reached and pause after it
   # This allows background processing of submitted examples to complete before the review phase starts.
-  config.after(:each) do |example| # rubocop:disable RSpec/HookArgument
-    if example.metadata[:submit_boundary]
-      puts "\nSubmit phase complete — pausing 60 seconds..."
-      sleep 60
-    end
+  config.after(:each) do |example|
+    next unless example.file_path.include?('/features/submit/')
+
+    # The most reliable way to determine if the submit boundary has been reached is to
+    # check if there are any remaining submit examples in the SUBMIT_EXAMPLES array
+    SUBMIT_EXAMPLES.pop
+    next unless SUBMIT_EXAMPLES.empty?
+
+    puts "\nSubmit phase complete — pausing 60 seconds..."
+    sleep 60
   end
 
   # Seed global randomization in this process using the `--seed` CLI option.

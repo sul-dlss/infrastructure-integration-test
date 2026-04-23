@@ -46,7 +46,7 @@ module DataHelpers
     raise "DataHelpers: no entry for '#{spec_name}' in #{file_path}. Did the submit spec pass?" unless result
 
     puts " *** DataHelpers: loaded '#{spec_name}' from #{file_path} ***"
-    result
+    result.is_a?(Hash) ? result.symbolize_keys : result
   end
 
   private
