@@ -132,32 +132,43 @@ RSpec.configure do |config|
   # config.order = :random
   SUBMIT_EXAMPLES = []
   config.register_ordering(:global) do |examples|
-    submit_examples = examples.select { |ex| ex.file_path.include?('/features/submit/') }.shuffle
-    review_examples = examples.select { |ex| ex.file_path.include?('/features/review/') }.shuffle
-    middle_examples = examples - submit_examples - review_examples
+    order = [:registration, :accessioning, :versioning, :verify]
 
-    # register_ordering is called for each spec, changing the order on each call,
-    # so we only populate the array once we have both submit and review examples
-    if submit_examples.any? && review_examples.any?
-      SUBMIT_EXAMPLES << submit_examples
-      SUBMIT_EXAMPLES.flatten!
-    end
+    grouped = examples.group_by { |ex| ex.metadata[:type] }
+    # other   = examples.reject   { |ex| order.include?(ex.metadata[:type]) }
 
-    submit_examples + middle_examples.shuffle + review_examples.shuffle
+    # other + order.flat_map { |type| grouped.fetch(type, []) }
+    order.flat_map { |type| grouped.fetch(type, []) }
   end
 
   # Determine if the submit boundary has been reached and pause after it
   # This allows background processing of submitted examples to complete before the review phase starts.
   config.after(:each) do |example|
-    next unless example.file_path.include?('/features/submit/')
+    # Check if the this is the last example of each type so we can pause by looking at what RSpec has queued
+    #   Pause when switching from registration to accessioning
+    #   Pause when switching from accessioning to versioning
+    #   Pause when switching from versioning to verify
 
-    # The most reliable way to determine if the submit boundary has been reached is to
-    # check if there are any remaining submit examples in the SUBMIT_EXAMPLES array
-    SUBMIT_EXAMPLES.pop
-    next unless SUBMIT_EXAMPLES.empty?
+    remaining = RSpec.world.filtered_examples.values.flatten
+    current_index = remaining.index(example)
+    next_example = remaining[current_index + 1] if current_index
 
-    puts "\nSubmit phase complete — pausing 2 minuts for accessioning to complete"
-    sleep 120 # Longest accessioning time is currently goobi, ~2 minutes
+    next if next_example.nil? # No reason to pause if there is no next example
+    next unless [:versioning, :verify].include?(next_example.metadata[:type])
+    next unless example.metadata[:type] == :accessioning
+
+    puts "\n#{example.metadata[:type]} phase complete — pausing 2 minutes..."
+    sleep 120
+
+    # next unless example.file_path.include?('/features/submit/')
+
+    # # The most reliable way to determine if the submit boundary has been reached is to
+    # # check if there are any remaining submit examples in the SUBMIT_EXAMPLES array
+    # SUBMIT_EXAMPLES.pop
+    # next unless SUBMIT_EXAMPLES.empty?
+
+    # puts "\nSubmit phase complete — pausing 2 minutes for accessioning to complete"
+    # sleep 120 # Longest accessioning time is currently goobi, ~2 minutes
   end
 
   # Seed global randomization in this process using the `--seed` CLI option.
