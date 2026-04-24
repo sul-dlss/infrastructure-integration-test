@@ -70,7 +70,7 @@ def find_access_rights_single_facet_value(druid, facet_value)
   end
 end
 
-def choose_rights(view:, download: nil, location: nil, cdl: false)
+def choose_rights(view:, download: nil, location: nil)
   # go to record view
   within '.index_title' do
     click_link_or_button
@@ -81,16 +81,14 @@ def choose_rights(view:, download: nil, location: nil, cdl: false)
     select view, from: 'item_view_access'
     select download, from: 'item_download_access' if download
     select location, from: 'item_access_location' if location
-    select 'Yes', from: 'Controlled digital lending' if cdl
     click_link_or_button 'Save'
   end
 
   # It takes a few milliseconds for the rights update to take
-  expect(page).to have_text(view_label(view:, location:, cdl:))
+  expect(page).to have_text(view_label(view:, location:))
 end
 
-def view_label(view:, location:, cdl:)
-  return 'CDL' if cdl
+def view_label(view:, location:)
   return "View: Location: #{location}" if location
   return 'View: Citation-only' if view == 'Citation only'
 
