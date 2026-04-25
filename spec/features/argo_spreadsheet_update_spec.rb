@@ -1,21 +1,20 @@
 # frozen_string_literal: true
 
 # Integration: Argo, Modsulator, DSA
-RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)' do
-  let(:title1) { random_phrase } # rubocop:disable RSpec/IndexedLet
-  let(:title2) { random_phrase } # rubocop:disable RSpec/IndexedLet
+RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :accessioning do
+  let(:titles) { [random_phrase, random_phrase] }
   let(:note) { random_phrase }
   let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
-  let(:druid1) { create_druid }
-  let(:druid2) { create_druid }
+  let(:druids) { [create_druid, create_druid] }
 
   before do
     authenticate!(start_url:, expected_text: 'integration-testing')
-    save_test_data(spec_name: 'argo_spreadsheet_update', data: { 'druid1' => druid1, 'druid2' => druid2, 'title1' => title1, 'title2' => title2 })
+    save_test_data(spec_name: 'argo_spreadsheet_update',
+                   data: { 'druids' => druids, 'titles' => titles })
   end
 
   scenario do
-    temp_xlsx = update_xlsx(druid1, title1, druid2, title2)
+    temp_xlsx = update_xlsx(druids.first, titles.first, druids.last, titles.last)
     visit start_url
     # Open the MODS bulk jobs
     click_link_or_button 'Upload MODS'
