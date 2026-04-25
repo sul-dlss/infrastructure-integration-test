@@ -6,9 +6,12 @@ require 'druid-tools'
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 # This spec is only run if speech_to_text is enabled in the environment specific settings file
-RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechToTexted', if: Settings.speech_to_text.enabled do
-  bare_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
-  let(:start_url) { "#{Settings.argo_url}/registration" }
+RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechToTexted', if: Settings.speech_to_text.enabled, type: :accessioning do
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
+  let(:druid) { test_data[:druid] }
+  let(:object_label) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'preassembly_speech_to_text') }
   let(:preassembly_bundle_dir) { Settings.preassembly.speech_to_text_bundle_directory } # where we will stage the media content
   let(:remote_manifest_location) do
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
@@ -16,10 +19,6 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:local_file_manifest_location) { 'tmp/file_manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-media-stt-#{random_noun}-#{random_alpha}" }
-  let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
-  let(:source_id) { "media-stt-integration-test:#{source_id_random_word}" }
-  let(:label_random_words) { random_phrase }
-  let(:object_label) { "media stt integration test #{label_random_words}" }
   let(:collection_name) { 'integration-testing' }
   let(:preassembly_manifest_csv) do
     <<~CSV
@@ -39,35 +38,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
   end
 
   before do
-    authenticate!(start_url:,
-                  expected_text: 'Register DOR Items')
-  end
-
-  after do
-    clear_downloads
-    FileUtils.rm_rf(bare_druid)
-    unless bare_druid.empty?
-      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
-      #{preassembly_bundle_dir}/#{bare_druid}`
-    end
-  end
-
-  scenario do
-    select 'integration-testing', from: 'Admin Policy'
-    select collection_name, from: 'Collection'
-    select 'media', from: 'Content Type'
-    fill_in 'Project Name', with: 'Integration Test - Media Speech To Text via Preassembly'
-    fill_in 'Source ID', with: "#{source_id}-#{random_alpha}"
-    fill_in 'Label', with: object_label
-
-    click_button 'Register'
-
-    # wait for object to be registered
-    expect(page).to have_text 'Items successfully registered.'
-
-    bare_druid = find('table a').text
-    druid = "druid:#{bare_druid}"
-    puts " *** preassembly media accessioning druid: #{druid} ***" # useful for debugging
+    authenticate!(start_url:, expected_text: object_label)
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
@@ -82,7 +53,18 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_file_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
+  end
 
+  after do
+    clear_downloads
+    FileUtils.rm_rf(bare_druid)
+    unless bare_druid.empty?
+      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
+      #{preassembly_bundle_dir}/#{bare_druid}`
+    end
+  end
+
+  scenario do
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Start new job')
 
