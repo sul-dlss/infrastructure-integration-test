@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # TODO-Aaron: Needs attention, this spec is still unreliable (on the register button click)
-RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights' do
+RSpec.describe 'Use Argo verify new objects inherit new APO rights', type: :accessioning do
   let(:apo_title) { test_data[:title] }
   let(:apo_druid) { test_data[:druid] }
   let(:test_data) { load_test_data(spec_name: 'apo_creation') }
