@@ -530,7 +530,6 @@ RSpec/RedundantPredicateMatcher: # new in 2.26
 RSpec/RemoveConst: # new in 2.26
   Enabled: true
 
-
 # We've encountered cases where we have a link and a button in the same page with the same text.
 # As of this rule's disabling (Jan 2024), the only instances we've seen like that are for
 # the "Register" button on the Argo registration form (there's a nav header link with the same
@@ -648,4 +647,29 @@ RSpec/LeakyLocalVariable: # new in 3.8
 RSpec/Output: # new in 3.9
   Enabled: false
 RSpecRails/HttpStatusNameConsistency: # new in 2.32
+  Enabled: true
+
+Lint/DataDefineOverride: # new in 1.85
+  Enabled: true
+Lint/UnreachablePatternBranch: # new in 1.85
+  Enabled: true
+Style/FileOpen: # new in 1.85
+  Enabled: true
+Style/MapJoin: # new in 1.85
+  Enabled: true
+Style/OneClassPerFile: # new in 1.85
+  Enabled: true
+Style/PartitionInsteadOfDoubleSelect: # new in 1.85
+  Enabled: true
+Style/PredicateWithKind: # new in 1.85
+  Enabled: true
+Style/ReduceToHash: # new in 1.85
+  Enabled: true
+Style/RedundantMinMaxBy: # new in 1.85
+  Enabled: true
+Style/SelectByKind: # new in 1.85
+  Enabled: true
+Style/SelectByRange: # new in 1.85
+  Enabled: true
+Style/TallyMethod: # new in 1.85
   Enabled: true
