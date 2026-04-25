@@ -11,15 +11,15 @@ AllCops:
   TargetRubyVersion: 3.4
   DisplayCopNames: true
   Include:
-    - "./Rakefile"
-    - "spec/**/*.rb"
+    - './Rakefile'
+    - 'spec/**/*.rb'
   Exclude:
-    - "bin/**/*"
-    - "vendor/**/*"
+    - 'bin/**/*'
+    - 'vendor/**/*'
 
 RSpec/Dialect:
   Enabled:
-    - "scenario"
+    - 'scenario'
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
@@ -117,7 +117,7 @@ Metrics/MethodLength:
 
 RSpec/ExampleLength:
   Exclude:
-    - "spec/features/**/*.rb"
+    - 'spec/features/*.rb'
 
 RSpec/MultipleExpectations:
   Enabled: false
@@ -137,7 +137,7 @@ Style/ArrayCoercion:
 Style/AsciiComments:
   Enabled: true
   Exclude:
-    - "spec/features/access_indexing_spec.rb"
+    - 'spec/features/access_indexing_spec.rb'
 
 Style/BisectedAttrAccessor:
   Enabled: true
@@ -159,8 +159,8 @@ Style/ExponentialNotation:
 
 Style/FormatStringToken:
   Exclude:
-    - "spec/features/create_etd_spec.rb"
-    - "spec/features/embargo_spec.rb"
+    - 'spec/features/create_etd_spec.rb'
+    - 'spec/features/embargo_spec.rb'
 
 Style/GlobalStdStream:
   Enabled: true
@@ -186,7 +186,7 @@ Style/HashTransformValues:
 
 Style/IfInsideElse:
   Exclude:
-    - "spec/support/page_helpers.rb"
+    - 'spec/support/page_helpers.rb'
 
 Style/KeywordParametersOrder: # (new in 0.90)
   Enabled: true
@@ -647,4 +647,29 @@ RSpec/LeakyLocalVariable: # new in 3.8
 RSpec/Output: # new in 3.9
   Enabled: false
 RSpecRails/HttpStatusNameConsistency: # new in 2.32
+  Enabled: true
+
+Lint/DataDefineOverride: # new in 1.85
+  Enabled: true
+Lint/UnreachablePatternBranch: # new in 1.85
+  Enabled: true
+Style/FileOpen: # new in 1.85
+  Enabled: true
+Style/MapJoin: # new in 1.85
+  Enabled: true
+Style/OneClassPerFile: # new in 1.85
+  Enabled: true
+Style/PartitionInsteadOfDoubleSelect: # new in 1.85
+  Enabled: true
+Style/PredicateWithKind: # new in 1.85
+  Enabled: true
+Style/ReduceToHash: # new in 1.85
+  Enabled: true
+Style/RedundantMinMaxBy: # new in 1.85
+  Enabled: true
+Style/SelectByKind: # new in 1.85
+  Enabled: true
+Style/SelectByRange: # new in 1.85
+  Enabled: true
+Style/TallyMethod: # new in 1.85
   Enabled: true
