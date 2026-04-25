@@ -23,7 +23,9 @@ RSpec.shared_examples 'an SDR object registion' do
   let(:project_name) { defined?(project) ? project : nil }
   let(:project_tags) { defined?(tags) ? tags : nil }
   let(:object_label) { "#{spec_name.humanize} object for #{random_phrase}" }
-  let(:source_id) { "#{spec_name.dasherize}:#{SecureRandom.uuid}" }
+  let(:default_source_id) { "#{spec_name.dasherize}:#{SecureRandom.uuid}" }
+  let(:source_id) { defined?(virtual_source_id) ? virtual_source_id : default_source_id }
+  let(:folio_instance_hrid) { defined?(folio_hrid) ? folio_hrid : nil }
 
   before do
     authenticate!(start_url:, expected_text: 'Register DOR Items')
@@ -38,6 +40,7 @@ RSpec.shared_examples 'an SDR object registion' do
     fill_in 'Tags', with: project_tags if project_tags
 
     fill_in 'Source ID', with: source_id
+    fill_in 'Folio Instance HRID', with: folio_instance_hrid if folio_instance_hrid
     fill_in 'Label', with: object_label
 
     click_button 'Register'

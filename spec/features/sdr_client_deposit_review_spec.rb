@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA, Prescat, SDR API, Stacks
-RSpec.describe 'Verify SDR client deposit to SDR API' do
+RSpec.describe 'Verify SDR client deposit to SDR API', type: :verify do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:druid) { load_test_data(spec_name: 'sdr_client_deposit') }
 

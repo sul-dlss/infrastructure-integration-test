@@ -7,18 +7,17 @@ require 'druid-tools'
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 # This spec is only run if OCR is enabled in the environment specific settings file
 RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed', if: Settings.ocr.enabled do
-  bare_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
-  let(:start_url) { "#{Settings.argo_url}/registration" }
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
+  let(:druid) { test_data[:druid] }
+  let(:object_label) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'preassembly_ocr_document') }
   let(:preassembly_bundle_dir) { Settings.preassembly.ocr_bundle_directory } # where we will stage the ocr content
   let(:remote_manifest_location) do
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
   end
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-image-ocr-#{random_noun}-#{random_alpha}" }
-  let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
-  let(:source_id) { "image-ocr-integration-test:#{source_id_random_word}" }
-  let(:label_random_words) { random_phrase }
-  let(:object_label) { "image ocr integration test #{label_random_words}" }
   let(:collection_name) { 'integration-testing' }
   let(:preassembly_manifest_csv) do
     <<~CSV
@@ -28,8 +27,14 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
   end
 
   before do
-    authenticate!(start_url:,
-                  expected_text: 'Register DOR Items')
+    authenticate!(start_url:, expected_text: object_label)
+
+    # create manifest.csv file and scp it to preassembly staging directory
+    File.write(local_manifest_location, preassembly_manifest_csv)
+    `scp #{local_manifest_location} #{remote_manifest_location}`
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    end
   end
 
   after do
@@ -42,29 +47,6 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
   end
 
   scenario do
-    select 'integration-testing', from: 'Admin Policy'
-    select collection_name, from: 'Collection'
-    select 'image', from: 'Content Type'
-    fill_in 'Project Name', with: 'Integration Test - Image OCR via Preassembly'
-    fill_in 'Source ID', with: "#{source_id}-#{random_alpha}"
-    fill_in 'Label', with: object_label
-
-    click_button 'Register'
-
-    # wait for object to be registered
-    expect(page).to have_text 'Items successfully registered.'
-
-    bare_druid = find('table a').text
-    druid = "druid:#{bare_druid}"
-    puts " *** preassembly image accessioning druid: #{druid} ***" # useful for debugging
-
-    # create manifest.csv file and scp it to preassembly staging directory
-    File.write(local_manifest_location, preassembly_manifest_csv)
-    `scp #{local_manifest_location} #{remote_manifest_location}`
-    unless $CHILD_STATUS.success?
-      raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
-    end
-
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Start new job')
 

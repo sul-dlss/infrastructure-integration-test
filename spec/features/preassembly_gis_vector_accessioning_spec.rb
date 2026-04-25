@@ -6,21 +6,18 @@
 # To this end, files have been placed on Settings.gis.robots_content_root
 # NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
 RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
-  bare_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
-  let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:project_name) { 'Integration Test - GIS via preassembly' }
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
+  let(:druid) { test_data[:druid] }
+  let(:object_label) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'preassembly_gis_vector_accessioning') }
   let(:preassembly_bundle_dir) { Settings.preassembly.gis_bundle_directory } # where we will stage the content
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:remote_manifest_location) do
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
   end
   let(:preassembly_project_name) { "IntegrationTest-preassembly-gis-#{random_noun}-#{random_alpha}" }
-  let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
-  let(:source_id) { "geo-preassembly-integration-test:#{source_id_random_word}" }
-  let(:label_random_words) { random_phrase }
-  let(:object_label) { "gis preassembly vector integration test #{label_random_words}" }
   let(:collection_name) { 'Integration Test Collection - GIS' }
-  let(:apo_name) { 'APO for GIS' }
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
@@ -29,35 +26,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
   end
 
   before do
-    authenticate!(start_url:,
-                  expected_text: 'Register DOR Items')
-  end
-
-  after do
-    clear_downloads
-    FileUtils.rm_rf(bare_druid)
-    unless bare_druid.empty?
-      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
-      #{preassembly_bundle_dir}/content && rm -fr #{preassembly_bundle_dir}/manifest.csv`
-    end
-  end
-
-  scenario do
-    select apo_name, from: 'Admin Policy'
-    select collection_name, from: 'Collection'
-    select 'geo', from: 'Content Type'
-    fill_in 'Project Name', with: project_name
-    fill_in 'Source ID', with: source_id
-    fill_in 'Label', with: object_label
-
-    click_button 'Register'
-
-    # wait for object to be registered
-    expect(page).to have_text 'Items successfully registered.'
-
-    bare_druid = find('table a').text
-    druid = "druid:#{bare_druid}"
-    puts " *** preassembly gis accessioning druid: #{druid} ***" # useful for debugging
+    authenticate!(start_url:, expected_text: object_label)
 
     # Move gis test data to preassembly bundle directory
     # Should this test data be deleted from the server,
@@ -79,8 +48,20 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
+  end
 
+  after do
+    clear_downloads
+    FileUtils.rm_rf(bare_druid)
+    unless bare_druid.empty?
+      `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
+      #{preassembly_bundle_dir}/content && rm -fr #{preassembly_bundle_dir}/manifest.csv`
+    end
+  end
+
+  scenario do
     visit Settings.preassembly.url
+
     expect(page).to have_css('h1', text: 'Start new job')
 
     sleep 1 # if you notice the project name not filling in completely, try this to

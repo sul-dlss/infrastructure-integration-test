@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA, Folio
-RSpec.describe 'Use Argo to create an item object with a Folio instance HRID' do
-  let(:random_word) { random_phrase }
-  let(:object_label) { "Object Label for #{random_word}" }
-  let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:source_id) { "create-obj-folio-instance-hrid-test:#{random_alpha}" }
+RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', type: :accessioning do
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:druid) { test_data[:druid] }
+  let(:expected_text) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'item_creation_with_folio_hrid') }
   let(:folio_instance_hrid) { Settings.test_folio_instance_hrid }
   let(:catalog_object_label) { 'The means to prosperity' } # will be pulled from folio
   let(:folio_instance_hrid_updated) { 'a123' }
@@ -14,36 +14,10 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID' do
   let(:project) { 'Awesome Folio Project' }
 
   before do
-    authenticate!(start_url:,
-                  expected_text: 'Register DOR Items')
+    authenticate!(start_url:, expected_text:)
   end
 
   scenario do
-    # fill in registration form
-    select 'integration-testing', from: 'Admin Policy'
-    select 'integration-testing', from: 'Collection'
-    select 'book', from: 'Content Type'
-    fill_in 'Tag', with: user_tag
-    fill_in 'Project Name', with: project
-
-    fill_in 'Source ID', with: source_id
-    fill_in 'Folio Instance HRID', with: folio_instance_hrid
-    fill_in 'Label', with: object_label # will be overwritten and checked below
-
-    click_button 'Register'
-
-    # wait for object to be registered
-    expect(page).to have_text 'Items successfully registered.'
-
-    bare_object_druid = find('table a').text
-    object_druid = "druid:#{bare_object_druid}"
-    puts " *** create folio object spec druid: #{object_druid} ***" # useful for debugging
-
-    visit "#{Settings.argo_url}/view/#{object_druid}"
-
-    # wait for registrationWF to finish
-    reload_page_until_timeout!(text: 'v1 Registered')
-
     # look for metadata
     expect(page).to have_text(user_tag)
     expect(page).to have_text("Project : #{project}")
@@ -63,7 +37,7 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID' do
     reload_page_until_timeout!(text: catalog_object_label_updated) # updated label pulled from folio for new HRID
 
     # look for metadata source facet having an entry of Folio for this druid
-    fill_in 'Search...', with: object_druid
+    fill_in 'Search...', with: druid
     click_button 'Search'
     click_link_or_button 'Metadata Source'
     within '#facet-metadata_source_ssimdv ul.facet-values' do

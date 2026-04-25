@@ -130,9 +130,8 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   # config.order = :random
-  SUBMIT_EXAMPLES = []
   config.register_ordering(:global) do |examples|
-    order = [:registration, :accessioning, :versioning, :verify]
+    order = %i[registration accessioning versioning verify]
 
     grouped = examples.group_by { |ex| ex.metadata[:type] }
     # other   = examples.reject   { |ex| order.include?(ex.metadata[:type]) }
@@ -141,9 +140,9 @@ RSpec.configure do |config|
     order.flat_map { |type| grouped.fetch(type, []) }
   end
 
-  # Determine if the submit boundary has been reached and pause after it
+  # Determine if the registration boundary has been reached and pause after it
   # This allows background processing of submitted examples to complete before the review phase starts.
-  config.after(:each) do |example|
+  config.after do |example|
     # Check if the this is the last example of each type so we can pause by looking at what RSpec has queued
     #   Pause when switching from registration to accessioning
     #   Pause when switching from accessioning to versioning
@@ -154,7 +153,7 @@ RSpec.configure do |config|
     next_example = remaining[current_index + 1] if current_index
 
     next if next_example.nil? # No reason to pause if there is no next example
-    next unless [:versioning, :verify].include?(next_example.metadata[:type])
+    next unless %i[versioning verify].include?(next_example.metadata[:type])
     next unless example.metadata[:type] == :accessioning
 
     puts "\n#{example.metadata[:type]} phase complete — pausing 2 minutes..."

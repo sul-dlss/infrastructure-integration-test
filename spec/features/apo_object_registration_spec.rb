@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # TODO-Aaron: Needs attention, this spec is still unreliable (on the register button click)
-RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights' do
+RSpec.describe 'Use Argo verify new objects inherit new APO rights', type: :accessioning do
   let(:apo_title) { test_data[:title] }
   let(:apo_druid) { test_data[:druid] }
   let(:test_data) { load_test_data(spec_name: 'apo_creation') }
@@ -28,10 +28,15 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
     fill_in 'Source ID', with: source_id
     fill_in 'Label', with: object_label
 
-    button = find_button('Register')
-    execute_script('arguments[0].scrollIntoView(true)', button)
-    button.click
+    page.scroll_to(:bottom)
 
+    sleep(2)
+    click_button('Register')
+    # button = find_button('Register')
+    # execute_script('arguments[0].scrollIntoView(true)', button)
+    # button.click
+
+    sleep(2)
     # wait for object to be registered
     expect(page).to have_text 'Items successfully registered.'
 
