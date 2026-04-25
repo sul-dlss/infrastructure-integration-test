@@ -5,21 +5,17 @@ require 'druid-tools'
 # Integration: Argo, DSA, Preassembly, Purl
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
-RSpec.describe 'Create and re-accession object with hierarchical files via Pre-assembly' do
-  druid = ''
-
-  let(:start_url) { "#{Settings.argo_url}/registration" }
+RSpec.describe 'Create and re-accession object with hierarchical files via Pre-assembly', type: :accessioning do
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:druid) { test_data[:druid] }
+  let(:object_label) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'preassembly_hfs_accessioning') }
   let(:preassembly_hfs_bundle_dir) { Settings.preassembly.hfs_bundle_directory }
   let(:remote_manifest_location) do
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_hfs_bundle_dir}"
   end
   let(:local_manifest_location) { 'tmp/manifest.csv' }
   let(:preassembly_project_name) { "IntegrationTest-preassembly-hsf-#{random_noun}" }
-  let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
-  let(:source_id) { "hierarchical-files-integration-test:#{source_id_random_word}" }
-  let(:label_random_words) { random_phrase }
-  let(:object_label) { "hierarchical files integration test #{label_random_words}" }
-  let(:collection_name) { 'integration-testing' }
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
@@ -28,31 +24,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
   end
 
   before do
-    authenticate!(start_url:, expected_text: 'Register DOR Items')
-  end
-
-  after do
-    clear_downloads
-  end
-
-  scenario do
-    # register new object
-    select 'integration-testing', from: 'Admin Policy'
-    select collection_name, from: 'Collection'
-    select 'file', from: 'Content Type'
-    fill_in 'Project Name', with: 'Integration Test - hierarchical files via Preassembly'
-
-    fill_in 'Source ID', with: source_id
-    fill_in 'Label', with: object_label
-
-    click_button 'Register'
-
-    # wait for object to be registered
-    expect(page).to have_text 'Items successfully registered.'
-
-    bare_object_druid = find('table a').text
-    druid = "druid:#{bare_object_druid}"
-    puts " *** preassembly hierarchical files accessioning druid: #{druid} ***" # useful for debugging
+    authenticate!(start_url:, expected_text: object_label)
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)
@@ -60,7 +32,13 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     unless $CHILD_STATUS.success?
       raise("unable to scp #{local_manifest_location} to #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
+  end
 
+  after do
+    clear_downloads
+  end
+
+  scenario do
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Start new job')
 
@@ -161,7 +139,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
     # This section confirms the object has been published to PURL and has filenames in the json
-    expect_text_on_purl_page(druid:, text: collection_name)
+    expect_text_on_purl_page(druid:, text: 'integration-testing')
     expect_text_on_purl_page(druid:, text: object_label)
 
     # verify the cocina json has the filenames with paths
