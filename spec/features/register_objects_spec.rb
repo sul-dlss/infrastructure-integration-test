@@ -47,38 +47,38 @@ RSpec.describe 'Register objects in Argo', type: :registration do
     let(:type) { 'geo' }
   end
 
-	it_behaves_like 'an SDR object registion' do
+  it_behaves_like 'an SDR object registion' do
     let(:spec_name) { 'preassembly_hfs_accessioning' }
     let(:project) { 'Integration Test - hierarchical files via Preassembly' }
     let(:type) { 'file' }
-	end
+  end
 
-	it_behaves_like 'an SDR object registion' do
+  it_behaves_like 'an SDR object registion' do
     let(:spec_name) { 'preassembly_ocr_document' }
     let(:project) { 'Integration Test - Document OCR via Preassembly' }
     let(:type) { 'document' }
-	end
+  end
 
-	it_behaves_like 'an SDR object registion' do
+  it_behaves_like 'an SDR object registion' do
     let(:spec_name) { 'preassembly_ocr_image' }
     let(:project) { 'Integration Test - Image OCR via Preassembly' }
     let(:type) { 'image' }
-	end
+  end
 
-	it_behaves_like 'an SDR object registion' do
+  it_behaves_like 'an SDR object registion' do
     let(:spec_name) { 'preassembly_speech_to_text' }
     let(:project) { 'Integration Test - Media Speech To Text via Preassembly' }
     let(:type) { 'media' }
-	end
+  end
 
-	context 'when registering virtual object constituents' do
-	  Settings.number_of_constituents.times do |i|
-     	it_behaves_like 'an SDR object registion' do
+  context 'when registering virtual object constituents' do
+    Settings.number_of_constituents.times do |i|
+      it_behaves_like 'an SDR object registion' do
         let(:spec_name) { 'virtual_object_creation' }
         let(:project) { 'Integration Test - Virtual object via Preassembly' }
         let(:type) { 'image' }
         let(:virtual_source_id) { "virtual-object-creation:#{SecureRandom.uuid}-#{i}" }
-     	end
-		end
-	end
+      end
+    end
+  end
 end

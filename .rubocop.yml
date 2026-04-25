@@ -117,7 +117,7 @@ Metrics/MethodLength:
 
 RSpec/ExampleLength:
   Exclude:
-    - 'spec/features/*.rb'
+    - 'spec/features/**/*.rb'
 
 RSpec/MultipleExpectations:
   Enabled: false
