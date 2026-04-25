@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights' do
+RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rights', type: :registration do
   let(:apo_title) { "ZZZ Create APO test #{random_phrase}" }
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
   let(:rights) { 'Stanford' }
@@ -9,8 +9,8 @@ RSpec.describe 'Use Argo to create an APO and verify new objects inherit its rig
   let(:license) { 'Attribution Non-Commercial 3.0 Unported' }
 
   before do
-    expected_txt = 'The following defaults will apply to all newly registered objects.'
-    authenticate!(start_url:, expected_text: expected_txt)
+    expected_text = 'The following defaults will apply to all newly registered objects.'
+    authenticate!(start_url:, expected_text:)
   end
 
   scenario do
