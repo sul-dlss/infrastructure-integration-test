@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA
-RSpec.describe 'Use Argo to create a collection' do
+RSpec.describe 'Use Argo to create a collection', type: :verify
+do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:druid) { test_data[:druid] }
   let(:title) { test_data[:title] }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: Argo, Modsulator, DSA
-RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)' do
+RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :verify do
   let(:druid1) { test_data[:druid1] }
   let(:druid2) { test_data[:druid2] }
   let(:title1) { test_data[:title1] }
