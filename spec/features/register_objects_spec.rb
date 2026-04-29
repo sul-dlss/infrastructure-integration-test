@@ -66,6 +66,12 @@ RSpec.describe 'Register objects in Argo', type: :registration do
   end
 
   it_behaves_like 'an SDR object registion' do
+    let(:spec_name) { 'preassembly_accessioning' }
+    let(:project) { 'Integration Test - Accessioning via Preassembly' }
+    let(:type) { 'image' }
+  end
+
+  it_behaves_like 'an SDR object registion' do
     let(:spec_name) { 'preassembly_speech_to_text' }
     let(:project) { 'Integration Test - Media Speech To Text via Preassembly' }
     let(:type) { 'media' }

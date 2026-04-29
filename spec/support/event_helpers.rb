@@ -19,7 +19,10 @@ module EventHelpers
 
       # Scroll to the bottom so the lazily-loaded events section enters the viewport
       # and the browser fetches its content.
-      page.scroll_to(:bottom)
+      # page.scroll_to(:bottom)
+      # page.scroll_by(0, 200) # Scroll a little bit after exapnding events.
+      element = find_element('turbo-frame#events[complete]')
+      execute_script('arguments[0].scrollIntoView(true)', element)
 
       expect(page).to have_css('turbo-frame#events[complete]', wait: 5) # wait for events to load
       all('turbo-frame#events a', text: 'Expand all').each(&:click) # expand all event details
