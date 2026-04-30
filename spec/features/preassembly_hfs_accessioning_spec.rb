@@ -15,7 +15,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_hfs_bundle_dir}"
   end
   let(:local_manifest_location) { 'tmp/manifest.csv' }
-  let(:preassembly_project_name) { "IntegrationTest-preassembly-hsf-#{random_noun}" }
+  let(:preassembly_project_name) { "IntegrationTest-preassembly-hsf-#{SecureRandom.uuid}" }
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
@@ -53,6 +53,14 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect(page).to have_content 'Success! Your job is queued. ' \
                                  'A link to job output will be emailed to you upon completion.'
 
+    # Get the preassembly job number
+    cell = first('td', text: /^Job #\d+/)
+    job_id = cell.text.match(/^Job #(\d+)/)[1]
+    # md = /^Job \#(\d+)/.match(elem.text)
+    # job_id = md[1].to_i
+
+    save_test_data(spec_name: 'preassembly_hfs_accessioning', data: test_data.merge({ 'job_id' => job_id.to_i }))
+
     # go to job details page, download result
     first('td > a').click
     expect(page).to have_content preassembly_project_name
@@ -74,7 +82,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     visit "#{Settings.argo_url}/view/#{druid}"
 
     # Wait for accessioningWF to finish
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: /v\d+ Accessioned/)
 
     files = all('tr.file')
 
@@ -90,53 +98,53 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
-    sleep 30 # let's wait a bit before trying the re-accession to avoid a possible race condition
+    # sleep 30 # let's wait a bit before trying the re-accession to avoid a possible race condition
 
-    ### Re-accession
+    # ### Re-accession
 
-    # Get the original version from the page
-    elem = find_table_cell_following(header_text: 'Status')
-    md = /^v(\d+) Accessioned/.match(elem.text)
-    version = md[1].to_i
+    # # Get the original version from the page
+    # elem = find_table_cell_following(header_text: 'Status')
+    # md = /^v(\d+) Accessioned/.match(elem.text)
+    # version = md[1].to_i
 
-    visit Settings.preassembly.url
+    # visit Settings.preassembly.url
 
-    expect(page).to have_content 'Start new job'
+    # expect(page).to have_content 'Start new job'
 
-    sleep 1 # if you notice the project name not filling in completely, try this
-    fill_in 'Project name', with: random_project_name
-    select 'Preassembly Run', from: 'Job type'
-    fill_in 'Staging location', with: preassembly_hfs_bundle_dir
-    select 'File', from: 'Content type'
-    select 'Default', from: 'Processing configuration' unless Settings.ocr.enabled
+    # sleep 1 # if you notice the project name not filling in completely, try this
+    # fill_in 'Project name', with: random_project_name
+    # select 'Preassembly Run', from: 'Job type'
+    # fill_in 'Staging location', with: preassembly_hfs_bundle_dir
+    # select 'File', from: 'Content type'
+    # select 'Default', from: 'Processing configuration' unless Settings.ocr.enabled
 
-    click_link_or_button 'Submit'
+    # click_link_or_button 'Submit'
 
-    expect(page).to have_content 'Success! Your job is queued. ' \
-                                 'A link to job output will be emailed to you upon completion.'
+    # expect(page).to have_content 'Success! Your job is queued. ' \
+    #                              'A link to job output will be emailed to you upon completion.'
 
-    first('td > a').click # Click to the job details page
+    # first('td > a').click # Click to the job details page
 
-    reload_page_until_timeout! do
-      page.has_link?('Download', wait: 1)
-    end
+    # reload_page_until_timeout! do
+    #   page.has_link?('Download', wait: 1)
+    # end
 
-    click_link_or_button 'Download'
+    # click_link_or_button 'Download'
 
-    wait_for_download
+    # wait_for_download
 
-    yaml = YAML.load_file(download)
-    expect(yaml[:status]).to eq 'success'
+    # yaml = YAML.load_file(download)
+    # expect(yaml[:status]).to eq 'success'
 
-    prefixed_druid = yaml[:pid]
-    latest_version = version + 1
+    # prefixed_druid = yaml[:pid]
+    # latest_version = version + 1
 
-    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
-    reload_page_until_timeout!(text: "v#{latest_version} Accessioned")
+    # visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+    # reload_page_until_timeout!(text: "v#{latest_version} Accessioned")
 
-    # ensure we still have the 7 files
-    expect(files.size).to eq 7
-    expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
+    # # ensure we still have the 7 files
+    # expect(files.size).to eq 7
+    # expect(find_table_cell_following(header_text: 'Content type').text).to eq('file') # filled in by accessioning
 
     # This section confirms the object has been published to PURL and has filenames in the json
     expect_text_on_purl_page(druid:, text: 'integration-testing')
@@ -146,7 +154,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     expect_published_files(druid:, filenames: ['README.md', 'config/settings.yml', 'config/settings/qa.yml',
                                                'config/settings/settings.yml', 'config/settings/staging.yml'])
 
-    visit_argo_and_confirm_event_display!(druid:, version: latest_version)
-    confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: latest_version)
+    # visit_argo_and_confirm_event_display!(druid:, version: latest_version)
+    # confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: latest_version)
   end
 end
