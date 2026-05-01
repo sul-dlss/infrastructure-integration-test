@@ -7,7 +7,7 @@ require 'druid-tools'
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 # This spec is only run if OCR is enabled in the environment specific settings file
 RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRed', if: Settings.ocr.enabled,
-                                                                                    type: :accessioning do
+                                                                                    type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_ocr_document' }
     let(:object_label) { test_data[:title] }

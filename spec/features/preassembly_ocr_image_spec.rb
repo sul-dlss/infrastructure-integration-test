@@ -6,7 +6,7 @@ require 'druid-tools'
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 # This spec is only run if OCR is enabled in the environment specific settings file
-RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed', if: Settings.ocr.enabled, type: :accessioning do
+RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed', if: Settings.ocr.enabled, type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_ocr_image' }
     let(:object_label) { test_data[:title] }

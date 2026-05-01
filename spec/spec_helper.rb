@@ -92,7 +92,12 @@ RSpec.configure do |config|
   # is tagged with `:focus`, all examples get run. RSpec also provides
   # aliases for `it`, `describe`, and `context` that include `:focus`
   # metadata: `fit`, `fdescribe` and `fcontext`, respectively.
-  config.filter_run_when_matching :focus
+  # config.filter_run_when_matching type: :preassembly
+
+  # The filter_run_excluding setting is used to filter out examples or groups
+  # based on their metadata. In this case, we're excluding examples with the
+  # `:preassembly` type, which are preassembly job creation tests.
+  config.filter_run_excluding type: :preassembly
 
   # Allows RSpec to persist some state between runs in order to support
   # the `--only-failures` and `--next-failure` CLI options. We recommend
@@ -131,7 +136,7 @@ RSpec.configure do |config|
   #     --seed 1234
   # config.order = :random
   config.register_ordering(:global) do |examples|
-    order = %i[registration accessioning versioning verify]
+    order = %i[registration accessioning preassembly versioning verify]
 
     grouped = examples.group_by { |ex| ex.metadata[:type] }
     # other   = examples.reject   { |ex| order.include?(ex.metadata[:type]) }
