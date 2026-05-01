@@ -4,8 +4,11 @@
 RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
   # Can be run with more than the default 2 constituents:
   # SETTINGS__NUMBER_OF_CONSTITUENTS=4 bundle exec rspec spec/features/virtual_object_creation_spec.rb
-  bare_druid = '' # used for HEREDOC preassembly manifest files (can't be memoized)
-  let(:start_url) { Settings.argo_url }
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
+  let(:druid) { test_data[:druid] }
+  let(:object_label) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'preassembly_speech_to_text') }
   let(:num_constituents) { Settings.number_of_constituents }
   let(:project_name) { 'Integration Test - Virtual object via Preassembly' }
   let(:preassembly_bundle_dir) { Settings.preassembly.virtual_object_bundle_directory } # where we will stage the content
@@ -14,12 +17,6 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
   end
   let(:preassembly_project_name) { "IntegrationTest-virtual-object-preassembly-#{random_noun}-#{random_alpha}" }
-  let(:source_id_random_word) { "#{random_noun}-#{random_alpha}" }
-  let(:source_id) { "virtual-object-integration-test:#{source_id_random_word}" }
-  let(:label_random_words) { random_phrase }
-  let(:object_label) { "virtual object integration test #{label_random_words}" }
-  let(:collection_name) { 'integration-testing' }
-  let(:apo_name) { 'integration-testing' }
   let(:csv_path) { File.join(DownloadHelpers::PATH, 'virtual-object.csv') }
   let(:virtual_objects_description) { random_phrase }
   let(:constituent_druids) { [] }
