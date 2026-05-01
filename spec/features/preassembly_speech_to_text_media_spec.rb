@@ -7,7 +7,7 @@ require 'druid-tools'
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 # This spec is only run if speech_to_text is enabled in the environment specific settings file
 RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechToTexted', if: Settings.speech_to_text.enabled,
-                                                                                          type: :accessioning do
+                                                                                          type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_speech_to_text' }
     let(:object_label) { test_data[:title] }

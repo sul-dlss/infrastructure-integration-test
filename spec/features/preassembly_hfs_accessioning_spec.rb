@@ -5,7 +5,7 @@ require 'druid-tools'
 # Integration: Argo, DSA, Preassembly, Purl
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
-RSpec.describe 'Create and re-accession object with hierarchical files via Pre-assembly', type: :accessioning do
+RSpec.describe 'Create and re-accession object with hierarchical files via Pre-assembly', type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_hfs_accessioning' }
     let(:object_label) { test_data[:title] }
