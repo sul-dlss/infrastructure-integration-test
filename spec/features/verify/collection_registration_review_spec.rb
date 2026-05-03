@@ -5,7 +5,7 @@ RSpec.describe 'Use Argo to create a collection', type: :verify do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:druid) { test_data[:druid] }
   let(:title) { test_data[:title] }
-  let(:test_data) { load_test_data(spec_name: 'collection_creation') }
+  let(:test_data) { load_test_data(spec_name: 'collection_registration') }
 
   before do
     authenticate!(start_url:, expected_text: title)

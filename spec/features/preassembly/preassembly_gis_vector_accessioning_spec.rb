@@ -5,7 +5,7 @@
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.gis.robots_content_root
 # NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
-RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
+RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_gis_vector_accessioning' }
     let(:object_label) { test_data[:title] }

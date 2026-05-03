@@ -26,7 +26,7 @@ RSpec.shared_examples 'preassembly job creation' do
   let(:processing_configuration) { nil } # Optional processing configuration (e.g., 'Group by filename', 'Default')
   let(:save_job_id) { false } # Whether to save job_id to test data
   let(:navigate_to_job_details) { :click_first_link } # :click_first_link, :visit_url, or :visit_job_runs_first
-  let(:use_file_manifest) { false } # Whether to choose file manifest option
+  let(:use_file_manifest) { false } # Whether t choose file manifest option
   let(:ocr_settings) { nil } # Hash with OCR settings if applicable (e.g., { ocr_available: false, run_ocr: true })
   let(:stt_settings) { nil } # Hash with speech-to-text settings if applicable (e.g., { stt_available: false, run_stt: true })
   let(:sleep_after_submit) { 0 } # Optional sleep duration after submit (in seconds)

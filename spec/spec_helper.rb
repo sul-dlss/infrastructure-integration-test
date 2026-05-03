@@ -136,7 +136,9 @@ RSpec.configure do |config|
   #     --seed 1234
   # config.order = :random
   config.register_ordering(:global) do |examples|
-    order = %i[registration accessioning preassembly versioning verify]
+    # Note: Even though we exclude preassembly, we still need to include it in
+    # order for it to be picked up when run manually
+    order = %i[registration accessioning sdr verify preassembly]
 
     grouped = examples.group_by { |ex| ex.metadata[:type] }
     # other   = examples.reject   { |ex| order.include?(ex.metadata[:type]) }
@@ -149,9 +151,9 @@ RSpec.configure do |config|
   # This allows background processing of submitted examples to complete before the review phase starts.
   config.after do |example|
     # Check if the this is the last example of each type so we can pause by looking at what RSpec has queued
-    #   Pause when switching from registration to accessioning
-    #   Pause when switching from accessioning to versioning
-    #   Pause when switching from versioning to verify
+    #   Pause when switching from registration to sdr
+    #   Pause when switching from sdr to accessioning
+    #   Pause when switching from accessioning to verify
 
     remaining = RSpec.world.filtered_examples.values.flatten
     current_index = remaining.index(example)
@@ -163,16 +165,6 @@ RSpec.configure do |config|
 
     puts "\n#{example.metadata[:type]} phase complete — pausing 2 minutes..."
     sleep 120
-
-    # next unless example.file_path.include?('/features/submit/')
-
-    # # The most reliable way to determine if the submit boundary has been reached is to
-    # # check if there are any remaining submit examples in the SUBMIT_EXAMPLES array
-    # SUBMIT_EXAMPLES.pop
-    # next unless SUBMIT_EXAMPLES.empty?
-
-    # puts "\nSubmit phase complete — pausing 2 minutes for accessioning to complete"
-    # sleep 120 # Longest accessioning time is currently goobi, ~2 minutes
   end
 
   # Seed global randomization in this process using the `--seed` CLI option.
