@@ -136,7 +136,7 @@ RSpec.configure do |config|
   #     --seed 1234
   # config.order = :random
   config.register_ordering(:global) do |examples|
-    # Note: Even though we exclude preassembly, we still need to include it in
+    # NOTE: Even though we exclude preassembly, we still need to include it in
     # order for it to be picked up when run manually
     order = %i[registration accessioning sdr verify preassembly]
 

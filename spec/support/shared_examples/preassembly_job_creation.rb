@@ -73,26 +73,18 @@ RSpec.shared_examples 'preassembly job creation' do
     fill_in 'Staging location', with: preassembly_bundle_dir
 
     # Handle processing configuration if specified
-    if processing_configuration && !Settings.ocr.enabled
-      select processing_configuration, from: 'Processing configuration'
-    end
+    select processing_configuration, from: 'Processing configuration' if processing_configuration && !Settings.ocr.enabled
 
     # Handle file manifest option if applicable
-    if use_file_manifest
-      choose 'batch_context_using_file_manifest_true'
-    end
+    choose 'batch_context_using_file_manifest_true' if use_file_manifest
 
     # Handle OCR settings if provided
     if ocr_settings
-      if ocr_settings.key?(:ocr_available)
-        choose "batch_context_ocr_available_#{ocr_settings[:ocr_available]}"
-      end
+      choose "batch_context_ocr_available_#{ocr_settings[:ocr_available]}" if ocr_settings.key?(:ocr_available)
       if ocr_settings.key?(:manually_corrected_ocr)
         choose "batch_context_manually_corrected_ocr_#{ocr_settings[:manually_corrected_ocr]}"
       end
-      if ocr_settings.key?(:run_ocr)
-        choose "batch_context_run_ocr_#{ocr_settings[:run_ocr]}"
-      end
+      choose "batch_context_run_ocr_#{ocr_settings[:run_ocr]}" if ocr_settings.key?(:run_ocr)
       if ocr_settings[:languages]
         first('button[aria-label="toggle dropdown"]').click
         ocr_settings[:languages].each do |lang|
@@ -103,12 +95,8 @@ RSpec.shared_examples 'preassembly job creation' do
 
     # Handle speech-to-text settings if provided
     if stt_settings
-      if stt_settings.key?(:stt_available)
-        choose "batch_context_stt_available_#{stt_settings[:stt_available]}"
-      end
-      if stt_settings.key?(:run_stt)
-        choose "batch_context_run_stt_#{stt_settings[:run_stt]}"
-      end
+      choose "batch_context_stt_available_#{stt_settings[:stt_available]}" if stt_settings.key?(:stt_available)
+      choose "batch_context_run_stt_#{stt_settings[:run_stt]}" if stt_settings.key?(:run_stt)
     end
 
     click_link_or_button 'Submit'
@@ -124,9 +112,7 @@ RSpec.shared_examples 'preassembly job creation' do
     job_id = cell.text.match(/^Job #(\d+)/)[1]
 
     # Save job_id if requested
-    if save_job_id
-      save_test_data(spec_name:, data: test_data.merge({ 'job_id' => job_id.to_i }))
-    end
+    save_test_data(spec_name:, data: test_data.merge({ 'job_id' => job_id.to_i })) if save_job_id
 
     # Navigate to job details page
     case navigate_to_job_details

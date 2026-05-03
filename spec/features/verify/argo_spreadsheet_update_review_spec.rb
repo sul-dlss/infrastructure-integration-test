@@ -2,10 +2,10 @@
 
 # Integration: Argo, Modsulator, DSA
 RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :verify do
-  let(:druid1) { test_data[:druid1] }
-  let(:druid2) { test_data[:druid2] }
-  let(:title1) { test_data[:title1] }
-  let(:title2) { test_data[:title2] }
+  let(:first_druid) { test_data[:druid1] }
+  let(:second_druid) { test_data[:druid2] }
+  let(:first_title) { test_data[:title1] }
+  let(:second_title) { test_data[:title2] }
   let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
   let(:test_data) { load_test_data(spec_name: 'argo_spreadsheet_update') }
 
@@ -15,12 +15,12 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
 
   scenario do
     # Open druids and tests for titles
-    puts "Checking that #{druid1} has title '#{title1}'..."
-    visit "#{Settings.argo_url}/view/#{druid1}"
-    reload_page_until_timeout!(text: title1)
+    puts "Checking that #{first_druid} has title '#{first_title}'..."
+    visit "#{Settings.argo_url}/view/#{first_druid}"
+    expect(page).to have_content(first_title)
 
-    puts "Checking that #{druid2} has title '#{title2}'..."
-    visit "#{Settings.argo_url}/view/#{druid2}"
-    reload_page_until_timeout!(text: title2)
+    puts "Checking that #{second_druid} has title '#{second_title}'..."
+    visit "#{Settings.argo_url}/view/#{second_druid}"
+    expect(page).to have_content(second_title)
   end
 end

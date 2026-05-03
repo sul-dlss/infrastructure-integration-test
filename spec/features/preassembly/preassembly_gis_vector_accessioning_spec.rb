@@ -82,7 +82,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       expect(cocina_json['label']).to eq 'Air Monitoring Stations: California, 2001-2003'
       resource_types = description['form'].select { |form| form['type'] == 'resource type' }
       expect(resource_types.any? { |resource| resource['value'] == 'cartographic' }).to be true
-      expect(description['title'].first['value']).to eq 'Air Monitoring Stations: California, 2001-2003' # with the new object label
+      expect(description['title'].first['value']).to eq 'Air Monitoring Stations: California, 2001-2003' # new object label
       expect(description['note'].select { |note| note['type'] == 'abstract' }.first['value']) # abstract
         .to include('This point shapefile represents all air monitoring stations active in California from 2001 until 2003')
       forms = description['form'].select { |form| form['type'] == 'form' }
