@@ -118,6 +118,11 @@ Metrics/MethodLength:
 RSpec/ExampleLength:
   Exclude:
     - 'spec/features/**/*.rb'
+    - 'spec/support/shared_examples/**/*.rb'
+
+RSpec/ExpectInHook:
+  Exclude:
+    - 'spec/features/preassembly/**/*.rb'
 
 RSpec/MultipleExpectations:
   Enabled: false

@@ -5,7 +5,7 @@
 RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage', type: :accessioning do
   let(:druid) { test_data[:druid] }
   let(:title) { test_data[:title] }
-  let(:test_data) { load_test_data(spec_name: 'goobi_accessing') }
+  let(:test_data) { load_test_data(spec_name: 'goobi_accessioning') }
 
   after do
     clear_downloads

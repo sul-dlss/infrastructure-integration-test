@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA, Preassembly, Purl, Earthworks
-# Use pre-assembly to accession a vector based GIS object
+# Use pre-assembly to accession a raster based GIS object
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.gis.robots_content_root
 # NOTE: this spec will be skipped unless run on staging, since there is no geoserver-qa
-RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
+RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', type: :preassembly do
   it_behaves_like 'preassembly job creation' do
-    let(:spec_name) { 'preassembly_gis_vector_accessioning' }
+    let(:spec_name) { 'preassembly_gis_raster_accessioning' }
     let(:object_label) { test_data[:title] }
     let(:expected_text) { object_label }
     let(:preassembly_bundle_dir) { Settings.preassembly.gis_bundle_directory }
@@ -19,8 +19,8 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     before do
       # Move gis test data to preassembly bundle directory
       # Should this test data be deleted from the server,
-      # a zipped copy is available at spec/fixtures/gis_integration_test_data_vector.zip
-      test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data_vector')
+      # a zipped copy is available at spec/fixtures/gis_integration_test_data_raster.zip
+      test_data_source_folder = File.join(Settings.gis.robots_content_root, 'integration_test_data_raster')
       test_data_destination_folder = File.join(Settings.preassembly.gis_bundle_directory, 'content')
       copy_command = "ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} " \
                      "\"mkdir -p #{test_data_destination_folder} " \
@@ -49,16 +49,14 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
 
       # look for expected files produced by GIS workflows
       files = all('tr.file')
-      expect(files.size).to eq 9
-      expect(files[0].text).to match(%r{AirMonitoringStations.shp application/vnd.shp 8.14 KB})
-      expect(files[1].text).to match(%r{AirMonitoringStations.shx application/vnd.shx 2.39 KB})
-      expect(files[2].text).to match(%r{AirMonitoringStations.dbf application/vnd.dbf 40.8 KB})
-      expect(files[3].text).to match(%r{AirMonitoringStations.prj text/plain 468 Bytes})
-      expect(files[4].text).to match(%r{preview.jpg image/jpeg 2\d.\d KB})
-      expect(files[5].text).to match(%r{AirMonitoringStations.shp.xml application/xml 6\d.\d KB})
-      expect(files[6].text).to match(%r{AirMonitoringStations-iso19139.xml application/xml 2\d.\d KB})
-      expect(files[7].text).to match(%r{AirMonitoringStations-iso19110.xml application/xml 1\d.\d KB})
-      expect(files[8].text).to match(%r{AirMonitoringStations-fgdc.xml application/xml 5.\d+ KB})
+      expect(files.size).to eq 7
+      expect(files[0].text).to match(%r{SC_Color_WGS.tif image/tiff 9.\d\d MB})
+      expect(files[1].text).to match(%r{SC_Color_WGS.tfw text/plain 8\d Bytes})
+      expect(files[2].text).to match(%r{SC_Color_WGS.tif.ovr application/octet-stream 4.\d\d MB})
+      expect(files[3].text).to match(%r{preview.jpg image/jpeg 6.\d\d KB})
+      expect(files[4].text).to match(%r{SC_Color_WGS.tif.xml application/xml 2\d.\d KB})
+      expect(files[5].text).to match(%r{SC_Color_WGS-iso19139.xml application/xml 2\d.\d KB})
+      expect(files[6].text).to match(%r{SC_Color_WGS-fgdc.xml application/xml 5.\d\d KB})
 
       # verify that the content type is "geo"
       expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
@@ -76,31 +74,33 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
       click_link_or_button('Submit')
       expect(page).to have_text("Updated release for #{druid}")
 
-      # This section confirms the cocina JSON has been published to PURL
-      cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid}.json").body)
-      description = cocina_json['description']
-      expect(cocina_json['label']).to eq 'Air Monitoring Stations: California, 2001-2003'
-      resource_types = description['form'].select { |form| form['type'] == 'resource type' }
-      expect(resource_types.any? { |resource| resource['value'] == 'cartographic' }).to be true
-      expect(description['title'].first['value']).to eq 'Air Monitoring Stations: California, 2001-2003' # with the new object label
-      expect(description['note'].select { |note| note['type'] == 'abstract' }.first['value']) # abstract
-        .to include('This point shapefile represents all air monitoring stations active in California from 2001 until 2003')
-      forms = description['form'].select { |form| form['type'] == 'form' }
-      expect(forms.any? { |resource| resource['value'] == 'Shapefile' }).to be true # form
-      expect(description['form'].select { |form| form['type'] == 'map projection' }.first['value'])
-        .to eq 'EPSG::3310' # form for native projection
-      genres = description['form'].select { |form| form['type'] == 'genre' }
-      expect(genres.any? { |genre| genre['value'] == 'Geospatial data' }).to be true
-      expect(genres.any? { |genre| genre['value'] == 'cartographic dataset' }).to be true
-
+      # This section confirms the object has been published to PURL
       # wait for the PURL name to be published by checking for collection name and check for bits of expected metadata
       expect_text_on_purl_page(druid:, text: collection_name)
       expect_link_on_purl_page(druid:,
                                text: 'View in EarthWorks',
                                href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
+
+      # This section confirms the cocina JSON has been published to PURL
+      cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid}.json").body)
+      description = cocina_json['description']
+      expect(cocina_json['label']).to eq 'Proposed Southern Crossings of San Francisco Bay (Raster Image)'
+      resource_types = description['form'].select { |form| form['type'] == 'resource type' }
+      expect(resource_types.any? { |resource| resource['value'] == 'cartographic' }).to be true
+      expect(description['title'].first['value']).to eq 'Proposed Southern Crossings of San Francisco Bay (Raster Image)'
+      expect(description['note'].select { |note| note['type'] == 'abstract' }.first['value']) # abstract
+        .to include('This raster dataset is a georeferenced image')
+      forms = description['form'].select { |form| form['type'] == 'form' }
+      expect(forms.any? { |resource| resource['value'] == 'GeoTIFF' }).to be true # form
+      expect(description['form'].select { |form| form['type'] == 'map projection' }.first['value'])
+        .to eq 'EPSG::4326' # form for native projection
+      genres = description['form'].select { |form| form['type'] == 'genre' }
+      expect(genres.any? { |genre| genre['value'] == 'Geospatial data' }).to be true
+      expect(genres.any? { |genre| genre['value'] == 'cartographic dataset' }).to be true
+
       # click Earthworks link and verify it was released
       click_link_or_button 'View in EarthWorks'
-      reload_page_until_timeout!(text: 'Air Monitoring Stations: California, 2001-2003')
+      reload_page_until_timeout!(text: 'Proposed Southern Crossings of San Francisco Bay (Raster Image)')
     end
   end
 end

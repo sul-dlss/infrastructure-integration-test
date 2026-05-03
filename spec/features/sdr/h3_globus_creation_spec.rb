@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: H3, Argo, DSA, Purl, Globus
-RSpec.describe 'Use H3 to create a collection and an item object belonging to it with files from globus' do
+RSpec.describe 'Use H3 to create a collection and an item object belonging to it with files from globus', type: :sdr do
   let(:collection_title) { random_phrase }
   let(:item_title) { "Globus Test Item for #{collection_title}" }
   let(:user_email) { "#{AuthenticationHelpers.username}@stanford.edu" }

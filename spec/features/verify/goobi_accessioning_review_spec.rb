@@ -7,7 +7,7 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage',
   let(:bare_object_druid) { druid.delete_prefix('druid:') }
   let(:object_label) { test_data[:label] }
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
-  let(:test_data) { load_test_data(spec_name: 'goobi_accessioning_spec') }
+  let(:test_data) { load_test_data(spec_name: 'goobi_accessioning') }
   let(:collection_name) { 'integration-testing' }
 
   before do
