@@ -370,7 +370,7 @@ Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
-Capybara/SpecificMatcher: # new in 2.12
+Capybara/RSpec/SpecificMatcher: # new in 2.12
   Enabled: true
 RSpecRails/HaveHttpStatus: # new in 2.12
   Enabled: true
@@ -398,7 +398,7 @@ Style/RedundantStringEscape: # new in 1.37
   Enabled: true
 RSpec/SortMetadata: # new in 2.14
   Enabled: true
-Capybara/NegationMatcher: # new in 2.14
+Capybara/RSpec/NegationMatcher: # new in 2.14
   Enabled: true
 Capybara/SpecificActions: # new in 2.14
   Enabled: true
@@ -421,7 +421,7 @@ Style/RedundantConstantBase: # new in 1.40
   Enabled: true
 Style/RedundantDoubleSplatHashBraces: # new in 1.41
   Enabled: true
-Capybara/MatchStyle: # new in <<next>>
+Capybara/RSpec/MatchStyle: # new in <<next>>
   Enabled: true
 RSpec/DuplicatedMetadata: # new in 2.16
   Enabled: true
@@ -631,7 +631,7 @@ Naming/PredicateMethod: # new in 1.76
   Enabled: true
 Style/ArrayIntersectWithSingleElement: # new in 1.81
   Enabled: true
-Capybara/NegationMatcherAfterVisit: # new in 2.22
+Capybara/RSpec/NegationMatcherAfterVisit: # new in 2.22
   Enabled: true
 
 Style/EmptyClassDefinition: # new in 1.83
