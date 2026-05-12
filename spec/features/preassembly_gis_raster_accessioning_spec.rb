@@ -123,9 +123,9 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage' do
     # look for expected files produced by GIS workflows
     files = all('tr.file')
     expect(files.size).to eq 7
-    expect(files[0].text).to match(%r{SC_Color_WGS.tif image/tiff 9.\d\d MB})
-    expect(files[1].text).to match(%r{SC_Color_WGS.tfw text/plain 8\d Bytes})
-    expect(files[2].text).to match(%r{SC_Color_WGS.tif.ovr application/octet-stream 4.\d\d MB})
+    expect(files[0].text).to match(%r{SC_Color_WGS.tif image/tiff; application=geotiff 9.\d\d MB})
+    expect(files[1].text).to match(%r{SC_Color_WGS.tif.ovr application/octet-stream 4.\d\d MB})
+    expect(files[2].text).to match(%r{SC_Color_WGS.tfw text/plain 8\d Bytes})
     expect(files[3].text).to match(%r{preview.jpg image/jpeg 6.\d\d KB})
     expect(files[4].text).to match(%r{SC_Color_WGS.tif.xml application/xml 2\d.\d KB})
     expect(files[5].text).to match(%r{SC_Color_WGS-iso19139.xml application/xml 2\d.\d KB})
