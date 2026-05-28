@@ -6,6 +6,8 @@ h3_url: 'https://sul-h3-stage.stanford.edu'
 preassembly:
   host: 'sul-preassembly-stage.stanford.edu'
   url: 'https://sul-preassembly-stage.stanford.edu'
+preservation_catalog:
+  host: 'preservation-catalog-worker-stage-01'
 sdrapi_url: 'https://sdr-api-stage.stanford.edu'
 was_playback_url: 'https://swap-stage.stanford.edu'
 was_registrar:

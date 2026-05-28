@@ -60,6 +60,9 @@ preassembly:
   gis_bundle_directory: '/dor/staging/integration-tests/gis-test'
   virtual_object_bundle_directory: '/dor/staging/integration-tests/virtual-object-test'
 
+preservation_catalog:
+  username: 'pres'
+
 earthworks_url: 'https://earthworks-stage.stanford.edu/catalog'
 
 ocr:
