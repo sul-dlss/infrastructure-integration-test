@@ -296,5 +296,6 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly' do
 
     visit_argo_and_confirm_event_display!(druid:, version: latest_version)
     confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: latest_version)
+    retrieve_and_fixity_check_replicated_druid!(bare_druid:, expected_version: latest_version)
   end
 end

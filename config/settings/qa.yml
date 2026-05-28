@@ -6,6 +6,8 @@ h3_url: 'https://sul-h3-qa.stanford.edu'
 preassembly:
   host: 'sul-preassembly-qa.stanford.edu'
   url: 'https://sul-preassembly-qa.stanford.edu'
+preservation_catalog:
+  host: 'preservation-catalog-worker-qa-01'
 sdrapi_url: 'https://sdr-api-qa.stanford.edu'
 was_playback_url: 'https://swap-qa.stanford.edu'
 was_registrar:
