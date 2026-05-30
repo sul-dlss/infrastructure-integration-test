@@ -150,8 +150,34 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
 
     expect(files[10].text).to match(%r{video_log.txt text/plain 5\d* Bytes No role})
 
-    # TODO: Add expectations for the speech to text files when they are added to the object
-    #
+    # Download the generated transcription files and check their Word Error Rate (WER)
+    # against the human-validated reference files.
+    within(files[8]) { click_link_or_button 'audio_1_m4a.txt' }
+    # second link in the modal is the preservation download link, which should already
+    # be available (whereas the stacks link availability can lag accessioning a bit)
+    all('.modal-content a')[1].click
+    wait_for_download
+    txt_wer = calculate_wer('spec/fixtures/speech-to-text-reference-transcript.txt', download, format: :text)
+    puts " *** Word Error Rate (TXT): #{txt_wer} ***"
+    expect(txt_wer).to be < 0.05 # Allow for slight variations in ASR
+    delete_download(download)
+
+    # close the file modal
+    click_link_or_button 'Cancel'
+
+    within(files[9]) { click_link_or_button 'audio_1_m4a.vtt' }
+    # second link in the modal is the preservation download link, which should already
+    # be available (whereas the stacks link availability can lag accessioning a bit)
+    all('.modal-content a')[1].click
+    wait_for_download
+    vtt_wer = calculate_wer('spec/fixtures/speech-to-text-reference-transcript.vtt', download, format: :vtt)
+    puts " *** Word Error Rate (VTT): #{vtt_wer} ***"
+    expect(vtt_wer).to be < 0.05
+    delete_download(download)
+
+    # close the file modal
+    click_link_or_button 'Cancel'
+
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('media') # filled in by accessioning
 
     # check technical metadata for all non-thumbnail files
