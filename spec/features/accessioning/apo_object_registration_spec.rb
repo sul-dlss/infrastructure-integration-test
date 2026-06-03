@@ -32,9 +32,6 @@ RSpec.describe 'Use Argo verify new objects inherit new APO rights', type: :acce
 
     sleep(2)
     click_button('Register')
-    # button = find_button('Register')
-    # execute_script('arguments[0].scrollIntoView(true)', button)
-    # button.click
 
     sleep(2)
     # wait for object to be registered

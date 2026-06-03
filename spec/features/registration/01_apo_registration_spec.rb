@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Use Argo to register an APO', type: :registration do
-  let(:apo_title) { "ZZZ Create APO test #{random_phrase}" }
+  let(:apo_title) { "Integration Testing APO #{random_phrase}" }
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
-  let(:rights) { 'Stanford' }
-  let(:terms_of_use) { 'Some oddly specific terms of use.' }
-  let(:copyright) { 'You may not do anything with my stuff.' }
-  let(:license) { 'Attribution Non-Commercial 3.0 Unported' }
+  let(:rights) { 'World' }
+  let(:terms_of_use) { 'Use statement from APO' }
+  let(:copyright) { 'None' }
+  let(:license) { 'CC Attribution Non-Commercial 3.0 Unported' }
 
   before do
     expected_text = 'The following defaults will apply to all newly registered objects.'
@@ -27,6 +27,8 @@ RSpec.describe 'Use Argo to register an APO', type: :registration do
     # make sure APO is registered
     apo_druid = find_table_cell_following(header_text: 'DRUID').text
     expect(page).to have_text "APO #{apo_druid} created."
+    # wait for accessionWF to finish and verify APO creation and move on
+    reload_page_until_timeout!(text: 'v1 Accessioned')
     save_test_data(spec_name: 'apo_creation', data: { 'druid' => apo_druid, 'title' => apo_title })
   end
 end
