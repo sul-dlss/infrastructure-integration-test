@@ -4,11 +4,12 @@
 RSpec.describe 'Use Argo to register a collection', type: :registration do
   let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
-  let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
+  let(:start_url) { "#{Settings.argo_url}/view/#{test_apo[:druid]}" }
+  let(:test_apo) { load_test_data(spec_name: 'apo_creation') }
 
   before do
     authenticate!(start_url:,
-                  expected_text: 'integration-testing')
+                  expected_text: test_apo[:title])
   end
 
   scenario do

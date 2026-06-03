@@ -16,8 +16,8 @@
 #     tags: [default: nil]
 RSpec.shared_examples 'an SDR object registion' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:collection_for_registration) { defined?(collection) ? collection : 'integration-testing' }
-  let(:apo_for_registration) { defined?(apo) ? apo : 'integration-testing' }
+  let(:collection_for_registration) { defined?(collection) ? collection : test_collection[:title] }
+  let(:apo_for_registration) { defined?(apo) ? apo : test_apo[:title] }
   let(:type) { defined?(content_type) ? content_type : nil }
   let(:workflow) { defined?(initial_workflow) ? initial_workflow : nil }
   let(:project_name) { defined?(project) ? project : nil }
@@ -26,6 +26,8 @@ RSpec.shared_examples 'an SDR object registion' do
   let(:default_source_id) { "#{spec_name.dasherize}:#{SecureRandom.uuid}" }
   let(:source_id) { defined?(virtual_source_id) ? virtual_source_id : default_source_id }
   let(:folio_instance_hrid) { defined?(folio_hrid) ? folio_hrid : nil }
+  let(:test_apo) { load_test_data(spec_name: 'apo_creation') }
+  let(:test_collection) { load_test_data(spec_name: 'collection_registration') }
 
   before do
     authenticate!(start_url:, expected_text: 'Register DOR Items')
