@@ -7,7 +7,7 @@ RSpec.describe 'Register objects in Argo', type: :registration do
   end
 
   it_behaves_like 'an SDR object registion' do
-    let(:spec_name) { 'goobi_accessing' }
+    let(:spec_name) { 'goobi_accessioning' }
     let(:apo) { 'Goobi Testing APO' }
     let(:collection) { 'integration-testing' }
     let(:initial_workflow) { 'goobiWF' }
@@ -81,7 +81,7 @@ RSpec.describe 'Register objects in Argo', type: :registration do
   context 'when registering virtual object constituents' do
     Settings.number_of_constituents.times do |i|
       it_behaves_like 'an SDR object registion' do
-        let(:spec_name) { 'virtual_object_creation' }
+        let(:spec_name) { "virtual_object_creation_#{i}" }
         let(:project) { 'Integration Test - Virtual object via Preassembly' }
         let(:type) { 'image' }
         let(:virtual_source_id) { "virtual-object-creation:#{SecureRandom.uuid}-#{i}" }

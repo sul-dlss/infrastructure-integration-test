@@ -6,6 +6,8 @@ RSpec.describe 'Use Argo to create a collection', type: :verify do
   let(:druid) { test_data[:druid] }
   let(:title) { test_data[:title] }
   let(:test_data) { load_test_data(spec_name: 'collection_registration') }
+  let(:apo_druid) { test_apo[:druid] }
+  let(:test_apo) { load_test_data(spec_name: 'apo_creation') }
 
   before do
     authenticate!(start_url:, expected_text: title)
@@ -19,6 +21,6 @@ RSpec.describe 'Use Argo to create a collection', type: :verify do
     expect(object_type_element.text).to eq('collection')
 
     apo_element = find_table_cell_following(header_text: 'Admin policy')
-    expect(apo_element.first('a')[:href]).to end_with(Settings.default_apo)
+    expect(apo_element.first('a')[:href]).to end_with(apo_druid)
   end
 end

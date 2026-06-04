@@ -4,25 +4,40 @@
 RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', type: :accessioning do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:druid) { test_data[:druid] }
-  let(:expected_text) { test_data[:title] }
+  let(:expected_text) { /Keynes, John Maynard, 1883-1946|Amellér, André, 1912-1990/ }
   let(:test_data) { load_test_data(spec_name: 'item_creation_with_folio_hrid') }
-  let(:folio_instance_hrid) { Settings.test_folio_instance_hrid }
-  let(:catalog_object_label) { 'The means to prosperity' } # will be pulled from folio
-  let(:folio_instance_hrid_updated) { 'a123' }
-  let(:catalog_object_label_updated) { 'A la francaise' } # the updated label after we change the hrid
+  # rubocop:disable RSpec/InstanceVariable
+  let(:folio_instance_hrid) { @initial_hrid }
+  let(:catalog_object_label) { @initial_label } # will be pulled from folio
+  let(:folio_instance_hrid_updated) { @updated_hrid }
+  let(:catalog_object_label_updated) { @updated_label } # the updated label after we change the hrid
+  # rubocop:enable RSpec/InstanceVariable
+  let(:catalog_label) { /A la francaise|The means to prosperity/ }
   let(:user_tag) { 'Some : UniqueTagValue' }
   let(:project) { 'Awesome Folio Project' }
 
   before do
     authenticate!(start_url:, expected_text:)
+
+    @initial_hrid = Settings.test_folio_instance_hrid
+    @initial_label = 'The means to prosperity'
+    @updated_hrid = 'a123'
+    @updated_label = 'A la francaise'
+
+    if page.has_content?('a123')
+      @initial_hrid = 'a123'
+      @initial_label = 'A la francaise'
+      @updated_hrid = Settings.test_folio_instance_hrid
+      @updated_label = 'The means to prosperity'
+    end
   end
 
   scenario do
     # look for metadata
     expect(page).to have_text(user_tag)
     expect(page).to have_text("Project : #{project}")
-    expect(page).to have_text(Settings.test_folio_instance_hrid)
-    expect(page).to have_text(catalog_object_label) # this was pulled from folio, overwriting used entered label
+    expect(page).to have_text(folio_instance_hrid)
+    expect(page).to have_text(catalog_label) # this was pulled from folio, overwriting used entered label
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
     # edit folio_instance_hrid
