@@ -6,10 +6,12 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', t
   let(:druid) { test_data[:druid] }
   let(:expected_text) { /Keynes, John Maynard, 1883-1946|Amellér, André, 1912-1990/ }
   let(:test_data) { load_test_data(spec_name: 'item_creation_with_folio_hrid') }
+  # rubocop:disable RSpec/InstanceVariable
   let(:folio_instance_hrid) { @initial_hrid }
   let(:catalog_object_label) { @initial_label } # will be pulled from folio
   let(:folio_instance_hrid_updated) { @updated_hrid }
   let(:catalog_object_label_updated) { @updated_label } # the updated label after we change the hrid
+  # rubocop:enable RSpec/InstanceVariable
   let(:catalog_label) { /A la francaise|The means to prosperity/ }
   let(:user_tag) { 'Some : UniqueTagValue' }
   let(:project) { 'Awesome Folio Project' }

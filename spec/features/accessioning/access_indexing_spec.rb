@@ -14,7 +14,7 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
   scenario do
     puts " *** access indexing druid: #{druid} ***" # useful for debugging
 
-    expect(page).to have_text /v\d+\s+(Accessioned|Registered)/
+    expect(page).to have_text(/v\d+\s+(Accessioned|Registered)/)
 
     # choose_rights expects to start from the search results page
     # so start by duplicating the find_access_rights_single_facet_value.
