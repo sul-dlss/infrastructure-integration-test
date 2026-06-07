@@ -5,11 +5,11 @@ RSpec.describe 'Use Argo to register a collection', type: :registration do
   let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
   let(:start_url) { "#{Settings.argo_url}/view/#{test_apo[:druid]}" }
+  let(:expected_text) { test_apo[:title] }
   let(:test_apo) { load_test_data(spec_name: 'apo_creation') }
 
   before do
-    authenticate!(start_url:,
-                  expected_text: test_apo[:title])
+    authenticate!(start_url:, expected_text:)
   end
 
   scenario do
@@ -22,6 +22,8 @@ RSpec.describe 'Use Argo to register a collection', type: :registration do
 
     collection_druid = find('.alert-info').text.split[2]
     puts " *** collection creation druid: #{collection_druid} ***" # useful for debugging
+
+    # Save new collection druid and title for use in testing
     save_test_data(spec_name: 'collection_registration', data: { 'druid' => collection_druid, 'title' => collection_title })
   end
 end

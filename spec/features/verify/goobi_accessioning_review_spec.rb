@@ -2,7 +2,7 @@
 
 # Integration: Argo, Goobi, DSA, Purl
 # NOTE: this spec will be skipped unless run on stage, since there is no goobi in QA
-RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage', type: :verify do
+RSpec.describe 'Verify object accessioned via Goobi', if: $sdr_env == 'stage', type: :verify do
   let(:druid) { test_data[:druid] }
   let(:bare_object_druid) { druid.delete_prefix('druid:') }
   let(:object_label) { test_data[:label] }

@@ -19,6 +19,8 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', t
   before do
     authenticate!(start_url:, expected_text:)
 
+    # This swaps the initial and updated hrid and label
+    # to allow the test to be rerun without registering a new object
     @initial_hrid = Settings.test_folio_instance_hrid
     @initial_label = 'The means to prosperity'
     @updated_hrid = 'a123'

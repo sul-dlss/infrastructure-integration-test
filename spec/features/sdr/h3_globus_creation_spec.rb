@@ -77,7 +77,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
       # wait for the upload to be complete: the directory list should refresh when done and show the filename
       within('.directory-content') do
-        expect(page).to have_content(filename)
+        expect(page).to have_text(filename)
       end
     end
 

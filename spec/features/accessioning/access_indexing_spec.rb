@@ -17,12 +17,12 @@ RSpec.describe 'Argo rights changes result in correct Access Rights facet value'
     expect(page).to have_text(/v\d+\s+(Accessioned|Registered)/)
 
     # choose_rights expects to start from the search results page
-    # so start by duplicating the find_access_rights_single_facet_value.
-    # This allows this to be rerun without first registering a new druid
     fill_in 'Search...', with: druid
     click_button 'Search'
     click_link_or_button('Access Rights')
 
+    # Set the rights to world/world initially
+    # This allows this to be rerun without first registering a new druid
     choose_rights(view: 'World', download: 'World')
     find_access_rights_single_facet_value(druid:, facet_value: 'world')
 

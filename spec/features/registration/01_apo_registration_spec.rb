@@ -24,11 +24,15 @@ RSpec.describe 'Use Argo to register an APO', type: :registration do
 
     # make sure we're on an APO show view
     expect(page).to have_text apo_title
+
     # make sure APO is registered
     apo_druid = find_table_cell_following(header_text: 'DRUID').text
     expect(page).to have_text "APO #{apo_druid} created."
+
     # wait for accessionWF to finish and verify APO creation and move on
     reload_page_until_timeout!(text: 'v1 Accessioned')
+
+    # Save the druid and title of the new APO to use in tests
     save_test_data(spec_name: 'apo_creation', data: { 'druid' => apo_druid, 'title' => apo_title })
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Registers all of the expected objects for follow up tests
+# Utilizes the register_objects shared example
 RSpec.describe 'Register objects in Argo', type: :registration do
   it_behaves_like 'an SDR object registion' do
     let(:spec_name) { 'access_indexing' }

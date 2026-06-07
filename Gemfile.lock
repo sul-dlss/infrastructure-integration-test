@@ -303,7 +303,7 @@ DEPENDENCIES
   rubocop-rspec
   rubocop-rspec_rails
   rubyXL
-  sdr-client (~> 2.0)
+  sdr-client
   selenium-webdriver
   websocket
 

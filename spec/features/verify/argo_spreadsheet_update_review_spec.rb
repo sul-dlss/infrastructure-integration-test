@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: Argo, Modsulator, DSA
-RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :verify do
+RSpec.describe 'Verify objects updated using a spreadsheet', type: :verify do
   let(:first_druid) { test_data[:druid1] }
   let(:second_druid) { test_data[:druid2] }
   let(:first_title) { test_data[:title1] }
@@ -17,10 +17,10 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
     # Open druids and tests for titles
     puts "Checking that #{first_druid} has title '#{first_title}'..."
     visit "#{Settings.argo_url}/view/#{first_druid}"
-    expect(page).to have_content(first_title)
+    expect(page).to have_text(first_title)
 
     puts "Checking that #{second_druid} has title '#{second_title}'..."
     visit "#{Settings.argo_url}/view/#{second_druid}"
-    expect(page).to have_content(second_title)
+    expect(page).to have_text(second_title)
   end
 end
