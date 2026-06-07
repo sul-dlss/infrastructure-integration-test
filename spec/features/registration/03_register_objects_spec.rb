@@ -7,7 +7,7 @@ RSpec.describe 'Register objects in Argo', type: :registration do
   end
 
   it_behaves_like 'an SDR object registion' do
-    let(:spec_name) { 'goobi_accessing' }
+    let(:spec_name) { 'goobi_accessioning' }
     let(:apo) { 'Goobi Testing APO' }
     let(:collection) { 'integration-testing' }
     let(:initial_workflow) { 'goobiWF' }

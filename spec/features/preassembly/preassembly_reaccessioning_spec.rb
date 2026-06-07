@@ -130,11 +130,6 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
 
     ### Re-accession
 
-    # # Get the original version from the page
-    # elem = find_table_cell_following(header_text: 'Status')
-    # md = /^v(\d+) Accessioned/.match(elem.text)
-    # version = md[1].to_i
-
     visit Settings.preassembly.url
 
     expect(page).to have_text 'Start new job'
@@ -158,7 +153,6 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
 
     save_test_data(spec_name: 'preassembly_reaccessioning', data: { 'job_id' => job_id.to_i })
 
-    # first('td > a').click # Click to the job details page
     visit "#{Settings.preassembly.url}/job_runs/#{job_id}"
 
     reload_page_until_timeout! do
