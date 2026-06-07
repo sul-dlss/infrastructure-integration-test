@@ -1,14 +1,10 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA, Preassembly, Purl
-RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
+RSpec.describe 'Use Argo to create a virtual object with constituent objects', type: :accessioning do
   # Can be run with more than the default 2 constituents:
   # SETTINGS__NUMBER_OF_CONSTITUENTS=4 bundle exec rspec spec/features/virtual_object_creation_spec.rb
-  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
-  let(:bare_druid) { druid.delete_prefix('druid:') }
-  let(:druid) { test_data[:druid] }
-  let(:object_label) { test_data[:title] }
-  let(:test_data) { load_test_data(spec_name: 'preassembly_speech_to_text') }
+  let(:start_url) { Settings.argo_url }
   let(:num_constituents) { Settings.number_of_constituents }
   let(:project_name) { 'Integration Test - Virtual object via Preassembly' }
   let(:preassembly_bundle_dir) { Settings.preassembly.virtual_object_bundle_directory } # where we will stage the content
@@ -37,29 +33,12 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
   end
 
   scenario do
-    # Register constituent objects
-    num_constituents.times do |i|
-      visit "#{Settings.argo_url}/registration"
-      select apo_name, from: 'Admin Policy'
-      select collection_name, from: 'Collection'
-      select 'image', from: 'Content Type'
-      fill_in 'Project Name', with: project_name
-      fill_in 'Source ID', with: "#{source_id}-#{i}"
-      fill_in 'Label', with: "#{object_label} #{i}"
-      click_button 'Register'
-
-      # wait for object to be registered
-      expect(page).to have_text 'Items successfully registered.'
-
-      bare_druid = find('table a').text
-      druid = "druid:#{bare_druid}"
-      puts " *** preassembly virtual object constituent druid: #{druid} ***" # useful for debugging
-      constituent_druids << druid.delete_prefix('druid:')
-    end
-
     # create manifest.csv file and scp it to preassembly staging directory
     rows = num_constituents.times.map do |i|
-      "#{constituent_druids[i]},#{constituent_druids[i]}"
+      constituent_object = load_test_data(spec_name: "virtual_object_creation_#{i}")
+      bare_druid = constituent_object[:druid].delete_prefix('druid:')
+      constituent_druids << bare_druid
+      "#{bare_druid},#{bare_druid}"
     end
     preassembly_manifest_csv =
       <<~CSV
@@ -115,7 +94,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects' do
     constituent_druids.each do |constituent_druid|
       puts "Checking that #{constituent_druid} has been accessioned..."
       visit "#{Settings.argo_url}/view/druid:#{constituent_druid}"
-      reload_page_until_timeout!(text: 'v1 Accessioned')
+      reload_page_until_timeout!(text: /v\d+\s+Accessioned/)
     end
 
     # There is some sort of a discrepancy between how the indexing of 'v1 Accessioned' is indexed
