@@ -89,7 +89,11 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     visit "#{Settings.argo_url}/view/#{work_druid}"
     reload_page_until_timeout!(text: 'v1 Accessioned')
     expect(page).to have_text('Initial version (Public version 1)') # we have an initial public version 1 in Argo
+
+    # it seems like jumping over to purl can cause timing issues sometimes so buffer that visit with sleep
+    sleep 5
     expect_text_on_purl_page(druid: work_druid, text: 'Version 1') # check the version display on PURL
+    sleep 5
 
     # back to H3, create a new version that only changes metadata, thus not creating a user version
     visit "#{Settings.h3_url}/dashboard"
@@ -117,8 +121,12 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
                                                   retry_wait: 10)
     expect(page).to have_text('changing abstract (Public version 1)') # Argo still on user version 1 since only metadata changed
     expect(page).to have_no_text('Public version 2') # and no user version 2
+
+    # it seems like jumping over to purl can cause timing issues sometimes so buffer that visit with sleep
+    sleep 5
     expect_text_on_purl_page(druid: work_druid, text: 'Version 1') # PURL also still only shows Version 1
     do_not_expect_text_on_purl_page(druid: work_druid, text: 'Version 2') # and no user version 2
+    sleep 5
 
     # back to H3, create a new version that changes a file, thus creating a user version
     visit "#{Settings.h3_url}/dashboard"
