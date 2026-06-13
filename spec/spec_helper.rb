@@ -92,7 +92,12 @@ RSpec.configure do |config|
   # is tagged with `:focus`, all examples get run. RSpec also provides
   # aliases for `it`, `describe`, and `context` that include `:focus`
   # metadata: `fit`, `fdescribe` and `fcontext`, respectively.
-  config.filter_run_when_matching :focus
+  # config.filter_run_when_matching type: :preassembly
+
+  # The filter_run_excluding setting is used to filter out examples or groups
+  # based on their metadata. In this case, we're excluding examples with the
+  # `:preassembly` type, which are preassembly job creation tests.
+  config.filter_run_excluding type: :preassembly
 
   # Allows RSpec to persist some state between runs in order to support
   # the `--only-failures` and `--next-failure` CLI options. We recommend
@@ -129,7 +134,38 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = :random
+  # config.order = :random
+  config.register_ordering(:global) do |examples|
+    # NOTE: Even though we exclude preassembly, we still need to include it in
+    # order for it to be picked up when run manually
+    order = %i[registration accessioning sdr verify preassembly]
+
+    grouped = examples.group_by { |ex| ex.metadata[:type] }
+    # other   = examples.reject   { |ex| order.include?(ex.metadata[:type]) }
+
+    # other + order.flat_map { |type| grouped.fetch(type, []) }
+    order.flat_map { |type| grouped.fetch(type, []) }
+  end
+
+  # Determine if the registration boundary has been reached and pause after it
+  # This allows background processing of submitted examples to complete before the review phase starts.
+  config.after do |example|
+    # Check if the this is the last example of each type so we can pause by looking at what RSpec has queued
+    #   Pause when switching from registration to sdr
+    #   Pause when switching from sdr to accessioning
+    #   Pause when switching from accessioning to verify
+
+    remaining = RSpec.world.filtered_examples.values.flatten
+    current_index = remaining.index(example)
+    next_example = remaining[current_index + 1] if current_index
+
+    next if next_example.nil? # No reason to pause if there is no next example
+    next unless %i[versioning verify].include?(next_example.metadata[:type])
+    next unless example.metadata[:type] == :accessioning
+
+    puts "\n#{example.metadata[:type]} phase complete — pausing 2 minutes..."
+    sleep 120
+  end
 
   # Seed global randomization in this process using the `--seed` CLI option.
   # Setting this allows you to use `--seed` to deterministically reproduce

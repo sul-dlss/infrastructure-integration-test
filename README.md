@@ -27,7 +27,17 @@ See the `Other Configuration` section below for
 
 ## Run Tests
 
-By default, the integration tests run in the SDR stage environment:
+### Test type and order
+
+There are 5 types of tests run in this order:
+
+- registration
+- accessioning
+- sdr
+- verify
+- preassembly (skipped by default)
+
+By default, the integration tests  (with the exception of preassembly tests) run in the SDR stage environment:
 
 `bin/rspec`
 
@@ -36,6 +46,28 @@ To test in the SDR QA environment, run tests with the `SDR_ENV` environment vari
 ```shell
 SDR_ENV=qa bin/rspec
 ```
+
+Each type of test can be run as a separate group with:
+
+```
+bin/rspec --tag type:[registration|accessioning|sdr|verify]
+```
+
+### Preassembly tests
+
+Because the preassembly tests are puposfully skipped during a test suite run, the type tag must be used.
+
+```
+bin/rspec --tag type:preassembly
+```
+
+or individually:
+
+```
+bin/rspec spec/features/preassembly/preassembly_gis_raster_accessioning_spec.rb  --tag type:preassembly
+```
+
+### Currently depracated
 
 If you would prefer to run the tests one by one and be prompted to move on to the next one you can use the following (but you will be prompted to login with Duo for each test):
 

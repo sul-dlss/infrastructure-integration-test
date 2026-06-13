@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA
-RSpec.describe 'Use Argo to edit administrative tags in bulk' do
+RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :sdr do
   let(:start_url) { "#{Settings.argo_url}/catalog?f%5Bexploded_nonproject_tag_ssimdv%5D%5B%5D=Registered+By+%3A+bergeraj" }
   let(:export_tag_description) { random_phrase }
   let(:import_tag_description) { random_phrase }

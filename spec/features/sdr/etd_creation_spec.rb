@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: ETD, Argo, DSA
-RSpec.describe 'Create a new ETD with embargo, and then update the embargo date' do
+RSpec.describe 'Create a new ETD with embargo, and then update the embargo date', type: :sdr do
   now = '' # used for HEREDOC reader and registrar approved xml (can't be memoized)
 
   # dissertation id must be unique; 10 digits, e.g. 0123456789

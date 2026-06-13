@@ -1,22 +1,21 @@
 # frozen_string_literal: true
 
 # Integration: Argo, Modsulator, DSA
-RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)' do
-  let(:title1) { random_phrase } # rubocop:disable RSpec/IndexedLet
-  let(:title2) { random_phrase } # rubocop:disable RSpec/IndexedLet
+RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)', type: :accessioning do
+  let(:titles) { [random_phrase, random_phrase] }
   let(:note) { random_phrase }
+  let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
+  let(:druids) { [create_druid, create_druid] }
 
   before do
-    authenticate!(start_url: "#{Settings.argo_url}/settings/tokens", expected_text: 'Generate new token')
+    authenticate!(start_url:, expected_text: 'integration-testing')
+    save_test_data(spec_name: 'argo_spreadsheet_update',
+                   data: { 'druids' => druids, 'titles' => titles })
   end
 
   scenario do
-    druid1 = create_druid
-    druid2 = create_druid
-    puts " *** bulk update metadata druids: #{druid1}, #{druid2} ***" # useful for debugging
-    temp_xlsx = update_xlsx(druid1, title1, druid2, title2)
-
-    visit "#{Settings.argo_url}/view/#{Settings.default_apo}"
+    temp_xlsx = update_xlsx(druids.first, titles.first, druids.last, titles.last)
+    visit start_url
     # Open the MODS bulk jobs
     click_link_or_button 'Upload MODS'
     expect(page).to have_text 'Spreadsheet bulk upload for APO'
@@ -43,14 +42,5 @@ RSpec.describe 'Use Argo to update metadata in a spreadsheet (using modsulator)'
       click_link_or_button 'Delete' # '#bulk-delete-confirm'
     end
     expect(page).to have_text "Bulk job for APO (#{Settings.default_apo}) deleted."
-
-    # Open druids and tests for titles
-    puts "Checking that #{druid1} has title '#{title1}'..."
-    visit "#{Settings.argo_url}/view/#{druid1}"
-    reload_page_until_timeout!(text: title1)
-
-    puts "Checking that #{druid2} has title '#{title2}'..."
-    visit "#{Settings.argo_url}/view/#{druid2}"
-    reload_page_until_timeout!(text: title2)
   end
 end
