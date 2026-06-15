@@ -240,7 +240,7 @@ GEM
     rubyXL (3.4.37)
       nokogiri (>= 1.10.8)
       rubyzip (>= 3.2.2)
-    rubyzip (3.3.1)
+    rubyzip (3.4.0)
     sdr-client (2.40.0)
       activesupport
       cocina-models (~> 0.122.0)
@@ -308,4 +308,4 @@ DEPENDENCIES
   websocket
 
 BUNDLED WITH
-  4.0.13
+  4.0.14
