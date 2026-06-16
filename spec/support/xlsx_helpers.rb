@@ -4,7 +4,7 @@ require 'rubyXL/convenience_methods/cell' # for rubyXL change_contents method
 
 module XlsxHelpers
   def create_druid
-    source_id = "spreadsheet-druid:#{random_phrase}"
+    source_id = "spreadsheet-druid:#{SecureRandom.uuid}"
     object_label = "Object Label for #{random_phrase}"
 
     deposit(
