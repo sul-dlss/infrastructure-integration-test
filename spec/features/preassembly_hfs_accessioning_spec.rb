@@ -72,12 +72,12 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
     fill_in 'Staging location', with: preassembly_hfs_bundle_dir
 
     click_link_or_button 'Submit'
-    expect(page).to have_content 'Success! Your job is queued. ' \
-                                 'A link to job output will be emailed to you upon completion.'
+    expect(page).to have_text 'Success! Your job is queued. ' \
+                              'A link to job output will be emailed to you upon completion.'
 
     # go to job details page, download result
     first('td > a').click
-    expect(page).to have_content preassembly_project_name
+    expect(page).to have_text preassembly_project_name
 
     # wait for preassembly background job to finish
     reload_page_until_timeout! do
@@ -123,7 +123,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     visit Settings.preassembly.url
 
-    expect(page).to have_content 'Start new job'
+    expect(page).to have_text 'Start new job'
 
     sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: random_project_name
@@ -134,8 +134,8 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
     click_link_or_button 'Submit'
 
-    expect(page).to have_content 'Success! Your job is queued. ' \
-                                 'A link to job output will be emailed to you upon completion.'
+    expect(page).to have_text 'Success! Your job is queued. ' \
+                              'A link to job output will be emailed to you upon completion.'
 
     first('td > a').click # Click to the job details page
 
