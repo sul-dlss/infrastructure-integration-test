@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA, WRA, was-pywb (SWAP), Purl
-RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive crawl and seed accession' do
+RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive crawl and seed accession', type: :sdr do
   let(:job_specific_directory) { start_time.to_i.to_s }
   let(:remote_path) do
     "#{Settings.was_registrar.username}@#{Settings.was_registrar.host}:#{Settings.was_registrar.jobs_directory}/" \

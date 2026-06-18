@@ -1,50 +1,19 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA
-RSpec.describe 'Use Argo to create an item object without any files and no collection' do
-  let(:random_word) { random_phrase }
-  let(:object_label) { "Object Label for #{random_word}" }
-  let(:start_url) { "#{Settings.argo_url}/registration" }
-  let(:source_id) { "create-obj-no-files-test:#{random_alpha}" }
+RSpec.describe 'Use Argo to create an item object without any files and no collection', type: :accessioning do
+  let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
+  let(:druid) { test_data[:druid] }
+  let(:expected_text) { test_data[:title] }
+  let(:test_data) { load_test_data(spec_name: 'item_creation_no_files_or_collection') }
   let(:user_tag) { 'Some : UniqueTagValue' }
   let(:project) { 'Awesome Project' }
 
   before do
-    authenticate!(start_url:,
-                  expected_text: 'Register DOR Items')
+    authenticate!(start_url:, expected_text:)
   end
 
   scenario do
-    # fill in registration form
-    select 'integration-testing', from: 'Admin Policy'
-    # Leaving collection unselected
-    select 'book', from: 'Content Type'
-    fill_in 'Tag', with: user_tag
-    fill_in 'Project Name', with: project
-
-    fill_in 'Source ID', with: source_id
-    fill_in 'Label', with: object_label
-
-    # This part of the registration form is in a turbo frame. The form can be
-    # submitted before this frame has been loaded, which causes an HTTP 500
-    # error. So make sure the page is fully loaded before submitting the form.
-    expect(page).to have_no_css('turbo-frame[busy]')
-    expect(page).to have_text('Initial Workflow')
-
-    click_link_or_button 'Register', class: 'btn-primary', exact_text: true
-
-    # wait for object to be registered
-    expect(page).to have_text 'Items successfully registered.'
-
-    bare_object_druid = find('table a').text
-    object_druid = "druid:#{bare_object_druid}"
-    puts " *** create object no files druid: #{object_druid} ***" # useful for debugging
-
-    visit "#{Settings.argo_url}/view/#{object_druid}"
-
-    # wait for registrationWF to finish
-    reload_page_until_timeout!(text: 'v1 Registered')
-
     # add accessionWF
     click_link_or_button 'Close Version'
     within '.modal-dialog' do
@@ -60,12 +29,14 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     # check no collection
     expect(page).to have_text('None selected')
 
+    ## Step 3: Wait for and verify accessioning
     # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v1 Accessioned',
                                                   workflow: 'accessionWF',
                                                   workflow_retry_text: 'Version mismatch',
                                                   retry_wait: 2)
 
+    ## Step 4: Open a new version and verify
     # open a new version
     click_link_or_button 'Unlock to make changes to this object'
     within '.modal-dialog' do
@@ -93,6 +64,7 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     expect(page).to have_text('closing version for integration testing')
     page.refresh # solves problem of close version modal re-appearing
 
+    ## Step 5: Wait for and verify accessioning
     # wait for accessioningWF to finish; retry if Version mismatch on sdr-ingest-transfer
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
                                                   workflow: nil,
