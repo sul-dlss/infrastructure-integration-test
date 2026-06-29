@@ -2,7 +2,6 @@
 
 RSpec.shared_examples 'preassembly job creation' do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
-  # let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:druid) { test_data[:druid] }
   let(:expected_text) { test_data[:title] }
   let(:test_data) { load_test_data(spec_name:) }

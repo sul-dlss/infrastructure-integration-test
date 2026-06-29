@@ -13,7 +13,7 @@ module EventHelpers
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
-    latest_s3_key = "#{druid_tree_str}.v000#{version}.zip"
+    latest_s3_key = "#{druid_tree_str}.v#{version.to_s.rjust(4, '0')}.zip"
     reload_page_until_timeout! do
       click_link_or_button 'Events' # expand the Events section
 
@@ -47,7 +47,7 @@ module EventHelpers
     # entire preservation flow.
     poll_for_matching_events!(prefixed_druid) do |events|
       (from_version..to_version).all? do |cur_version|
-        cur_s3_key = "#{druid_tree_str}.v000#{cur_version}.zip"
+        cur_s3_key = "#{druid_tree_str}.v#{cur_version.to_s.rjust(4, '0')}.zip"
 
         puts "searching events for #{cur_s3_key} replication to all of #{TARGET_ENDPOINT_NAMES}"
         events_were_found = TARGET_ENDPOINT_NAMES.all? do |endpoint_name|

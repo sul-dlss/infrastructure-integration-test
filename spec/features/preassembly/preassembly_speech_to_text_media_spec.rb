@@ -16,7 +16,6 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
     let(:content_type) { 'Media' }
     let(:stt_settings) { { stt_available: false, run_stt: true } }
     let(:navigate_to_job_details) { :click_first_link }
-    let(:collection_name) { 'integration-testing' }
     let(:preassembly_file_manifest_csv) do
       <<~CSV
         druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,sdr_generated_text,corrected_for_accessibility
@@ -37,9 +36,12 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
       # Check that speechToTextWF ran
       reload_page_until_timeout!(text: 'speechToTextWF')
 
-      # Wait for the second version accessioningWF to finish -- this can take longer
-      # than normal due to the captioning process in AWS taking longer
-      reload_page_until_timeout!(text: 'v2 Accessioned', num_seconds: 1200)
+      # Wait for the new version accessioningWF to finish
+      elem = find_table_cell_following(header_text: 'Status')
+      md = /^v(\d+) *./.match(elem.text)
+      version = md[1].to_i
+
+      reload_page_until_timeout!(text: /v\d+ Accessioned/, num_seconds: 1200)
 
       # Check that the version description is correct for the second version
       reload_page_until_timeout!(text: 'Start SpeechToText workflow')
@@ -76,13 +78,13 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
         page.scroll_to(:bottom)
 
         # events are loaded lazily, give the network a few moments
-        page.has_text?('v2 Accessioned', wait: 2)
+        page.has_text?(/v\d+ Accessioned/, wait: 2)
       end
       page.has_text?('filetype', count: 11)
       page.has_text?('file_modification', count: 11)
 
-      visit_argo_and_confirm_event_display!(druid:, version: 2)
-      confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: 2)
+      visit_argo_and_confirm_event_display!(druid:, version: version)
+      confirm_archive_zip_replication_events!(druid:, from_version: version - 1, to_version: version)
 
       # This section confirms the object has been published to PURL and has a
       # valid IIIF manifest
