@@ -17,7 +17,6 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
     let(:ocr_settings) { { manually_corrected_ocr: false, run_ocr: true } }
     let(:sleep_after_submit) { 10 }
     let(:navigate_to_job_details) { :visit_job_runs_first }
-    let(:collection_name) { 'integration-testing' }
 
     after do
       # Additional verification after the shared example completes
@@ -28,9 +27,13 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
       # Check that ocrWF ran
       reload_page_until_timeout!(text: 'ocrWF')
 
-      # Wait for the second version accessioningWF to finish
-      reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned', workflow: nil) do |page|
-        if page.has_text?('v2 Accessioned')
+      # Wait for the new version accessioningWF to finish
+      elem = find_table_cell_following(header_text: 'Status')
+      md = /^v(\d+) *./.match(elem.text)
+      version = md[1].to_i
+
+      reload_page_until_timeout_with_wf_step_retry!(expected_text: /v\d+ Accessioned/, workflow: nil) do |page|
+        if page.has_text?(/v\d+ Accessioned/)
           next true # done retrying, success
         elsif page.has_text?(/technical-metadata : Problem with technical-metadata-service.*-generated.pdf not found/, wait: 1)
           next 'accessionWF' # this message is for an accessionWF step
@@ -49,7 +52,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
 
       expect(files.size).to eq 2
       expect(files[0].text).to match(%r{testocr-image-only.pdf application/pdf 9\d\d KB})
-      expect(files[1].text).to match(%r{#{bare_druid}-generated.pdf application/pdf 1\d\.\d KB Transcription})
+      expect(files[1].text).to match(%r{#{bare_druid(druid)}-generated.pdf application/pdf 1\d\.\d KB Transcription})
 
       expect(find_table_cell_following(header_text: 'Content type').text).to eq('document') # filled in by accessioning
 
@@ -62,13 +65,13 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
         page.scroll_to(:bottom)
 
         # events are loaded lazily, give the network a few moments
-        page.has_text?('v2 Accessioned', wait: 2)
+        page.has_text?(/v\d+ Accessioned/, wait: 2)
       end
       page.has_text?('filetype', count: 2)
       page.has_text?('file_modification', count: 2)
 
-      visit_argo_and_confirm_event_display!(druid:, version: 2)
-      confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: 2)
+      visit_argo_and_confirm_event_display!(druid:, version: version + 1)
+      confirm_archive_zip_replication_events!(druid:, from_version: version, to_version: version + 1)
 
       # This section confirms the object has been published to PURL
       expect_text_on_purl_page(druid:, text: collection_name)
