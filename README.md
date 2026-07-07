@@ -55,7 +55,7 @@ bin/rspec --tag type:[registration|accessioning|sdr|verify]
 
 ### Preassembly tests
 
-Because the preassembly tests are puposfully skipped during a test suite run, the type tag must be used.
+Because the preassembly tests are purposefully skipped during a test suite run, the type tag must be used.
 
 ```
 bin/rspec --tag type:preassembly
