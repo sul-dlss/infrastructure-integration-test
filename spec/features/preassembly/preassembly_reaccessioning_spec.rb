@@ -73,12 +73,16 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 
     # check technical metadata for all non-thumbnail files
-    click_link_or_button 'Technical metadata' # expand the Technical metadata section
+    reload_page_until_timeout! do
+      click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-    # Scroll to the bottom so the lazily-loaded section enters the viewport
-    # and the browser fetches its content.
-    page.scroll_to(:bottom)
+      # Scroll to the bottom so the lazily-loaded section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
+      # events are loaded lazily, give the network a few moments
+      page.has_text?("v#{version} Accessioned", wait: 2)
+    end
     page.has_text?('filetype', count: 3)
     page.has_text?('file_modification', count: 3)
     page.has_text?('bytes 29634') # file to be missing from manifest for targeted re-accession
