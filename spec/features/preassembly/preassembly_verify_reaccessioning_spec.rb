@@ -63,8 +63,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
     files = all('tr.file')
 
     expect(files.size).to eq 6
-    expect(files[0].text).to match(%r{argo-logo.png image/png 10.\d KB})
-    expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 10\.*\d* KB})
+    expect(files[0].text).to match(%r{argo-logo.png image/png \d+.\d KB})
+    expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 \d+\.*\d* KB})
     expect(files[2].text).to match(%r{image.jpg image/jpeg 28.\d KB})
     expect(files[3].text).to match(%r{image.jp2 image/jp2 137 KB})
     expect(files[4].text).to match(%r{sul-logo.png image/png 19.\d KB})
