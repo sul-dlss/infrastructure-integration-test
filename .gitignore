@@ -6,6 +6,7 @@ spec/examples.txt
 # ephemeral and shouldn't be committed.
 tmp/*.csv
 tmp/*.png
+tmp/*.yml
 downloads
 
 # configs to hold sensitive values

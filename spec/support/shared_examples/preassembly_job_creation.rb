@@ -2,10 +2,11 @@
 
 RSpec.shared_examples 'preassembly job creation' do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
-  let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:druid) { test_data[:druid] }
   let(:expected_text) { test_data[:title] }
   let(:test_data) { load_test_data(spec_name:) }
+  let(:collection_name) { test_collection[:title] }
+  let(:test_collection) { load_test_data(spec_name: 'collection_registration') }
   let(:preassembly_bundle_dir) { Settings.preassembly.bundle_directory }
   let(:remote_manifest_location) do
     "#{Settings.preassembly.username}@#{Settings.preassembly.host}:#{preassembly_bundle_dir}"
@@ -16,7 +17,7 @@ RSpec.shared_examples 'preassembly job creation' do
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
-      #{bare_druid},content
+      #{bare_druid(druid)},content
     CSV
   end
 
@@ -31,7 +32,7 @@ RSpec.shared_examples 'preassembly job creation' do
   let(:stt_settings) { nil } # Hash with speech-to-text settings if applicable (e.g., { stt_available: false, run_stt: true })
   let(:sleep_after_submit) { 0 } # Optional sleep duration after submit (in seconds)
   let(:preassembly_file_manifest_csv) { nil } # Optional file manifest CSV content
-  let(:cleanup_paths) { [bare_druid] } # Paths to clean up on remote host after test
+  let(:cleanup_paths) { [bare_druid(druid)] } # Paths to clean up on remote host after test
 
   before do
     authenticate!(start_url:, expected_text:)
@@ -55,8 +56,8 @@ RSpec.shared_examples 'preassembly job creation' do
 
   after do
     clear_downloads
-    FileUtils.rm_rf(bare_druid)
-    unless bare_druid.empty?
+    FileUtils.rm_rf(bare_druid(druid))
+    unless bare_druid(druid).empty?
       cleanup_command = cleanup_paths.map { |path| "#{preassembly_bundle_dir}/#{path}" }.join(' ')
       `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf #{cleanup_command}`
     end

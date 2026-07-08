@@ -95,9 +95,10 @@ RSpec.configure do |config|
   # config.filter_run_when_matching type: :preassembly
 
   # The filter_run_excluding setting is used to filter out examples or groups
-  # based on their metadata. In this case, we're excluding examples with the
+  # based on their metadata. In this example, we're excluding examples with the
   # `:preassembly` type, which are preassembly job creation tests.
-  config.filter_run_excluding type: :preassembly
+  # Uncomment this line to exlcude those tests
+  # config.filter_run_excluding type: :preassembly
 
   # Allows RSpec to persist some state between runs in order to support
   # the `--only-failures` and `--next-failure` CLI options. We recommend

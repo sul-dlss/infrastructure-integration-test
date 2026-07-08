@@ -39,11 +39,11 @@ module DataHelpers
   # @return [Hash, String] the stored data
   def load_test_data(spec_name:)
     file_path = most_recent_data_file_path
-    raise "DataHelpers: no data file found in #{TMP_DIR}. Did submit specs run first?" unless file_path
+    raise "DataHelpers: no data file found in #{TMP_DIR}. Did registration specs run first?" unless file_path
 
     data = load_yaml_file(file_path)
     result = data[spec_name]
-    raise "DataHelpers: no entry for '#{spec_name}' in #{file_path}. Did the submit spec pass?" unless result
+    raise "DataHelpers: no entry for '#{spec_name}' in #{file_path}. Did the registration spec pass?" unless result
 
     puts " *** DataHelpers: loaded '#{spec_name}' from #{file_path} ***"
     result.is_a?(Hash) ? result.symbolize_keys : result
