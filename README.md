@@ -29,15 +29,17 @@ See the `Other Configuration` section below for
 
 ### Test type and order
 
-There are 5 types of tests run in this order:
+There are 5 types of tests, run in this order (the order is enforced by `config.register_ordering(:global)` in `spec/spec_helper.rb`, based on each spec's `type:` metadata):
 
 - registration
 - accessioning
 - sdr
 - verify
-- preassembly (skipped by default)
+- preassembly
 
-By default, the integration tests  (with the exception of preassembly tests) run in the SDR stage environment:
+Several specs depend on data saved by an earlier-type spec (e.g. a druid registered in a `registration` spec and used by an `accessioning` spec). This is persisted to `tmp/{today}_data.yml` via `spec/support/data_helpers.rb`, and loaded with `load_test_data`, which raises a clear error if the expected entry isn't there. Running the full suite (below) runs every type in the correct order automatically, so this is only a concern when filtering to a single type or running a spec individually — see the "Preassembly tests" section below for a concrete example.
+
+By default, all of the integration tests run in the SDR stage environment:
 
 `bin/rspec`
 
@@ -55,7 +57,7 @@ bin/rspec --tag type:[registration|accessioning|sdr|verify]
 
 ### Preassembly tests
 
-Because the preassembly tests are purposefully skipped during a test suite run, the type tag must be used.
+To run just the preassembly tests (skipping the other types), use the type tag.
 
 ```
 bin/rspec --tag type:preassembly
@@ -66,6 +68,8 @@ or individually:
 ```
 bin/rspec spec/features/preassembly/preassembly_gis_raster_accessioning_spec.rb  --tag type:preassembly
 ```
+
+Note: `spec/features/preassembly/preassembly_reaccessioning_spec.rb` loads the druid saved by `spec/features/accessioning/preassembly_accessioning_spec.rb`, which in turn loads the druid saved by `spec/features/registration/03_register_objects_spec.rb`. Filtering to `--tag type:preassembly` skips both of those, so they must have already run successfully at least once the same day (e.g. via a plain `bin/rspec`, or `bin/rspec --tag type:accessioning` after registration has run) before running the reaccessioning spec on its own.
 
 ### Currently depracated
 
