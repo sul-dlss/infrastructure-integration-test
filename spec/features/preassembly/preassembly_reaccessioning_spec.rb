@@ -53,12 +53,30 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
   end
 
   scenario do
+    expect(page).to have_text(/v\d+ Accessioned/)
+
     # Get the original version from the page
     elem = find_table_cell_following(header_text: 'Status')
     md = /^v(\d+) Accessioned/.match(elem.text)
     version = md[1].to_i
 
-    expect(page).to have_text("v#{version} Accessioned")
+    if version > 1
+      raise <<~MESSAGE
+        This object is already above version 1, meaning it has already been re-accessioned by this spec before.
+        The spec assumes a freshly-accessioned object and is not safe to replay against an already-reaccessioned druid.
+
+        To get a fresh object if you want to run this spec again, remove the data and re-run the specs to create a new object:
+
+        ```
+        rm tmp/*_data.yml
+        bin/rspec spec/features/registration
+        bin/rspec spec/features/accessioning/preassembly_accessioning_spec.rb
+        bin/rspec spec/features/preassembly/preassembly_reaccessioning_spec.rb
+        ```
+
+         or just redo the full suite: `bin/rspec`.
+      MESSAGE
+    end
 
     files = all('tr.file')
 
@@ -67,8 +85,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
     expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 \d+\.*\d* KB})
     expect(files[2].text).to match(%r{image.jpg image/jpeg \d+.\d KB})
     expect(files[3].text).to match(%r{image.jp2 image/jp2 \d+\.*\d* KB})
-    expect(files[4].text).to match(%r{(?:sul-logo.png|vision_for_stanford.jpg) image/(?:png|jpeg) \d+.\d+ KB})
-    expect(files[5].text).to match(%r{(?:sul-logo|vision_for_stanford)\.jp2 image/jp2 \d+.\d+ KB})
+    expect(files[4].text).to match(%r{sul-logo.png image/png \d+.\d+ KB})
+    expect(files[5].text).to match(%r{sul-logo.jp2 image/jp2 \d+.\d+ KB})
 
     expect(find_table_cell_following(header_text: 'Content type').text).to eq('image') # filled in by accessioning
 
@@ -172,82 +190,38 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
     # delete the downloaded YAML file, so we don't pick it up by mistake during the re-accession
     delete_download(download)
 
-    # prefixed_druid = yaml[:pid]
-    # latest_version = version + 1
+    prefixed_druid = yaml[:pid]
+    latest_version = version + 1
 
-    # visit "#{Settings.argo_url}/view/#{prefixed_druid}"
+    visit "#{Settings.argo_url}/view/#{prefixed_druid}"
 
-    # # Wait for accessioningWF to finish
-    # reload_page_until_timeout!(text: "v#{latest_version} Accessioned")
+    # Wait for accessioningWF to finish
+    reload_page_until_timeout!(text: "v#{latest_version} Accessioned")
 
-    # # ensure changed files are all there, per pre-assembly
-    # files = all('tr.file')
-    # expect(files.size).to eq 6
-    # expect(files[0].text).to match(%r{argo-logo.png image/png 97.\d KB})
-    # expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 140 KB})
-    # expect(files[2].text).to match(%r{image.jpg image/jpeg 28.\d KB})
-    # expect(files[3].text).to match(%r{image.jp2 image/jp2 137 KB})
-    # expect(files[4].text).to match(%r{vision_for_stanford.jpg image/jpeg 8.\d+ KB})
-    # expect(files[5].text).to match(%r{vision_for_stanford.jp2 image/jp2 26.\d KB})
+    # ensure changed files are all there, per pre-assembly
+    files = all('tr.file')
+    expect(files.size).to eq 6
+    expect(files[0].text).to match(%r{argo-logo.png image/png \d+.\d KB})
+    expect(files[1].text).to match(%r{argo-logo.jp2 image/jp2 \d+\.*\d* KB})
+    expect(files[2].text).to match(%r{image.jpg image/jpeg \d+.\d KB})
+    expect(files[3].text).to match(%r{image.jp2 image/jp2 \d+\.*\d* KB})
+    expect(files[4].text).to match(%r{vision_for_stanford.jpg image/jpeg \d+.\d+ KB})
+    expect(files[5].text).to match(%r{vision_for_stanford.jp2 image/jp2 \d+.\d+ KB})
 
-    # # check technical metadata for all non-thumbnail files
-    # reload_page_until_timeout! do
-    #   click_link_or_button 'Technical metadata' # expand the Technical metadata section
+    # check technical metadata for all non-thumbnail files
+    reload_page_until_timeout! do
+      click_link_or_button 'Technical metadata' # expand the Technical metadata section
 
-    #   # Scroll to the bottom so the lazily-loaded section enters the viewport
-    #   # and the browser fetches its content.
-    #   page.scroll_to(:bottom)
+      # Scroll to the bottom so the lazily-loaded section enters the viewport
+      # and the browser fetches its content.
+      page.scroll_to(:bottom)
 
-    #   # events are loaded lazily, give the network a few moments
-    #   page.has_text?("v#{latest_version} Accessioned", wait: 2)
-    # end
-    # page.has_text?('filetype', count: 3)
-    # page.has_text?('file_modification', count: 3)
-    # page.has_text?('bytes 9071') # vision_for_stanford.jpg (new file)
-    # page.has_text?('bytes 29634') # file from original accession, neither removed nor changed.
-
-    # reload_page_until_timeout! do
-    #   click_link_or_button 'Events' # expand the Events section
-
-    #   # Scroll to the bottom so the lazily-loaded section enters the viewport
-    #   # and the browser fetches its content.
-    #   page.scroll_to(:bottom)
-
-    #   # events are loaded lazily, give the network a few moments
-    #   page.has_text?("v#{latest_version} Accessioned", wait: 3)
-    # end
-
-    # # This section confirms the object has been published to PURL and has a
-    # # valid IIIF manifest
-    # # wait for the PURL name to be published by checking for collection name
-    # expect_text_on_purl_page(druid:, text: collection_name)
-    # expect_text_on_purl_page(druid:, text: object_label)
-    # iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
-    # iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    # image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
-
-    # # In late August 2025, during a versioning work cycle on the Access side, we
-    # # started noticing that the image URL returned a 404 initially but
-    # # eventually returned 200. Likely related to filesystem latency.
-    # # "Eventually" meaning roughly 9-10 minutes. To allow this test to pass,
-    # # wait a considerably longer time and print out messages so the developer
-    # # knows what's going on. Hopefully we can jettison this at some point.
-    # sleep_duration = 15
-    # counter = 0
-    # while counter <= 100
-    #   image_response = Faraday.get(image_url)
-    #   puts "stacks image response at #{sleep_duration * counter}s: #{image_response.status}"
-
-    #   break if image_response.status == 200
-
-    #   counter += 1
-    #   sleep sleep_duration
-    # end
-
-    # expect(image_response.status).to eq(200)
-    # expect(image_response.headers['content-type']).to include('image/jpeg')
-
-    # visit_argo_and_confirm_event_display!(druid:, version: latest_version)
-    # confirm_archive_zip_replication_events!(druid:, from_version: 1, to_version: latest_version)
+      # events are loaded lazily, give the network a few moments
+      page.has_text?("v#{latest_version} Accessioned", wait: 2)
+    end
+    page.has_text?('filetype', count: 3)
+    page.has_text?('file_modification', count: 3)
+    page.has_text?('bytes 9071') # vision_for_stanford.jpg (new file)
+    page.has_text?('bytes 29634') # file from original accession, neither removed nor changed.
   end
 end
