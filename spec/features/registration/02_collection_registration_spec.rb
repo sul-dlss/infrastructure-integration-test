@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Integration: Argo, DSA
-RSpec.describe 'Use Argo to register a collection', type: :registration do
+RSpec.describe 'Use Argo to register a collection', :sample_accession, type: :registration do
   let(:collection_title) { random_phrase }
   let(:collection_abstract) { 'Created by https://github.com/sul-dlss/infrastructure-integration-test' }
   let(:start_url) { "#{Settings.argo_url}/view/#{test_apo[:druid]}" }

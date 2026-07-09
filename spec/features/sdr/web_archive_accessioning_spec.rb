@@ -76,6 +76,9 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     # Seed
     visit "#{Settings.argo_url}/registration"
     select 'Web Archive Seed Object APO', from: 'Admin Policy'
+    # The Collection options are repopulated via Turbo in response to the Admin Policy
+    # selection, so wait for the target option to actually be there before selecting it.
+    expect(page).to have_select('Collection', with_options: [collection_name])
     select collection_name, from: 'Collection'
     select 'wasSeedPreassemblyWF', from: 'Initial Workflow'
     select 'webarchive-seed', from: 'Content Type'

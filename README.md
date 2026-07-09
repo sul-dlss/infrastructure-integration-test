@@ -55,6 +55,22 @@ Each type of test can be run as a separate group with:
 bin/rspec --tag type:[registration|accessioning|sdr|verify]
 ```
 
+### Accessioning Quick Run
+
+To run a minimal end-to-end accessioning path (register an APO and collection, register all the standard test objects, accession a plain image object via Preassembly, then re-accession it) without the more time consuming H3/GIS/OCR/media accessioning specs, use the `sample_accession` tag:
+
+```
+bin/rspec --tag sample_accession
+```
+
+### Rerun
+
+If a run produces some failures, you can try and re-run just the latest failed examples with the command below.  This can be run again as needed.
+
+`bin/rspec --only-failures`
+
+Note that required ordering and dependencies may mean some specs still don't work, notably the re-accessioning test.  In other words, some tests depend on previous ones having succeeded.  So you may still need to start all over again.
+
 ### Preassembly tests
 
 To run just the preassembly tests (skipping the other types), use the type tag.
@@ -71,7 +87,7 @@ bin/rspec spec/features/preassembly/preassembly_gis_raster_accessioning_spec.rb 
 
 Note: `spec/features/preassembly/preassembly_reaccessioning_spec.rb` loads the druid saved by `spec/features/accessioning/preassembly_accessioning_spec.rb`, which in turn loads the druid saved by `spec/features/registration/03_register_objects_spec.rb`. Filtering to `--tag type:preassembly` skips both of those, so they must have already run successfully at least once the same day (e.g. via a plain `bin/rspec`, or `bin/rspec --tag type:accessioning` after registration has run) before running the reaccessioning spec on its own.
 
-### Currently depracated
+### Currently deprecated
 
 If you would prefer to run the tests one by one and be prompted to move on to the next one you can use the following (but you will be prompted to login with Duo for each test):
 

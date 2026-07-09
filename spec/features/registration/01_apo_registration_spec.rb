@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Use Argo to register an APO', type: :registration do
+RSpec.describe 'Use Argo to register an APO', :sample_accession, type: :registration do
   let(:apo_title) { "Integration Testing APO #{random_phrase}" }
   let(:start_url) { "#{Settings.argo_url}/apo/new" }
   let(:rights) { 'World' }
