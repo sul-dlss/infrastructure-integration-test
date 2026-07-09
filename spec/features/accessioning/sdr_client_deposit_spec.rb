@@ -15,21 +15,24 @@ RSpec.describe 'SDR client deposit to SDR API', type: :accessioning do
   end
 
   it 'deposits objects' do
-    druid = deposit(apo: Settings.default_apo,
-                    collection: Settings.default_collection,
-                    type: Cocina::Models::ObjectType.object,
-                    source_id:,
-                    folio_instance_hrid:,
-                    accession: true,
-                    view: 'world',
-                    download: 'world',
-                    basepath: '.',
-                    files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
-                    files_metadata: {
-                      'Gemfile' => { 'preserve' => true, 'shelve' => false, 'publish' => false },
-                      'Gemfile.lock' => { 'preserve' => false, 'shelve' => true, 'publish' => true },
-                      'config/settings.yml' => { 'preserve' => true }
-                    })
+    druid = deposit(
+      title: ':auto',
+      apo: Settings.default_apo,
+      collection: Settings.default_collection,
+      type: Cocina::Models::ObjectType.object,
+      source_id:,
+      folio_instance_hrid:,
+      accession: true,
+      view: 'world',
+      download: 'world',
+      basepath: '.',
+      files: ['Gemfile', 'Gemfile.lock', 'config/settings.yml'],
+      files_metadata: {
+        'Gemfile' => { 'preserve' => true, 'shelve' => false, 'publish' => false },
+        'Gemfile.lock' => { 'preserve' => false, 'shelve' => true, 'publish' => true },
+        'config/settings.yml' => { 'preserve' => true }
+      }
+    )
     puts " *** sdr deposit druid: #{druid} ***" # useful for debugging
     save_test_data(spec_name: 'sdr_client_deposit', data: druid)
 

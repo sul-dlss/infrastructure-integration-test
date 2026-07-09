@@ -102,7 +102,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
 
     # Create virtual object
     virtual_object_label = random_phrase
-    virtual_object_druid = deposit_object(label: virtual_object_label, viewing_direction: 'left-to-right')
+    virtual_object_druid = deposit_object(title: virtual_object_label, viewing_direction: 'left-to-right')
     puts " *** virtual object druid: #{virtual_object_druid} ***" # useful for debugging
 
     # Create CSV: virtual_object_druid, constituent_druid, constituent_druid

@@ -48,7 +48,7 @@ module DepositHelpers
   end
 
   # rubocop:disable Metrics/MethodLength
-  def deposit_object(filenames: [], label: nil, viewing_direction: nil)
+  def deposit_object(filenames: [], title: nil, viewing_direction: nil)
     files_metadata = {}
     grouping_strategy = 'single'
     if filenames.any?
@@ -64,7 +64,7 @@ module DepositHelpers
                            type: Cocina::Models::ObjectType.image,
                            accession: true,
                            view: 'world',
-                           label: label || random_phrase,
+                           title: title || random_phrase,
                            grouping_strategy:,
                            file_set_strategy:,
                            files: filenames,
