@@ -5,12 +5,12 @@ require 'rubyXL/convenience_methods/cell' # for rubyXL change_contents method
 module XlsxHelpers
   def create_druid
     source_id = "spreadsheet-druid:#{SecureRandom.uuid}"
-    object_label = "Object Label for #{random_phrase}"
+    object_title = "Object Title for #{random_phrase}"
 
     deposit(
       apo: Settings.default_apo,
       source_id:,
-      label: object_label,
+      title: object_title,
       collection: Settings.default_collection,
       url: Settings.sdrapi_url
     )
