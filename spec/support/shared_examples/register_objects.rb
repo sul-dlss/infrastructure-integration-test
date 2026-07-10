@@ -7,7 +7,7 @@
 #   it_behaves_like 'a register object action',
 #     object_id: [required: test name (i.e: access_indexing_spec, goobi_accessioning_spec, etc...)]
 #     source_id: [required],
-#     label: [required],
+#     title: [required],
 #     collection: [default: 'integration-testing'],
 #     apo: [default: 'integration-testing'],
 #     content_type: [default: nil],
@@ -22,7 +22,7 @@ RSpec.shared_examples 'an SDR object registion' do
   let(:workflow) { defined?(initial_workflow) ? initial_workflow : nil }
   let(:project_name) { defined?(project) ? project : nil }
   let(:project_tags) { defined?(tags) ? tags : nil }
-  let(:object_label) { "#{spec_name.humanize} object for #{random_phrase}" }
+  let(:title) { "#{spec_name.humanize} object for #{random_phrase}" }
   let(:default_source_id) { "#{spec_name.dasherize}:#{SecureRandom.uuid}" }
   let(:source_id) { defined?(virtual_source_id) ? virtual_source_id : default_source_id }
   let(:folio_instance_hrid) { defined?(folio_hrid) ? folio_hrid : nil }
@@ -46,7 +46,7 @@ RSpec.shared_examples 'an SDR object registion' do
 
     fill_in 'Source ID', with: source_id
     fill_in 'Folio Instance HRID', with: folio_instance_hrid if folio_instance_hrid
-    fill_in 'Label', with: object_label
+    fill_in 'Title', with: title
 
     click_button 'Register'
 
@@ -56,6 +56,6 @@ RSpec.shared_examples 'an SDR object registion' do
     bare_object_druid = find('table a').text
     druid = "druid:#{bare_object_druid}"
     puts " *** Registered druid: #{druid} ***" # useful for debugging
-    save_test_data(spec_name:, data: { 'druid' => druid, 'title' => object_label })
+    save_test_data(spec_name:, data: { 'druid' => druid, 'title' => title })
   end
 end

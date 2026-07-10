@@ -8,29 +8,29 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', t
   let(:test_data) { load_test_data(spec_name: 'item_creation_with_folio_hrid') }
   # rubocop:disable RSpec/InstanceVariable
   let(:folio_instance_hrid) { @initial_hrid }
-  let(:catalog_object_label) { @initial_label } # will be pulled from folio
+  let(:catalog_object_title) { @initial_title } # will be pulled from folio
   let(:folio_instance_hrid_updated) { @updated_hrid }
-  let(:catalog_object_label_updated) { @updated_label } # the updated label after we change the hrid
+  let(:catalog_object_title_updated) { @updated_title } # the updated title after we change the hrid
   # rubocop:enable RSpec/InstanceVariable
-  let(:catalog_label) { /A la francaise|The means to prosperity/ }
+  let(:catalog_title) { /A la francaise|The means to prosperity/ }
   let(:user_tag) { 'Some : UniqueTagValue' }
   let(:project) { 'Awesome Folio Project' }
 
   before do
     authenticate!(start_url:, expected_text:)
 
-    # This swaps the initial and updated hrid and label
+    # This swaps the initial and updated hrid and title
     # to allow the test to be rerun without registering a new object
     @initial_hrid = Settings.test_folio_instance_hrid
-    @initial_label = 'The means to prosperity'
+    @initial_title = 'The means to prosperity'
     @updated_hrid = 'a123'
-    @updated_label = 'A la francaise'
+    @updated_title = 'A la francaise'
 
     if page.has_content?('a123')
       @initial_hrid = 'a123'
-      @initial_label = 'A la francaise'
+      @initial_title = 'A la francaise'
       @updated_hrid = Settings.test_folio_instance_hrid
-      @updated_label = 'The means to prosperity'
+      @updated_title = 'The means to prosperity'
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', t
     expect(page).to have_text(user_tag)
     expect(page).to have_text("Project : #{project}")
     expect(page).to have_text(folio_instance_hrid)
-    expect(page).to have_text(catalog_label) # this was pulled from folio, overwriting used entered label
+    expect(page).to have_text(catalog_title) # this was pulled from folio, overwriting used entered title
     expect(page).to have_text("Registered By : #{AuthenticationHelpers.username}")
 
     # edit folio_instance_hrid
@@ -51,7 +51,7 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', t
     expect(page).to have_text(folio_instance_hrid_updated)
     click_link_or_button 'Manage description'
     click_link_or_button 'Refresh'
-    reload_page_until_timeout!(text: catalog_object_label_updated) # updated label pulled from folio for new HRID
+    reload_page_until_timeout!(text: catalog_object_title_updated) # updated title pulled from folio for new HRID
 
     # look for metadata source facet having an entry of Folio for this druid
     fill_in 'Search...', with: druid

@@ -8,8 +8,8 @@
 RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_gis_vector_accessioning' }
-    let(:object_label) { test_data[:title] }
-    let(:expected_text) { object_label }
+    let(:title) { test_data[:title] }
+    let(:expected_text) { title }
     let(:preassembly_bundle_dir) { Settings.preassembly.gis_bundle_directory }
     let(:content_type) { 'Geo' }
     let(:navigate_to_job_details) { :click_first_link }

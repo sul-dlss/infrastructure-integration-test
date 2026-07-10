@@ -10,8 +10,8 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
                                                                                           type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_speech_to_text' }
-    let(:object_label) { test_data[:title] }
-    let(:expected_text) { object_label }
+    let(:title) { test_data[:title] }
+    let(:expected_text) { title }
     let(:preassembly_bundle_dir) { Settings.preassembly.speech_to_text_bundle_directory }
     let(:content_type) { 'Media' }
     let(:stt_settings) { { stt_available: false, run_stt: true } }
@@ -90,10 +90,10 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
       # valid IIIF manifest
       # wait for the PURL name to be published by checking for collection name
       expect_text_on_purl_page(druid:, text: collection_name)
-      expect_text_on_purl_page(druid:, text: object_label)
+      expect_text_on_purl_page(druid:, text: title)
       iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
       iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-      expect(iiif_manifest['label']['en'].first).to eq object_label
+      expect(iiif_manifest['label']['en'].first).to eq title
     end
   end
 end

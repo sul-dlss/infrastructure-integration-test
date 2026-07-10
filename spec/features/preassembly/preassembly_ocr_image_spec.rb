@@ -9,8 +9,8 @@ require 'druid-tools'
 RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed', if: Settings.ocr.enabled, type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_ocr_image' }
-    let(:object_label) { test_data[:title] }
-    let(:expected_text) { object_label }
+    let(:title) { test_data[:title] }
+    let(:expected_text) { title }
     let(:preassembly_bundle_dir) { Settings.preassembly.ocr_bundle_directory }
     let(:content_type) { 'Image' }
     let(:ocr_settings) { { ocr_available: false, run_ocr: true } }
@@ -75,7 +75,7 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
       # valid IIIF manifest
       # wait for the PURL name to be published by checking for collection name
       expect_text_on_purl_page(druid:, text: collection_name)
-      expect_text_on_purl_page(druid:, text: object_label)
+      expect_text_on_purl_page(druid:, text: title)
       iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
       iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
       image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
