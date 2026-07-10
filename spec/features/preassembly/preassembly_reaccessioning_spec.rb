@@ -9,7 +9,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:druid) { test_data[:druid] }
-  let(:object_label) { test_data[:title] }
+  let(:title) { test_data[:title] }
   let(:test_data) { load_test_data(spec_name: 'preassembly_accessioning') }
   let(:preassembly_bundle_dir) { Settings.preassembly.bundle_directory }
   let(:remote_manifest_location) do
@@ -33,7 +33,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
   end
 
   before do
-    authenticate!(start_url:, expected_text: object_label)
+    authenticate!(start_url:, expected_text: title)
 
     # create manifest.csv file and scp it to preassembly staging directory
     File.write(local_manifest_location, preassembly_manifest_csv)

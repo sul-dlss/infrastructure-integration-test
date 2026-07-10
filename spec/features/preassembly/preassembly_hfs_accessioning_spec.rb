@@ -8,8 +8,8 @@ require 'druid-tools'
 RSpec.describe 'Create and re-accession object with hierarchical files via Pre-assembly', type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_hfs_accessioning' }
-    let(:object_label) { test_data[:title] }
-    let(:expected_text) { object_label }
+    let(:title) { test_data[:title] }
+    let(:expected_text) { title }
     let(:preassembly_bundle_dir) { Settings.preassembly.hfs_bundle_directory }
     let(:content_type) { 'File' }
     let(:navigate_to_job_details) { :click_first_link }
@@ -45,7 +45,7 @@ RSpec.describe 'Create and re-accession object with hierarchical files via Pre-a
 
       # This section confirms the object has been published to PURL and has filenames in the json
       expect_text_on_purl_page(druid:, text: collection_name)
-      expect_text_on_purl_page(druid:, text: object_label)
+      expect_text_on_purl_page(druid:, text: title)
 
       # verify the cocina json has the filenames with paths
       expect_published_files(druid:, filenames: ['README.md', 'config/settings.yml', 'config/settings/qa.yml',

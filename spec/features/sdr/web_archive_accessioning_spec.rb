@@ -83,7 +83,7 @@ RSpec.describe 'Use was-registrar-app, Argo, and pywb to ensure web archive craw
     select 'wasSeedPreassemblyWF', from: 'Initial Workflow'
     select 'webarchive-seed', from: 'Content Type'
     fill_in 'Source ID', with: "seed-#{source_id}"
-    fill_in 'Label', with: url_in_wayback
+    fill_in 'Title', with: url_in_wayback
     fill_in 'Tags', with: 'webarchive : seed'
     click_button 'Register'
 

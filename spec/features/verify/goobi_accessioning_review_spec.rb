@@ -5,14 +5,13 @@
 RSpec.describe 'Verify object accessioned via Goobi', if: $sdr_env == 'stage', type: :verify do
   let(:druid) { test_data[:druid] }
   let(:bare_object_druid) { druid.delete_prefix('druid:') }
-  let(:object_label) { test_data[:label] }
+  let(:title) { test_data[:title] }
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:test_data) { load_test_data(spec_name: 'goobi_accessioning') }
   let(:collection_name) { 'integration-testing' }
 
   before do
-    authenticate!(start_url:,
-                  expected_text: object_label)
+    authenticate!(start_url:, expected_text: title)
   end
 
   after do
@@ -36,7 +35,7 @@ RSpec.describe 'Verify object accessioned via Goobi', if: $sdr_env == 'stage', t
     # wait for the PURL name to be published by checking for collection name
     expect_text_on_purl_page(druid:, text: collection_name)
     expect_text_on_purl_page(druid:, text: 'This work is licensed under an Apache License 2.0')
-    expect_text_on_purl_page(druid:, text: object_label)
+    expect_text_on_purl_page(druid:, text: title)
     expect_link_on_purl_page(druid:,
                              text: 'View in SearchWorks',
                              href: "#{Settings.searchworks_url}/view/#{bare_object_druid}")

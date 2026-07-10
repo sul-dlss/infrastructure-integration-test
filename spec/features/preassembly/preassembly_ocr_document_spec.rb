@@ -10,8 +10,8 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
                                                                                     type: :preassembly do
   it_behaves_like 'preassembly job creation' do
     let(:spec_name) { 'preassembly_ocr_document' }
-    let(:object_label) { test_data[:title] }
-    let(:expected_text) { object_label }
+    let(:title) { test_data[:title] }
+    let(:expected_text) { title }
     let(:preassembly_bundle_dir) { Settings.preassembly.ocr_document_bundle_directory }
     let(:content_type) { 'Document/PDF' }
     let(:ocr_settings) { { manually_corrected_ocr: false, run_ocr: true } }
@@ -75,7 +75,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
 
       # This section confirms the object has been published to PURL
       expect_text_on_purl_page(druid:, text: collection_name)
-      expect_text_on_purl_page(druid:, text: object_label)
+      expect_text_on_purl_page(druid:, text: title)
     end
   end
 end
