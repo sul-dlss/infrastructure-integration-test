@@ -5,7 +5,7 @@ require 'druid-tools'
 # Integration: Argo, DSA, Preassembly, Purl
 # Preassembly requires that files to be included in an object must be available on a mounted drive
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
-RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :preassembly do
+RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_accession, type: :preassembly do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
   let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:druid) { test_data[:druid] }
@@ -53,7 +53,8 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', type: :p
   end
 
   scenario do
-    expect(page).to have_text(/v\d+ Accessioned/)
+    # Ensure accessioning from pre-assembly job that create this object is done before we start the re-accessioning process.
+    reload_page_until_timeout!(text: /v\d+ Accessioned/)
 
     # Get the original version from the page
     elem = find_table_cell_following(header_text: 'Status')
