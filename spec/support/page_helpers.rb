@@ -57,7 +57,9 @@ module PageHelpers
         end
 
         if page.has_css?('.alert-danger', wait: 0) && page.has_text?(workflow_retry_text)
-          click_link_or_button workflow
+          within('#document-history-section') do
+            click_link_or_button workflow
+          end
           select 'Rerun', from: 'status'
           confirm_message = 'You have selected to manually change the status. '
           confirm_message += 'This could result in processing errors. Are you sure you want to proceed?'
