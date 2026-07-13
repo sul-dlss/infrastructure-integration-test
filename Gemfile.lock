@@ -136,7 +136,7 @@ GEM
       reline (>= 0.4.2)
     iso8601 (0.13.0)
     janeway-jsonpath (1.0.0)
-    json (2.20.0)
+    json (2.21.1)
     jsonschema_rs (0.47.0)
       bigdecimal (>= 3.1, < 5)
       rb_sys (~> 0.9.124)
@@ -218,7 +218,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
-    rubocop (1.88.1)
+    rubocop (1.88.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -263,7 +263,7 @@ GEM
       launchy
       zeitwerk
     securerandom (0.4.1)
-    selenium-webdriver (4.45.0)
+    selenium-webdriver (4.46.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -320,4 +320,4 @@ DEPENDENCIES
   websocket
 
 BUNDLED WITH
-  4.0.15
+  4.0.16
