@@ -52,7 +52,7 @@ SDR_ENV=qa bin/rspec
 Each type of test can be run as a separate group with:
 
 ```
-bin/rspec --tag type:[registration|accessioning|sdr|verify]
+bin/rspec --tag sample_accession --tag type:[registration|accessioning|sdr|verify]
 ```
 
 ### Accessioning Quick Run
@@ -76,16 +76,16 @@ Note that required ordering and dependencies may mean some specs still don't wor
 To run just the preassembly tests (skipping the other types), use the type tag.
 
 ```
-bin/rspec --tag type:preassembly
+bin/rspec --tag sample_accession --tag type:preassembly
 ```
 
 or individually:
 
 ```
-bin/rspec spec/features/preassembly/preassembly_gis_raster_accessioning_spec.rb  --tag type:preassembly
+bin/rspec spec/features/preassembly/preassembly_gis_raster_accessioning_spec.rb  --tag sample_accession --tag type:preassembly
 ```
 
-Note: `spec/features/preassembly/preassembly_reaccessioning_spec.rb` loads the druid saved by `spec/features/accessioning/preassembly_accessioning_spec.rb`, which in turn loads the druid saved by `spec/features/registration/03_register_objects_spec.rb`. Filtering to `--tag type:preassembly` skips both of those, so they must have already run successfully at least once the same day (e.g. via a plain `bin/rspec`, or `bin/rspec --tag type:accessioning` after registration has run) before running the reaccessioning spec on its own.
+Note: `spec/features/preassembly/preassembly_reaccessioning_spec.rb` loads the druid saved by `spec/features/accessioning/preassembly_accessioning_spec.rb`, which in turn loads the druid saved by `spec/features/registration/03_register_objects_spec.rb`. Filtering to `--tag type:preassembly` skips both of those, so you must include the `--tag sample_accession` in order to establish the expected APO, Collection, and druids.
 
 ### Currently deprecated
 
