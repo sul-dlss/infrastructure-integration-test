@@ -77,6 +77,8 @@ def choose_rights(view:, download: nil, location: nil, cdl: false)
 
   # It takes a few milliseconds for the rights update to take
   expect(page).to have_text(view_label(view:, location:, cdl:))
+
+  sleep 5
 end
 
 def view_label(view:, location:, cdl:)

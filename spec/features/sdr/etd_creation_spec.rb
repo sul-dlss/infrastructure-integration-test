@@ -185,7 +185,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     end
 
     # Manage embargo
-    sleep 1
+    sleep 5
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     click_link_or_button 'Manage embargo'
@@ -196,6 +196,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}")
 
     # check Argo facet field with 3 day embargo
+    sleep 5
     fill_in 'Search...', with: prefixed_druid
     click_button 'Search'
     click_link_or_button('Embargo Release Date')
