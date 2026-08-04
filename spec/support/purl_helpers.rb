@@ -2,9 +2,13 @@
 
 # This module allows us to check the purl page for a given string
 module PurlHelpers
-  def expect_text_on_purl_page(druid:, text:, within_frame: false)
+  def visit_purl_page(druid)
     visit "#{Settings.purl_url}/#{bare_druid(druid)}"
-    sleep 1
+    expect(page).to have_css('body') # wait for page to load
+  end
+
+  def expect_text_on_purl_page(druid:, text:, within_frame: false)
+    visit_purl_page(druid)
     if within_frame
       reload_page_until_timeout! do
         within_frame { page.has_text?(text, wait: 2) }
@@ -15,14 +19,12 @@ module PurlHelpers
   end
 
   def do_not_expect_text_on_purl_page(druid:, text:) # rubocop:disable Naming/PredicateMethod
-    visit "#{Settings.purl_url}/#{bare_druid(druid)}"
-    sleep 1
+    visit_purl_page(druid)
     page.has_no_text?(text)
   end
 
   def expect_link_on_purl_page(druid:, text:, href:)
-    visit "#{Settings.purl_url}/#{bare_druid(druid)}"
-    sleep 1
+    visit_purl_page(druid)
     reload_page_until_timeout! { page.has_link?(text, href:, wait: 2) }
   end
 
