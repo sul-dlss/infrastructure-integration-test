@@ -6,12 +6,7 @@ module PreservationHelpers
                        "--druid_list #{bare_druid} --endpoints_to_audit gcp_s3_south_1"
     remote_destination = "#{Settings.preservation_catalog.username}@#{Settings.preservation_catalog.host}"
     remote_fixity_check_cmd = "ssh #{remote_destination} '#{fixity_check_cmd}'"
-    stdout_str, stderr_str, status =
-      begin
-        Open3.capture3(remote_fixity_check_cmd)
-      rescue StandardError => e
-        puts "Error executing system command: '#{remote_fixity_check_cmd}' raised #{e}"
-      end
+    stdout_str, stderr_str, status = Open3.capture3(remote_fixity_check_cmd)
 
     cmd_result = {
       cmd: remote_fixity_check_cmd, stdout_str:, stderr_str:, exitstatus: status.exitstatus, success: status.success?
