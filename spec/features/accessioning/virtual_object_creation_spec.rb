@@ -119,21 +119,9 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
 
     expect(page).to have_text 'Create virtual objects job was successfully created.'
 
-    Timeout.timeout(Settings.timeouts.bulk_action) do
-      loop do
-        page.refresh
-
-        relevant_bulk_action = find(:xpath, "//tr[td = '#{virtual_objects_description}']")
-        within(relevant_bulk_action) do
-          status_text = all('td')[3].text
-          next unless status_text == 'Completed'
-
-          results_text = all('td')[4].text
-          expect(results_text).to eq('1 / 1 / 0')
-        end
-
-        break
-      end
+    wait_for_bulk_action_completion!(description: virtual_objects_description) do
+      results_text = find('td:nth-child(5)').text
+      expect(results_text).to eq('1 / 1 / 0')
     end
 
     visit "#{start_url}/view/#{virtual_object_druid}"

@@ -40,32 +40,17 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :sdr do
 
     druids_with_tags = []
 
-    # wait for bulk action to complete (runs asynchronously)
-    Timeout.timeout(Settings.timeouts.bulk_action) do
-      loop do
-        page.refresh
+    wait_for_bulk_action_completion!(description: export_tag_description) do
+      results_text = find('td:nth-child(5)').text
+      expect(results_text).to eq("#{number_of_druids} / #{number_of_druids} / 0")
 
-        relevant_bulk_action = find(:xpath, "//tr[td = '#{export_tag_description}']")
-        within(relevant_bulk_action) do
-          status_text = all('td')[3].text
-
-          next unless status_text == 'Completed'
-
-          results_text = all('td')[4].text
-          expect(results_text).to eq("#{number_of_druids} / #{number_of_druids} / 0")
-
-          click_link_or_button 'Download Exported Tags (CSV)'
-          wait_for_download
-          druids_with_tags = CSV.parse(File.read(download))
-          expect(druids_with_tags.count).to eq(number_of_druids)
-          # druids_with_tags is an array of arrays, each of which is a druid and its tags
-          druids_with_tags.each do |(druid, *tags)|
-            expect(druid).to match(druid_regex)
-            tags.all? { |tag| expect(tag).to match(tag_regex) }
-          end
-        end
-
-        break
+      click_link_or_button 'Download Exported Tags (CSV)'
+      wait_for_download
+      druids_with_tags = CSV.parse(File.read(download))
+      expect(druids_with_tags.count).to eq(number_of_druids)
+      druids_with_tags.each do |(druid, *tags)|
+        expect(druid).to match(druid_regex)
+        tags.all? { |tag| expect(tag).to match(tag_regex) }
       end
     end
 
@@ -96,23 +81,9 @@ RSpec.describe 'Use Argo to edit administrative tags in bulk', type: :sdr do
 
     expect(page).to have_text 'Import tags job was successfully created.'
 
-    # wait for bulk action to complete (runs asynchronously)
-    Timeout.timeout(Settings.timeouts.bulk_action) do
-      loop do
-        page.refresh
-
-        relevant_bulk_action = find(:xpath, "//tr[td = '#{import_tag_description}']")
-        within(relevant_bulk_action) do
-          status_text = all('td')[3].text
-
-          next unless status_text == 'Completed'
-
-          results_text = all('td')[4].text
-          expect(results_text).to eq("#{number_of_druids} / #{number_of_druids} / 0")
-        end
-
-        break
-      end
+    wait_for_bulk_action_completion!(description: import_tag_description) do
+      results_text = find('td:nth-child(5)').text
+      expect(results_text).to eq("#{number_of_druids} / #{number_of_druids} / 0")
     end
 
     visit "#{Settings.argo_url}/view/#{druid_with_added_tag.first}"
