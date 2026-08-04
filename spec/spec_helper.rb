@@ -162,8 +162,8 @@ RSpec.configure do |config|
     next unless %i[versioning verify].include?(next_example.metadata[:type])
     next unless example.metadata[:type] == :accessioning
 
-    puts "\n#{example.metadata[:type]} phase complete — pausing 2 minutes..."
-    sleep 120
+    puts "\n#{example.metadata[:type]} phase complete — pausing 30 seconds..."
+    sleep 30
   end
 
   # Seed global randomization in this process using the `--seed` CLI option.
