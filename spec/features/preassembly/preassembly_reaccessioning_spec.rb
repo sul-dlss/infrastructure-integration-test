@@ -170,7 +170,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
                               'A link to job output will be emailed to you upon completion.'
 
     # Get the preassembly job number
-    cell = first('td', text: /^Job #\d+/)
+    cell = find('td', text: /^Job #\d+/, match: :first)
     job_id = cell.text.match(/^Job #(\d+)/)[1]
 
     save_test_data(spec_name: 'preassembly_reaccessioning', data: { 'job_id' => job_id.to_i })

@@ -71,7 +71,7 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
                               'A link to job output will be emailed to you upon completion.'
 
     # go to job details page, download result
-    first('td > a').click
+    find('td > a', match: :first).click
     expect(page).to have_text preassembly_project_name
 
     # wait for preassembly background job to finish

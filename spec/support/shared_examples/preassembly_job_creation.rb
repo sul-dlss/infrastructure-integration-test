@@ -67,8 +67,8 @@ RSpec.shared_examples 'preassembly job creation' do
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Start new job')
 
-    sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: preassembly_project_name
+    expect(page).to have_field('Project name', with: preassembly_project_name)
     select job_type, from: 'Job type'
     select content_type, from: 'Content type'
     fill_in 'Staging location', with: preassembly_bundle_dir
@@ -87,7 +87,7 @@ RSpec.shared_examples 'preassembly job creation' do
       end
       choose "batch_context_run_ocr_#{ocr_settings[:run_ocr]}" if ocr_settings.key?(:run_ocr)
       if ocr_settings[:languages]
-        first('button[aria-label="toggle dropdown"]').click
+        find('button[aria-label="toggle dropdown"]').click
         ocr_settings[:languages].each do |lang|
           check "batch_context_ocr_languages_#{lang}"
         end
@@ -109,7 +109,7 @@ RSpec.shared_examples 'preassembly job creation' do
                               'A link to job output will be emailed to you upon completion.'
 
     # Get the preassembly job number
-    cell = first('td', text: /^Job #\d+/)
+    cell = find('td', text: /^Job #\d+/, match: :first)
     job_id = cell.text.match(/^Job #(\d+)/)[1]
 
     # Save job_id if requested
@@ -118,13 +118,13 @@ RSpec.shared_examples 'preassembly job creation' do
     # Navigate to job details page
     case navigate_to_job_details
     when :click_first_link
-      first('td > a').click
+      find('td > a', match: :first).click
       expect(page).to have_text preassembly_project_name
     when :visit_url
       visit "#{Settings.preassembly.url}/job_runs/#{job_id}"
     when :visit_job_runs_first
       visit "#{Settings.preassembly.url}/job_runs"
-      first('td > a').click
+      find('td > a', match: :first).click
       expect(page).to have_text preassembly_project_name
     end
 

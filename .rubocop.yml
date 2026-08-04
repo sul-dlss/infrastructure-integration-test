@@ -612,8 +612,8 @@ Style/RedundantArrayFlatten: # new in 1.76
   Enabled: true
 Style/RedundantFormat: # new in 1.72
   Enabled: true
-Capybara/FindAllFirst: # new in 2.22
-  Enabled: true
+Capybara/FindAllFirst: # new in 2.22 - disabled: prefer find(match: :first) for waiting semantics
+  Enabled: false
 RSpec/IncludeExamples: # new in 3.6
   Enabled: true
 
