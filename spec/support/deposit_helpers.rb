@@ -22,8 +22,9 @@ module DepositHelpers
         JSON.parse(find_field('Token').value)['token']
       rescue StandardError
         retries_count += 1
-        puts "Token generation failed, waiting and retrying (#{retries_count}/5)..."
-        sleep 5
+        delay = retries_count * 2 # progressive: 2, 4, 6, 8, 10 seconds
+        puts "Token generation failed, waiting #{delay}s and retrying (#{retries_count}/5)..."
+        sleep delay
         retry if retries_count < 5
         raise
       end
