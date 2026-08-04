@@ -130,7 +130,6 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     # apply licenses
     expect(page).to have_css('li[aria-label="Step 7, License terms applied, In progress"]')
     check 'I have read and agree to the terms of the Stanford University license'
-    sleep 0.25 # wait for the checkbox form submit to be completed
     find('select[aria-label="Creative Commons license (required)"]').select('CC Attribution license')
     find('select[aria-label="Delayed release (required)"]').select('6 months')
     find('button[aria-label="Done: Apply copyright and license terms"]:not([disabled])').click
@@ -185,7 +184,6 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     end
 
     # Manage embargo
-    sleep 5
     new_embargo_date = Date.today + 3
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     click_link_or_button 'Manage embargo'
@@ -196,7 +194,6 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     reload_page_until_timeout!(text: "Embargoed until #{new_embargo_date.to_formatted_s(:long)}")
 
     # check Argo facet field with 3 day embargo
-    sleep 5
     fill_in 'Search...', with: prefixed_druid
     click_button 'Search'
     click_link_or_button('Embargo Release Date')
