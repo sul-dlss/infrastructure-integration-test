@@ -170,7 +170,7 @@ RSpec.describe 'Create a new ETD with embargo, and then update the embargo date'
     reload_page_until_timeout!(text: /Embargoed until #{embargo_date_regex_str}/)
     expect(page).to have_text(dissertation_title)
     apo_element = find_table_cell_following(header_text: 'Admin policy')
-    expect(apo_element.first('a')[:href]).to end_with('druid:bx911tp9024') # this is hardcoded in etd app
+    expect(apo_element.find('a', match: :first)[:href]).to end_with(Settings.etd_apo_druid)
     status_element = find_table_cell_following(header_text: 'Status')
     expect(status_element).to have_text('v1 Registered')
 

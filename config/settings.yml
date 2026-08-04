@@ -28,6 +28,8 @@ etd:
   username: ~
   password: ~
 
+etd_apo_druid: 'druid:bx911tp9024'
+
 # for dor-services-client (e.g. to get public_xml from dor-services-app)
 # See README for instructions
 dor_services:
