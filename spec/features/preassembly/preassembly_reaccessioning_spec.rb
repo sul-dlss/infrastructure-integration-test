@@ -149,7 +149,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
       raise("unable to scp #{bare_druid} #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
 
-    sleep 20 # let's wait a bit before trying the re-accession to avoid a possible race condition
+    sleep 5 # brief pause before re-accession to avoid race condition with workflow completion
 
     ### Re-accession
 
@@ -157,7 +157,6 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
 
     expect(page).to have_text 'Start new job'
 
-    sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: random_project_name
     select 'Preassembly Run', from: 'Job type'
     select 'Image', from: 'Content type'

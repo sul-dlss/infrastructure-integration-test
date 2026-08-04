@@ -61,7 +61,6 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
     visit Settings.preassembly.url
     expect(page).to have_css('h1', text: 'Start new job')
 
-    sleep 1 # if you notice the project name not filling in completely, try this
     fill_in 'Project name', with: preassembly_project_name
     select 'Preassembly Run', from: 'Job type'
     select 'Image', from: 'Content type'
@@ -94,11 +93,6 @@ RSpec.describe 'Use Argo to create a virtual object with constituent objects', t
       visit "#{Settings.argo_url}/view/druid:#{constituent_druid}"
       reload_page_until_timeout!(text: /v\d+\s+Accessioned/)
     end
-
-    # There is some sort of a discrepancy between how the indexing of 'v1 Accessioned' is indexed
-    # and DSA ItemQueryService determines whether an item is accessioned.
-    # This irons it out.
-    sleep 5
 
     # Create virtual object
     virtual_object_title = random_phrase

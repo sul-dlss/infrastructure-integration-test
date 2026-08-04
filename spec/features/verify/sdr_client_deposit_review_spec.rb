@@ -20,12 +20,12 @@ RSpec.describe 'Verify SDR client deposit to SDR API', type: :verify do
 
     # Tests existence of technical metadata
     button = find_button('Technical metadata')
-    execute_script('arguments[0].scrollIntoView(true)', button)
+    page.scroll_to(button)
     expect(page).to have_text 'Technical metadata'
     click_link_or_button 'Technical metadata'
 
-    sleep(1) # The expansion of TechMD can be slower than the test causing a false failure.
     page.scroll_to(:bottom)
+    expect(page).to have_css('#document-techmd-section', wait: 5)
 
     within('#document-techmd-section') do
       file_listing = find_all('.file')

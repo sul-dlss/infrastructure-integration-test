@@ -41,10 +41,11 @@ RSpec.describe 'Create and accession object via Goobi', if: $sdr_env == 'stage',
 
     # wait for goobi to do some back-end processing of the uploaded image
     # and then find object again to continue processing
-    sleep 2
-    fill_in 'search', with: druid
-    click_link_or_button 'Search'
-    expect(page).to have_text 'Final QA Validation'
+    reload_page_until_timeout!(num_seconds: 30) do
+      fill_in 'search', with: druid
+      click_link_or_button 'Search'
+      page.has_text?('Final QA Validation', wait: 2)
+    end
 
     # now send the object off to be accessioned (this will export from goobi)
     click_link_or_button 'Accept editing of this task'
