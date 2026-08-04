@@ -26,7 +26,7 @@ RSpec.describe 'Use Argo to create an item object with a Folio instance HRID', t
     @updated_hrid = 'a123'
     @updated_title = 'A la francaise'
 
-    if page.has_content?('a123')
+    if page.has_text?('a123')
       @initial_hrid = 'a123'
       @initial_title = 'A la francaise'
       @updated_hrid = Settings.test_folio_instance_hrid
