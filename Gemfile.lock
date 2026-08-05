@@ -35,7 +35,7 @@ GEM
       xpath (>= 2.1)
     childprocess (5.1.0)
       logger (~> 1.5)
-    cocina-models (0.132.0)
+    cocina-models (0.133.0)
       activesupport
       cocina_display
       deprecation
@@ -70,9 +70,9 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.6.2)
-    dor-services-client (15.66.0)
+    dor-services-client (15.67.0)
       activesupport (>= 7.0.0)
-      cocina-models (~> 0.132.0)
+      cocina-models (~> 0.133.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -111,7 +111,7 @@ GEM
       activesupport (>= 3.0, < 9.0)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
-    erb (6.0.6)
+    erb (6.0.7)
     faker (3.8.0)
       i18n (>= 1.8.11, < 2)
     faraday (2.14.3)
@@ -137,14 +137,14 @@ GEM
     iso8601 (0.13.0)
     janeway-jsonpath (1.1.0)
     json (2.21.2)
-    jsonschema_rs (0.49.3)
+    jsonschema_rs (0.49.5)
       bigdecimal (>= 3.1, < 5)
       rb_sys (~> 0.9.124)
-    jsonschema_rs (0.49.3-arm64-darwin)
+    jsonschema_rs (0.49.5-arm64-darwin)
       bigdecimal (>= 3.1, < 5)
-    jsonschema_rs (0.49.3-x86_64-darwin)
+    jsonschema_rs (0.49.5-x86_64-darwin)
       bigdecimal (>= 3.1, < 5)
-    jsonschema_rs (0.49.3-x86_64-linux)
+    jsonschema_rs (0.49.5-x86_64-linux)
       bigdecimal (>= 3.1, < 5)
     language_server-protocol (3.17.0.6)
     launchy (3.1.1)
@@ -218,7 +218,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
-    rubocop (1.88.2)
+    rubocop (1.89.0)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -254,9 +254,9 @@ GEM
       nokogiri (>= 1.10.8)
       rubyzip (>= 3.2.2)
     rubyzip (3.4.1)
-    sdr-client (2.48.0)
+    sdr-client (2.49.0)
       activesupport
-      cocina-models (~> 0.132.0)
+      cocina-models (~> 0.133.0)
       config
       dry-monads
       faraday (>= 0.16)
