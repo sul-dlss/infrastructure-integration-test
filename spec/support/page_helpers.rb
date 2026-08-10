@@ -49,11 +49,19 @@ module PageHelpers
       loop do
         if block_given?
           yield_val = yield(page)
-          break if yield_val == true
+          if yield_val == true
+            # Do a final synchronous refresh.
+            # Without this, the last (asynchronous) location.reload() might interfere with subsequent visits.
+            page.refresh
+            break
+          end
 
           workflow = yield_val if yield_val.is_a?(String)
-        else
-          break if page.has_text?(expected_text, wait: 1)
+        elsif page.has_text?(expected_text, wait: 1)
+          # Do a final synchronous refresh.
+          # Without this, the last (asynchronous) location.reload() might interfere with subsequent visits.
+          page.refresh
+          break
         end
 
         if page.has_css?('.alert-danger', wait: 0) && page.has_text?(workflow_retry_text)
