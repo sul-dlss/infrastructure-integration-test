@@ -40,25 +40,30 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       reload_page_until_timeout! do
         page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
       end
-      # verify the gisDeliveryWF workflow completes
+      # verify the gisDerivativeWF workflow completes
       reload_page_until_timeout! do
-        page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
+        page.has_selector?('#workflow-details-status-gisDerivativeWF', text: 'completed', wait: 1)
       end
       # Wait for accessioningWF to finish
       reload_page_until_timeout!(text: 'v1 Accessioned')
 
       # look for expected files produced by GIS workflows
-      files = all('tr.file')
-      expect(files.size).to eq 9
-      expect(files[0].text).to match(%r{AirMonitoringStations.shp application/vnd.shp 8.14 KB})
-      expect(files[1].text).to match(%r{AirMonitoringStations.shx application/vnd.shx 2.39 KB})
-      expect(files[2].text).to match(%r{AirMonitoringStations.dbf application/vnd.dbf 40.8 KB})
-      expect(files[3].text).to match(%r{AirMonitoringStations.prj text/plain 468 Bytes})
-      expect(files[4].text).to match(%r{preview.jpg image/jpeg 2\d.\d KB})
-      expect(files[5].text).to match(%r{AirMonitoringStations.shp.xml application/xml 6\d.\d KB})
-      expect(files[6].text).to match(%r{AirMonitoringStations-iso19139.xml application/xml 2\d.\d KB})
-      expect(files[7].text).to match(%r{AirMonitoringStations-iso19110.xml application/xml 1\d.\d KB})
-      expect(files[8].text).to match(%r{AirMonitoringStations-fgdc.xml application/xml 5.\d+ KB})
+      files = all('tr.file').map(&:text)
+      expect(files.size).to eq 11
+
+      expect(files).to include(%r{AirMonitoringStations.dbf application/x-dbf 40.8 KB})
+      expect(files).to include(%r{AirMonitoringStations.prj text/plain 468 Bytes})
+      expect(files).to include(%r{AirMonitoringStations.shp application/vnd.shp 8.14 KB})
+      expect(files).to include(%r{AirMonitoringStations.shp.xml application/xml 6\d.\d KB})
+      expect(files).to include(%r{AirMonitoringStations.shx application/octet-stream 2.39 KB})
+      expect(files).to include(%r{AirMonitoringStations-iso19139.xml application/xml 2\d.\d KB Derivative})
+      expect(files).to include(%r{AirMonitoringStations-iso19110.xml application/xml 1\d.\d KB Derivative})
+      expect(files).to include(%r{AirMonitoringStations-fgdc.xml application/xml 5.\d+ KB Derivative})
+
+      # The following derivatives are produced by gisDerivativeWF
+      expect(files).to include(%r{AirMonitoringStations.fgb application/vnd.fgb 68.\d+ KB Derivative})
+      expect(files).to include(%r{AirMonitoringStations.pmtiles application/vnd.pmtiles 42 KB Derivative})
+      expect(files).to include(%r{AirMonitoringStations.jp2 image/jp2 17.\d KB Thumbnail})
 
       # verify that the content type is "geo"
       expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
@@ -77,7 +82,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       expect(page).to have_text("Updated release for #{druid}")
 
       # This section confirms the cocina JSON has been published to PURL
-      cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid}.json").body)
+      cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid(druid)}.json").body)
       description = cocina_json['description']
       expect(cocina_json['label']).to eq 'Air Monitoring Stations: California, 2001-2003'
       resource_types = description['form'].select { |form| form['type'] == 'resource type' }
@@ -97,7 +102,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       expect_text_on_purl_page(druid:, text: collection_name)
       expect_link_on_purl_page(druid:,
                                text: 'View in EarthWorks',
-                               href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
+                               href: "#{Settings.earthworks_url}/stanford-#{bare_druid(druid)}")
       # click Earthworks link and verify it was released
       click_link_or_button 'View in EarthWorks'
       reload_page_until_timeout!(text: 'Air Monitoring Stations: California, 2001-2003')
