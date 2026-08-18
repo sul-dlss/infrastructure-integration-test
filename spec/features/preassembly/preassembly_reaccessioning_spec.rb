@@ -7,7 +7,6 @@ require 'druid-tools'
 # To this end, files have been placed on Settings.preassembly.host at Settings.preassembly.bundle_directory
 RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_accession, type: :preassembly do
   let(:start_url) { "#{Settings.argo_url}/view/#{druid}" }
-  let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:druid) { test_data[:druid] }
   let(:title) { test_data[:title] }
   let(:test_data) { load_test_data(spec_name: 'preassembly_accessioning') }
@@ -22,13 +21,13 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
   let(:preassembly_manifest_csv) do
     <<~CSV
       druid,object
-      #{bare_druid},content
+      #{bare_druid(druid)},content
     CSV
   end
   let(:preassembly_reaccession_manifest_csv) do
     <<~CSV
       druid,object
-      #{bare_druid},#{bare_druid}
+      #{bare_druid(druid)},#{bare_druid(druid)}
     CSV
   end
 
@@ -45,10 +44,10 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
 
   after do
     clear_downloads
-    FileUtils.rm_rf(bare_druid)
-    unless bare_druid.empty?
+    FileUtils.rm_rf(bare_druid(druid))
+    unless bare_druid(druid).empty?
       `ssh #{Settings.preassembly.username}@#{Settings.preassembly.host} rm -rf \
-      #{preassembly_bundle_dir}/#{bare_druid}`
+      #{preassembly_bundle_dir}/#{bare_druid(druid)}`
     end
   end
 
@@ -113,7 +112,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
     # delete row for the deleted image file from the CSV and for the changed image file's jp2
     items.reject! { |row| row[1] == 'Image 3' || row[4] == 'argo-logo.jp2' }
     # add a row for a new image file
-    items << [bare_druid, 'Image 4', 'image', '3', 'vision_for_stanford.jpg', 'vision_for_stanford.jpg', 'no', 'no', 'yes',
+    items << [bare_druid(druid), 'Image 4', 'image', '3', 'vision_for_stanford.jpg', 'vision_for_stanford.jpg', 'no', 'no', 'yes',
               'world', 'world', '', 'image/jpeg', '']
     CSV.open(local_file_manifest_location, 'w') do |csv|
       items.each do |item|
@@ -137,16 +136,16 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
     end
 
     # Create local dir for scp:
-    Dir.mkdir(bare_druid)
+    Dir.mkdir(bare_druid(druid))
     # Replace one of the files with a different file
-    FileUtils.cp('spec/fixtures/argo-home.png', "#{bare_druid}/argo-logo.png")
+    FileUtils.cp('spec/fixtures/argo-home.png', "#{bare_druid(druid)}/argo-logo.png")
     # Add a new file
-    FileUtils.cp('spec/fixtures/vision_for_stanford.jpg', bare_druid)
+    FileUtils.cp('spec/fixtures/vision_for_stanford.jpg', bare_druid(druid))
 
     # scp druid directory to preassembly
-    `scp -r #{bare_druid} #{remote_manifest_location}`
-    unless $CHILD_STATUS.success? # rubocop:disable Style/IfUnlessModifier
-      raise("unable to scp #{bare_druid} #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
+    `scp -r #{bare_druid(druid)} #{remote_manifest_location}`
+    unless $CHILD_STATUS.success?
+      raise("unable to scp #{bare_druid(druid)} #{remote_manifest_location} - got #{$CHILD_STATUS.inspect}")
     end
 
     sleep 20 # let's wait a bit before trying the re-accession to avoid a possible race condition
