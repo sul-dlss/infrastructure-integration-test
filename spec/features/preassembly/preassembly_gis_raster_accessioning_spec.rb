@@ -40,23 +40,32 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       reload_page_until_timeout! do
         page.has_selector?('#workflow-details-status-gisAssemblyWF', text: 'completed', wait: 1)
       end
-      # verify the gisDeliveryWF workflow completes
+      # verify the gisDerivativeWF workflow completes
       reload_page_until_timeout! do
-        page.has_selector?('#workflow-details-status-gisDeliveryWF', text: 'completed', wait: 1)
+        page.has_selector?('#workflow-details-status-gisDerivativeWF', text: 'completed', wait: 1)
       end
       # Wait for accessioningWF to finish
       reload_page_until_timeout!(text: 'v1 Accessioned')
 
       # look for expected files produced by GIS workflows
-      files = all('tr.file')
-      expect(files.size).to eq 7
-      expect(files[0].text).to match(%r{SC_Color_WGS.tif image/tiff 9.\d\d MB})
-      expect(files[1].text).to match(%r{SC_Color_WGS.tfw text/plain 8\d Bytes})
-      expect(files[2].text).to match(%r{SC_Color_WGS.tif.ovr application/octet-stream 4.\d\d MB})
-      expect(files[3].text).to match(%r{preview.jpg image/jpeg 6.\d\d KB})
-      expect(files[4].text).to match(%r{SC_Color_WGS.tif.xml application/xml 2\d.\d KB})
-      expect(files[5].text).to match(%r{SC_Color_WGS-iso19139.xml application/xml 2\d.\d KB})
-      expect(files[6].text).to match(%r{SC_Color_WGS-fgdc.xml application/xml 5.\d\d KB})
+      files = all('tr.file').map(&:text)
+      expect(files.size).to eq 8
+
+      # Note application=geotiff in the MIME type; this is added by gisAssemblyWF
+      # because preassembly will see it as a regular tiff
+      expect(files).to include(%r{SC_Color_WGS.tfw text/plain 8\d Bytes})
+      expect(files).to include(%r{SC_Color_WGS.tif image/tiff; application=geotiff 9.\d\d MB})
+      expect(files).to include(%r{SC_Color_WGS.tif.ovr application/octet-stream 4.\d\d MB})
+      expect(files).to include(%r{SC_Color_WGS.tif.xml application/xml 2\d.\d KB})
+      expect(files).to include(%r{SC_Color_WGS-iso19139.xml application/xml 2\d.\d KB})
+      expect(files).to include(%r{SC_Color_WGS-fgdc.xml application/xml 5.\d+ KB})
+
+      # The following derivatives are produced by gisDerivativeWF
+      # note the profile=cloud-optimized in the COG MIME type
+      # rubocop:disable Metrics/LineLength
+      expect(files).to include(%r{SC_Color_WGS_cog.tif image/tiff; application=geotiff; profile=cloud-optimized 4\d.\d MB Derivative})
+      expect(files).to include(%r{SC_Color_WGS.jp2 image/jp2 2.\d\d MB Thumbnail})
+      # rubocop:enable Metrics/LineLength
 
       # verify that the content type is "geo"
       expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
@@ -79,10 +88,10 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       expect_text_on_purl_page(druid:, text: collection_name)
       expect_link_on_purl_page(druid:,
                                text: 'View in EarthWorks',
-                               href: "#{Settings.earthworks_url}/stanford-#{bare_druid}")
+                               href: "#{Settings.earthworks_url}/stanford-#{bare_druid(druid)}")
 
       # This section confirms the cocina JSON has been published to PURL
-      cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid}.json").body)
+      cocina_json = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid(druid)}.json").body)
       description = cocina_json['description']
       expect(cocina_json['label']).to eq 'Proposed Southern Crossings of San Francisco Bay (Raster Image)'
       resource_types = description['form'].select { |form| form['type'] == 'resource type' }
