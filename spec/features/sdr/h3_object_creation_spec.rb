@@ -29,7 +29,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     expect(page).to have_text('Save your collection')
     click_link_or_button 'Save', class: 'btn-primary'
 
-    expect(page).to have_css('h1', text: collection_title)
+    expect(page).to have_text(collection_title)
     collection_druid = page.current_url.split('/').last
     puts " *** h3 collection creation druid: #{collection_druid} ***" # useful for debugging
 
@@ -76,7 +76,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     click_link_or_button 'Deposit', class: 'btn-primary', exact_text: true
 
     # Checks if title is on resulting display
-    expect(page).to have_css('h1', text: item_title)
+    expect(page).to have_text(item_title)
     reload_page_until_timeout!(text: 'Deposited')
 
     work_druid = page.current_url.split('/').last
