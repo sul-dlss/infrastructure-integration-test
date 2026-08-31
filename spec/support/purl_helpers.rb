@@ -35,6 +35,19 @@ module PurlHelpers
   def bare_druid(druid)
     druid.delete_prefix('druid:')
   end
+
+  # The image derivative can take a minute or so to become available after the IIIF manifest is published,
+  # so retry a few times before giving up.
+  def fetch_image_response(image_url, attempts: 6, wait_seconds: 10)
+    attempts.times do |attempt|
+      response = Faraday.get(image_url)
+      return response if response.status == 200
+
+      puts "Image not yet accessible at #{image_url} (attempt #{attempt + 1}/#{attempts}), waiting #{wait_seconds}s..."
+      sleep wait_seconds
+    end
+    Faraday.get(image_url)
+  end
 end
 
 RSpec.configure { |config| config.include PurlHelpers }
