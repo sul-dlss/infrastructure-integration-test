@@ -43,7 +43,7 @@ RSpec.describe 'Verify object accessioned via Goobi', if: $sdr_env == 'stage', t
     iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
     image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
     puts "Checking that the image URL #{image_url} is accessible..."
-    image_response = Faraday.get(image_url)
+    image_response = fetch_image_response(image_url)
     expect(image_response.status).to eq(200)
     expect(image_response.headers['content-type']).to include('image/jpeg')
   end

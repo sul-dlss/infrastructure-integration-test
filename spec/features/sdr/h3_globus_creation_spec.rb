@@ -31,13 +31,13 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     click_link_or_button 'Save', class: 'btn-primary'
 
     expect(page).to have_css('h1', text: collection_title)
+    expect(page).to have_text('Deposit to this collection') # wait until the collection is actually deposited
     collection_druid = page.current_url.split('/').last
     puts " *** h3 collection creation druid: #{collection_druid} ***" # useful for debugging
 
     # Create a Work in the collection
-    visit "#{Settings.h3_url}/dashboard"
-
-    click_link('Deposit to this collection', href: "/works/new?collection_druid=#{collection_druid.sub(':', '%3A')}")
+    visit "#{Settings.h3_url}/collections/#{collection_druid}"
+    click_link('Deposit to this collection')
 
     # Set work title before saving draft
     find_by_id('title-tab').click
