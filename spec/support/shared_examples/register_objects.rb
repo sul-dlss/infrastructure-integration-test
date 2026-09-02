@@ -34,8 +34,8 @@ RSpec.shared_examples 'an SDR object registion' do
   end
 
   it 'uses Argo to register an object' do
-    select apo_for_registration, from: 'Admin Policy'
-    # The Collection options are repopulated via Turbo in response to the Admin Policy
+    select apo_for_registration, from: 'APO'
+    # The Collection options are repopulated via Turbo in response to the APO
     # selection, so wait for the target option to actually be there before selecting it.
     expect(page).to have_select('Collection', with_options: [collection_for_registration])
     select collection_for_registration, from: 'Collection'
