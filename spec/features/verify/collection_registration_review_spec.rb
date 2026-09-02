@@ -20,7 +20,7 @@ RSpec.describe 'Verify collection created successfully', type: :verify do
     object_type_element = find_table_cell_following(header_text: 'Object type')
     expect(object_type_element.text).to eq('collection')
 
-    apo_element = find_table_cell_following(header_text: 'Admin policy')
+    apo_element = find_table_cell_following(header_text: 'APO')
     expect(apo_element.first('a')[:href]).to end_with(apo_druid)
   end
 end
