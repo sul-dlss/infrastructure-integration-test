@@ -70,8 +70,7 @@ RSpec.describe 'Create a document object via Pre-assembly and ask for it be OCRe
       page.has_text?('filetype', count: 2)
       page.has_text?('file_modification', count: 2)
 
-      visit_argo_and_confirm_event_display!(druid:, version: version + 1)
-      confirm_archive_zip_replication_events!(druid:, from_version: version, to_version: version + 1)
+      confirm_moab_fully_replicated_and_retrievable!(druid:, latest_version: version)
 
       # This section confirms the object has been published to PURL
       expect_text_on_purl_page(druid:, text: collection_name)

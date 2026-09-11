@@ -8,13 +8,14 @@ module EventHelpers
 
   # @param [String] druid the druid to check for replication events, will be normalized to the prefixed version
   # @param [String,int] version the version to check for successful replication (naively assumes <= 9)
-  def visit_argo_and_confirm_event_display!(druid:, version:)
+  def visit_argo_and_confirm_replication_event_display!(druid:, version:)
     prefixed_druid = druid.start_with?('druid:') ? druid : "druid:#{druid}"
     visit "#{Settings.argo_url}/view/#{prefixed_druid}"
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
     latest_s3_key = "#{druid_tree_str}.v#{version.to_s.rjust(4, '0')}.zip"
     reload_page_until_timeout! do
+      puts "searching for replication of #{latest_s3_key} in Events section text..."
       click_link_or_button 'Events' # expand the Events section
 
       # Scroll to the bottom so the lazily-loaded events section enters the viewport
@@ -33,9 +34,9 @@ module EventHelpers
   # The event log should eventually contain an event for replication of each version that
   # the test created, to every endpoint we archive to. Confirm the expected events exist.
   # @param [String] druid the druid to check for replication events, will be normalized to the prefixed version
-  # @param [String,int] from_version the lowest version to check for successful replication, inclusive
   # @param [String,int] to_version the highest version to check for successful replication, inclusive (naively assumes <= 9)
-  def confirm_archive_zip_replication_events!(druid:, from_version:, to_version:) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # @param [String,int] from_version the lowest version to check for successful replication, inclusive
+  def confirm_archive_zip_replication_events!(druid:, to_version:, from_version: 1) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     prefixed_druid = druid.start_with?('druid:') ? druid : "druid:#{druid}"
     druid_tree_str = DruidTools::Druid.new(prefixed_druid).tree.join('/')
 
@@ -49,7 +50,7 @@ module EventHelpers
       (from_version..to_version).all? do |cur_version|
         cur_s3_key = "#{druid_tree_str}.v#{cur_version.to_s.rjust(4, '0')}.zip"
 
-        puts "searching events for #{cur_s3_key} replication to all of #{TARGET_ENDPOINT_NAMES}"
+        puts "searching events API result for #{cur_s3_key} replication to all of #{TARGET_ENDPOINT_NAMES}"
         events_were_found = TARGET_ENDPOINT_NAMES.all? do |endpoint_name|
           events.any? do |event|
             event[:event_type] == 'druid_version_replicated' &&

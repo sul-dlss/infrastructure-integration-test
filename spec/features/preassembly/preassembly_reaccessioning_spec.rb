@@ -69,9 +69,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
 
         ```
         rm tmp/*_data.yml
-        bin/rspec spec/features/registration
-        bin/rspec spec/features/accessioning/preassembly_accessioning_spec.rb
-        bin/rspec spec/features/preassembly/preassembly_reaccessioning_spec.rb
+        bin/rspec spec/features/registration spec/features/accessioning/preassembly_accessioning_spec.rb spec/features/preassembly/preassembly_reaccessioning_spec.rb
         ```
 
          or just redo the full suite: `bin/rspec`.
@@ -223,5 +221,7 @@ RSpec.describe 'Create and re-accession image object via Pre-assembly', :sample_
     page.has_text?('file_modification', count: 3)
     page.has_text?('bytes 9071') # vision_for_stanford.jpg (new file)
     page.has_text?('bytes 29634') # file from original accession, neither removed nor changed.
+
+    confirm_moab_fully_replicated_and_retrievable!(druid:, latest_version:)
   end
 end
