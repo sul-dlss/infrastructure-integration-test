@@ -68,8 +68,7 @@ RSpec.describe 'Create an image object via Pre-assembly and ask for it be OCRed'
       page.has_text?('filetype', count: 6)
       page.has_text?('file_modification', count: 6)
 
-      visit_argo_and_confirm_event_display!(druid:, version: version)
-      confirm_archive_zip_replication_events!(druid:, from_version: version - 1, to_version: version)
+      confirm_moab_fully_replicated_and_retrievable!(druid:, latest_version: version)
 
       # This section confirms the object has been published to PURL and has a
       # valid IIIF manifest

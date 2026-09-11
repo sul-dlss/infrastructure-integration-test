@@ -83,8 +83,7 @@ RSpec.describe 'Create a media object via Pre-assembly and ask for it be speechT
       page.has_text?('filetype', count: 11)
       page.has_text?('file_modification', count: 11)
 
-      visit_argo_and_confirm_event_display!(druid:, version: version)
-      confirm_archive_zip_replication_events!(druid:, from_version: version - 1, to_version: version)
+      confirm_moab_fully_replicated_and_retrievable!(druid:, latest_version: version)
 
       # This section confirms the object has been published to PURL and has a
       # valid IIIF manifest
