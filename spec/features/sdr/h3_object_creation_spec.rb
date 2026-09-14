@@ -80,13 +80,12 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     reload_page_until_timeout!(text: 'Deposited')
 
     work_druid = page.current_url.split('/').last
+    argo_work_url = "#{Settings.argo_url}/view/#{work_druid}"
     puts " *** h3 work creation druid: #{work_druid} ***" # useful for debugging
+    puts " *** argo url: #{argo_work_url}"
 
     # Opens Argo detail page
-    visit Settings.argo_url
-    expect(page).to have_text('Welcome to Argo!')
-
-    visit "#{Settings.argo_url}/view/#{work_druid}"
+    visit argo_work_url
     reload_page_until_timeout!(text: 'v1 Accessioned')
     expect(page).to have_text('Initial version (Public version 1)') # we have an initial public version 1 in Argo
     expect_text_on_purl_page(druid: work_druid, text: 'Version 1') # check the version display on PURL
@@ -109,7 +108,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     reload_page_until_timeout!(text: 'Deposited')
 
     # Opens Argo detail page
-    visit "#{Settings.argo_url}/view/#{work_druid}"
+    visit argo_work_url
     # wait for accessioningWF to finish; retry if error on shelving step, likely caused by a race condition
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v2 Accessioned',
                                                   workflow: 'accessionWF',
@@ -140,7 +139,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
     reload_page_until_timeout!(text: 'Deposited')
 
     # Opens Argo detail page
-    visit "#{Settings.argo_url}/view/#{work_druid}"
+    visit argo_work_url
     # wait for accessioningWF to finish; retry if error on shelving step, likely caused by a race condition
     reload_page_until_timeout_with_wf_step_retry!(expected_text: 'v3 Accessioned',
                                                   workflow: nil,
