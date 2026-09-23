@@ -7,14 +7,16 @@ RSpec.describe 'Register objects in Argo', :sample_accession, type: :registratio
     let(:spec_name) { 'access_indexing' }
   end
 
-  it_behaves_like 'an SDR object registion' do
-    let(:spec_name) { 'goobi_accessioning' }
-    let(:apo) { 'Goobi Testing APO' }
-    let(:collection) { 'integration-testing' }
-    let(:initial_workflow) { 'goobiWF' }
-    let(:project) { 'Integration Testing' }
-    let(:tags) { 'DPG : Workflow : Accession_Content_Expedited' }
-    let(:type) { 'image' }
+  context 'when registering a Goobi object', if: $sdr_env == 'stage' do
+    it_behaves_like 'an SDR object registion' do
+      let(:spec_name) { 'goobi_accessioning' }
+      let(:apo) { 'Goobi Testing APO' }
+      let(:collection) { 'integration-testing' }
+      let(:initial_workflow) { 'goobiWF' }
+      let(:project) { 'Integration Testing' }
+      let(:tags) { 'DPG : Workflow : Accession_Content_Expedited' }
+      let(:type) { 'image' }
+    end
   end
 
   it_behaves_like 'an SDR object registion' do
