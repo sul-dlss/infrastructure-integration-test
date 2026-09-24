@@ -159,8 +159,18 @@ confirmed at the top of the run.
    output will be emailed to you upon completion."**
 6. Read the job number from a table cell matching `Job #<N>`.
 7. Navigate to `{{preassembly_url}}/job_runs/<job number>`.
-8. **Wait (up to `{{timeouts.workflow}}` seconds) for: a "Download" link
-   to appear.**
+8. **Wait (up to `{{timeouts.workflow}}` seconds) for: the "State" table
+   cell to read "Job completed"** (equivalently, the per-druid Progress
+   Log row's status column reading "Accessioning success" or an error
+   string). **Do not wait for a "Download" link to appear** — confirmed
+   via a live run that the "Job output log / Download" row is present on
+   this page from the moment the job is created, whether the job is
+   "Running" or "Job completed"; it is not a completion signal. This page
+   does not update in place — each poll iteration needs a fresh
+   `browser_navigate` to the same URL, not just re-checking the
+   already-loaded DOM. A live re-accession run (file swap + new file)
+   took noticeably longer to complete than a first-time single-image
+   accession — budget accordingly.
 9. Click **Download**.
 10. **Verify: the downloaded file, parsed as YAML, has `status:
     success`.** Read its `pid` field — this is the prefixed druid the
@@ -205,16 +215,39 @@ substitute a weaker check.
 
 ### 7a — Replication event visible in Argo
 
+Replication is asynchronous and, per a live run, can take considerably
+longer than either `{{timeouts.workflow}}` (default 300s) or
+`{{timeouts.events.poll_for}}` (default 240s) — one endpoint took ~6.5
+minutes after job completion for a first-time accession, and a
+re-accession's replication event had still not appeared after 12 minutes
+of polling in one live run. Budget at least 15–20 minutes of patience
+here before concluding something is actually stuck, and treat hitting
+that ceiling as "inconclusive, needs a longer/resumed check" rather than
+a hard failure — the underlying accessioning (Steps 1–6) can be fully
+correct while this step is still pending.
+
 1. On the same Argo page, click **Events** to expand that section, then
    scroll to the bottom (triggers lazy loading).
 2. **Wait (up to ~5 seconds) for: an events panel to finish loading**,
-   then click any "Expand all" controls within it.
-3. Compute the expected S3 key: the druid's tree path (e.g.
-   `druid:ab123cd4567` → `ab/123/cd/4567`) plus
-   `.v<latest_version padded to 4 digits>.zip` (e.g.
-   `ab/123/cd/4567.v0002.zip`).
+   then click the "Expand all" control(s) for any `druid_version_replicated`
+   row(s) within it.
+3. Compute the expected S3 key: the druid's tree path as a **directory**
+   (e.g. `druid:ab123cd4567` → `ab/123/cd/4567/`) plus the **bare druid**
+   plus `.v<latest_version padded to 4 digits>.zip` (e.g.
+   `ab/123/cd/4567/ab123cd4567.v0002.zip`) — confirmed via a live run;
+   the tree path is not simply suffixed with the version, the bare druid
+   repeats as the filename itself.
 4. **Verify: that exact key string appears somewhere in the expanded
-   events section.**
+   events section, once per expected endpoint** (see 7b's endpoint list).
+   If it hasn't appeared yet, **poll**: reload the page from scratch
+   (`browser_navigate` to the same URL — this page does not update in
+   place, and there is no "load more"/pagination on the Events panel, so
+   a stale in-memory DOM will never show a newer event no matter how long
+   you wait without reloading), re-expand Events and the
+   `druid_version_replicated` row(s), and recheck. Use the poll
+   convention in `SKILL.md` (backoff, capped ~60s between checks), up to
+   the extended budget above rather than either of the two shorter
+   configured timeouts.
 
 ### 7b — Full replication event history via the events API
 
@@ -237,11 +270,14 @@ already has it.
      one entry, whose `s3_key` matches that version's zip key (as
      computed in 7a), and whose `endpoint_name` matches.**
 2. This may need polling (events are recorded asynchronously after
-   replication) — poll up to `{{timeouts.events.poll_for}}` seconds
-   (default 240), checking every `{{timeouts.events.poll_interval}}`
+   replication) — nominally poll up to `{{timeouts.events.poll_for}}`
+   seconds (default 240), checking every `{{timeouts.events.poll_interval}}`
    seconds (default 2), per the same poll convention as elsewhere (though
    here there's no error-state page to bail out on early — rely on the
-   timeout).
+   timeout). **A live run showed real replication latency exceeding this
+   default** (see 7a's note) — if `poll_for` expires with no confirmed
+   sighting via 7a either, treat it the same way: inconclusive and
+   worth extending the budget/resuming later, not an automatic failure.
 3. If any expected (version, endpoint) combination never appears, stop
    and report exactly which one(s) are missing.
 
@@ -283,6 +319,17 @@ Regardless of outcome:
    ```
    ssh {{preassembly_username}}@{{preassembly_host}} rm -rf {{preassembly_bundle_directory}}/<bare druid>
    ```
+4. **Note (does not need action, just awareness):** this step does *not*
+   reset `{{preassembly_bundle_directory}}/manifest.csv`, which this
+   scenario overwrote with `<bare druid>,<bare druid>` in Step 4 — a
+   different mapping than `preassembly-accessioning.md` uses
+   (`<bare druid>,content`). `manifest.csv` is shared, mutable state
+   across every row/scenario that stages through this same bundle
+   directory (confirmed via a live run); a future `preassembly-accessioning.md`
+   run reusing this directory needs its own manifest.csv content staged
+   fresh in its own Step 2 anyway, so this is self-correcting, but don't
+   be surprised to find `manifest.csv` in "whatever the last run left it
+   in" state if inspecting the directory between runs.
 
 ## Done
 
@@ -291,3 +338,21 @@ through all five scenario files (`apo-registration.md`,
 `collection-registration.md`, `register-objects.md`,
 `preassembly-accessioning.md`, `preassembly-reaccessioning.md`) is the
 agent-driven equivalent of `bin/rspec --tag sample_accession`.
+
+## Verified in a live dry run (2026-09-24)
+
+Run live against stage (see
+`.agents/skills/run-sample-accession-tests/runs/20260924T193206Z.md`),
+against the object produced by that same run's `preassembly-accessioning.md`
+pass. **Steps 1–6 passed in full**, including the safety guard, the
+original-file-set checkpoint, the CSV edit/re-upload, the three-SCP file
+staging, job submission and completion polling, and the post-swap
+file-list/byte-size verification (the corrected checkpoints above reflect
+what was learned). **Step 7a did not reach a pass/fail conclusion in that
+run** — the v2 replication event had not appeared after ~12 minutes of
+polling, exceeding the timeouts as configured at the time (now revised
+above); 7b and 7c were not attempted as a result, and the witness pass
+was not performed. This scenario still needs a follow-up live run (fresh
+object) that carries Step 7 through to a real pass/fail before declaring
+the file fully validated end-to-end — see the run log for what a resumed
+or fresh attempt should focus on.
