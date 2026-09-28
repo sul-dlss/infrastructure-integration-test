@@ -14,7 +14,7 @@
 #     initial_workflow: [default: nil],
 #     project: [default: nil],
 #     tags: [default: nil]
-RSpec.shared_examples 'an SDR object registion' do
+RSpec.shared_examples 'an SDR object registration' do
   let(:start_url) { "#{Settings.argo_url}/registration" }
   let(:collection_for_registration) { defined?(collection) ? collection : test_collection[:title] }
   let(:apo_for_registration) { defined?(apo) ? apo : test_apo[:title] }
