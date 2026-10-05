@@ -25,7 +25,9 @@ module EventHelpers
       # element = find_element('turbo-frame#events[complete]')
       # execute_script('arguments[0].scrollIntoView(true)', element)
 
-      expect(page).to have_css('turbo-frame#events[complete]', wait: 5) # wait for events to load
+      # wait for events to load; if they haven't, reload the page and try again
+      next false unless page.has_css?('turbo-frame#events[complete]', wait: 5)
+
       all('turbo-frame#events a', text: 'Expand all').each(&:click) # expand all event details
       page.has_text?(latest_s3_key)
     end

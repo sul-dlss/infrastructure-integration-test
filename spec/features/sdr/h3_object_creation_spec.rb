@@ -23,7 +23,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     # Select license
     find_by_id('license-tab').click
-    select 'CC0-1.0', from: 'collection_license'
+    select 'CC0 1.0 Universal', from: 'collection_license'
 
     find_by_id('deposit-tab').click
     expect(page).to have_text('Save your collection')
