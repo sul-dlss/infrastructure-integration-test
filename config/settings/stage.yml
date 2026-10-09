@@ -1,3 +1,4 @@
+argo_b3_url: 'https://argo-b3-stage.stanford.edu'
 argo_url: 'https://argo-stage.stanford.edu'
 dor_services:
   url: 'https://dor-services-stage-lb.stanford.edu'

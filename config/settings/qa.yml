@@ -1,3 +1,4 @@
+argo_b3_url: 'https://argo-b3-qa.stanford.edu'
 argo_url: 'https://argo-qa.stanford.edu'
 dor_services:
   url: 'https://dor-services-qa-lb.stanford.edu'
