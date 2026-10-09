@@ -4,6 +4,12 @@
 
 A set of Capybara tests that drive a browser to do inter-system integration testing of SDR in the stage or QA environment.
 
+## Agent-driven testing (experimental)
+
+In addition to the RSpec/Capybara suite below, this repo also has an experimental agent-driven alternative for the `sample_accession` path: an LLM agent (e.g. via Playwright MCP) drives a real browser through the same registration/accessioning/re-accessioning flow, using human-readable, git-versioned instructions instead of Ruby step definitions, supervised by a human copilot for auth and SSH/SCP approval.
+
+See [`.agents/skills/run-sample-accession-tests/SKILL.md`](.agents/skills/run-sample-accession-tests/SKILL.md) for the conventions, and [`.agents/skills/run-sample-accession-tests/scenarios/`](.agents/skills/run-sample-accession-tests/scenarios/) for the individual scenario files. See also [`AGENTS.md`](AGENTS.md) at the repo root.
+
 ## Installation
 
 The tests use Ruby 3.4.
