@@ -53,7 +53,17 @@ RSpec.describe 'Use Argo-B3 to register and deposit a single item', type: :acces
     # The show page refreshes itself as the deposit progresses.
     expect(page).to have_css('h2', text: 'Deposited', wait: Settings.timeouts.workflow)
 
-    ## Step 5: Find the item by searching
+    ## Step 5: Verify technical metadata
+    find_by_id('files-tab').click
+    # Deposited file rows toggle a row that lazily loads the technical metadata.
+    find('tr.toggle-row', text: 'example.tiff').click
+    # Scoped to the techmd frame since the file row also shows the MIME type.
+    within('tr.toggle-row-data.show turbo-frame') do
+      expect(page).to have_css('dt', text: 'Mimetype')
+      expect(page).to have_css('dd', text: 'image/tiff')
+    end
+
+    ## Step 6: Find the item by searching
     fill_in 'Search for', with: title
     click_button 'Search'
     # Wait for the item to be indexed.
@@ -61,7 +71,7 @@ RSpec.describe 'Use Argo-B3 to register and deposit a single item', type: :acces
     find('caption a', text: title).click
     expect(page).to have_css('h1', text: title)
 
-    ## Step 6: Verify published to PURL with an accessible IIIF image
+    ## Step 7: Verify published to PURL with an accessible IIIF image
     purl_window = window_opened_by { click_link 'View PURL page' }
     within_window(purl_window) do
       # Wait for the item to be published.
