@@ -52,20 +52,36 @@ roughly the order it makes sense to tackle it:
 
 ### 1. Finish validating the `sample_accession` scenarios themselves
 
-- [ ] **Dry-run `scenarios/preassembly-accessioning.md` live** against
-      stage. Drafted but never executed — expect the same kind of
-      adaptation seen when `register-objects.md` was first run live
-      (real UI/form structure differing from what the original RSpec
-      spec assumed). Update the scenario file and `SKILL.md` with
-      whatever's learned, the same way prior dry-runs were folded back
-      in.
-- [ ] **Dry-run `scenarios/preassembly-reaccessioning.md` live**. Also
-      drafted but never executed, and it's the highest-complexity,
-      highest-stakes scenario in the set (CSV download/edit/re-upload,
-      two SSH hosts, a safety guard against unsafe reruns, a
-      recommended "witness pass"). Do this only after
-      `preassembly-accessioning.md` has been validated, since it
-      depends on that scenario's output object.
+- [x] **Dry-run `scenarios/preassembly-accessioning.md` live** against
+      stage. Done 2026-09-24 (see
+      `.agents/skills/run-sample-accession-tests/runs/20260924T193206Z.md`)
+      — passed end-to-end (job #5206, `status: success`). Two mismatches
+      found and folded back into the scenario file and `SKILL.md`: the
+      "Download link appears" completion signal was wrong (that link is
+      present from job creation, not just completion — the real signal
+      is the "State" cell reading "Job completed"), and the Cleanup
+      step's `rm -rf .../<bare druid>` target doesn't exist in this
+      environment's actual shared/pre-staged bundle-directory setup.
+- [ ] **Dry-run `scenarios/preassembly-reaccessioning.md` live** —
+      partially done 2026-09-24 (same run log as above). **Steps 1–6
+      passed in full** (safety guard, original file-set checkpoint, CSV
+      edit/re-upload, three-SCP staging, job submission/completion, and
+      the post-swap file-list/byte-size verification) against the object
+      `preassembly-accessioning.md` produced in that same run. **Step 7
+      (replication + fixity) did not reach a conclusion** — the
+      replication event hadn't appeared in Argo after ~12 minutes of
+      polling, exceeding both configured timeouts (`timeouts.workflow`
+      300s, `timeouts.events.poll_for` 240s); 7b/7c and the witness pass
+      were not attempted as a result. Three more mismatches found and
+      folded back (S3 key format was wrong in the scenario's own
+      example, the events page needs a full reload each poll rather than
+      re-checking a stale DOM, and the shared `manifest.csv` state
+      carries over between this scenario and `preassembly-accessioning.md`
+      runs against the same bundle directory). **Remaining work**: a
+      follow-up run (fresh object, since the safety guard now blocks
+      re-running against the same druid past v1) that carries Step 7
+      through to an actual pass/fail, with the extended timeout budget
+      now documented in the scenario file.
 - [ ] **Finish `scenarios/register-objects.md`'s remaining rows.** Only
       3 of the ~13 rows (`access_indexing`, `goobi_accessioning`,
       `preassembly_accessioning`) were actually run live; the rest
