@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'dor/services/client'
+require 'druid-tools'
 
 module EventHelpers
   env_name = $sdr_env == 'stage' ? '_stage' : ''
