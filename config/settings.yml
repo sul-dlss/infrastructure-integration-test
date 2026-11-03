@@ -17,6 +17,9 @@ browser:
 default_apo: 'druid:qc410yz8746'
 default_collection: 'druid:bc778pm9866'
 
+# Folders of files (image-v1, image-v2, file-v1, file-v2) on a mount that argo-b3 can read
+argo_b3_multi_item_deposit_directory: '/dor/staging/integration-tests/argo-b3-multi-item-deposit'
+
 # For virtual object testing
 number_of_constituents: 2
 
