@@ -46,8 +46,9 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and redeposit multiple items',
     # The bulk action page refreshes itself until it is complete, when it shows the registration report.
     report_table = find_by_id('bulk-action-registration-report-table', wait: Settings.timeouts.bulk_action)
     items.each_key do |key|
-      row_text = report_table.find('tr', text: source_id(key)).text
-      druids[key] = row_text[/druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}/]
+      # The first column is the bare druid.
+      bare_druid = report_table.find('tr', text: source_id(key)).first('td').text.strip
+      druids[key] = "druid:#{bare_druid}"
       puts " *** argo-b3 multi-item deposit #{key} druid: #{druids[key]} ***"
     end
 
