@@ -32,6 +32,43 @@ module PurlHelpers
     expect(check_filenames).to eq filenames
   end
 
+  # Waits for the version to be published, since publishing follows accessioning.
+  # @return [Array<String>] the filenames in the published cocina
+  def published_cocina_filenames(druid:, version:)
+    Timeout.timeout(Settings.timeouts.workflow) do
+      loop do
+        response = Faraday.get("#{Settings.purl_url}/#{bare_druid(druid)}.json")
+        if response.success?
+          cocina_json = JSON.parse(response.body)
+          if cocina_json['version'] == version
+            return cocina_json['structural']['contains'].flat_map do |file_set|
+              file_set['structural']['contains'].pluck('filename')
+            end
+          end
+        end
+        puts "Waiting for version #{version} of #{druid} to be published..."
+        sleep 5
+      end
+    end
+  end
+
+  def expect_accessible_iiif_image(druid:, title:)
+    expect_text_on_purl_page(druid:, text: title)
+    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
+    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
+    image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
+    puts "Checking that the image URL #{image_url} is accessible..."
+    image_response = fetch_image_response(image_url)
+    expect(image_response.status).to eq(200)
+    expect(image_response.headers['content-type']).to include('image/jpeg')
+  end
+
+  # PURL shows its unavailable page (with a 404) once an object is unpublished, e.g., when made dark.
+  def expect_removed_from_purl(druid:)
+    expect_text_on_purl_page(druid:, text: 'The item you requested is not available.')
+    expect(Faraday.get("#{Settings.purl_url}/#{bare_druid(druid)}.json").status).to eq(404)
+  end
+
   def bare_druid(druid)
     druid.delete_prefix('druid:')
   end

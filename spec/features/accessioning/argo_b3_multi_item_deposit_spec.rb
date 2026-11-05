@@ -147,16 +147,6 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and redeposit multiple items',
     end
   end
 
-  def expect_files_on_object_page(druid:, filenames:, absent_filenames: [])
-    visit "#{start_url}/objects/#{druid}"
-    expect(page).to have_css('h2', text: 'Deposited')
-    find_by_id('files-tab').click
-    within('#files-pane') do
-      filenames.each { |filename| expect(page).to have_css('tbody th', exact_text: filename) }
-      absent_filenames.each { |filename| expect(page).to have_no_css('tbody th', exact_text: filename) }
-    end
-  end
-
   # Replication follows accessioning, so reloads until the event is shown.
   def expect_replication_event_on_object_page(druid:, version:)
     visit "#{start_url}/objects/#{druid}"
@@ -167,36 +157,5 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and redeposit multiple items',
         page.has_css?('#events-table tr', text: /Druid version replicated\s+#{version}\b/, wait: 5)
       end
     end
-  end
-
-  # Waits for the version to be published, since publishing follows accessioning.
-  # @return [Array<String>] the filenames in the published cocina
-  def published_cocina_filenames(druid:, version:)
-    Timeout.timeout(Settings.timeouts.workflow) do
-      loop do
-        response = Faraday.get("#{Settings.purl_url}/#{bare_druid(druid)}.json")
-        if response.success?
-          cocina_json = JSON.parse(response.body)
-          if cocina_json['version'] == version
-            return cocina_json['structural']['contains'].flat_map do |file_set|
-              file_set['structural']['contains'].pluck('filename')
-            end
-          end
-        end
-        puts "Waiting for version #{version} of #{druid} to be published..."
-        sleep 5
-      end
-    end
-  end
-
-  def expect_accessible_iiif_image(druid:, title:)
-    expect_text_on_purl_page(druid:, text: title)
-    iiif_manifest_url = find(:xpath, '//link[@rel="alternate" and @title="IIIF Manifest"]', visible: false)[:href]
-    iiif_manifest = JSON.parse(Faraday.get(iiif_manifest_url).body)
-    image_url = iiif_manifest.dig('sequences', 0, 'canvases', 0, 'images', 0, 'resource', '@id')
-    puts "Checking that the image URL #{image_url} is accessible..."
-    image_response = fetch_image_response(image_url)
-    expect(image_response.status).to eq(200)
-    expect(image_response.headers['content-type']).to include('image/jpeg')
   end
 end
