@@ -63,7 +63,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       # The following derivatives are produced by gisDerivativeWF
       expect(files).to include(%r{AirMonitoringStations.fgb application/vnd.fgb 68.\d+ KB Derivative})
       expect(files).to include(%r{AirMonitoringStations.pmtiles application/vnd.pmtiles 42 KB Derivative})
-      expect(files).to include(%r{AirMonitoringStations.jp2 image/jp2 17.\d KB Thumbnail})
+      expect(files).to include(%r{AirMonitoringStations.jp2 image/jp2 85.\d KB Thumbnail})
 
       # verify that the content type is "geo"
       expect(find_table_cell_following(header_text: 'Content type').text).to eq('geo')
