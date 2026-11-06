@@ -209,6 +209,23 @@ scenario otherwise — better to fail fast with a clear message.
 Record the outcome of both checks (pass/fail, environment checked) at the
 top of the run log, before any scenario's own steps begin.
 
+**Re-run both checks after any unexplained mid-run failure, not just at
+the start.** A live run hit three separate VPN drops mid-scenario, each
+surfacing as a confusing downstream symptom rather than an obvious
+network error: a browser navigation hanging then failing with
+`net::ERR_TIMED_OUT`, or an `scp`/`ssh` command failing with
+`mux_client_request_stdio_fwd: read from master failed: Broken pipe` /
+`scp: Connection closed`. In every case the SSH ControlMaster session had
+also silently died (`ssh -O check <host>` afterward reported "No such
+file or directory", even though a check run immediately after the VPN
+reconnected had briefly reported "Master running" before it died again)
+— **the two checks can fail independently and at different times**, so
+re-check both, not just the one that seemed to fail. Treat any of these
+symptoms as a signal to stop, re-run both preflight checks, and ask the
+human copilot to reconnect VPN and/or re-establish the ControlMaster
+session (`ssh sdr-infra`) before retrying the action that failed — do
+not retry blindly against a connection that's actually gone.
+
 ## One-time environment setup
 
 Before the first run in any environment (per human copilot / machine),
@@ -300,6 +317,26 @@ When an instruction says **"Wait (up to N minutes) for: `<condition>`"**:
 4. Otherwise wait with backoff (e.g. 10s, 10s, 20s, 30s, capped at ~60s
    between checks) and recheck, up to the stated timeout.
 5. On timeout, report failure with the last observed page state.
+
+**Some pages do not update in place** (confirmed via a live run: Argo's
+Events panel and Preassembly's job-detail page both only reflect state as
+of their last full load — no auto-refresh, no "load more"/pagination
+surfacing newer data). For these, "recheck" in step 4 means a fresh
+`browser_navigate` to the same URL, not re-inspecting the already-loaded
+DOM or re-clicking an already-expanded section — the latter will silently
+poll a stale snapshot forever regardless of real backend progress. When
+authoring a scenario's wait condition, state explicitly whether a reload
+is required, rather than leaving it implicit.
+
+**A scenario's own suggested timeout may understate real-world latency**
+— a live run saw one async condition (preservation replication) take up
+to ~6.5 minutes for one case and still not resolve after ~12 minutes for
+another, well past that scenario's configured `timeouts.workflow` (300s)
+and `timeouts.events.poll_for` (240s). Treat hitting a stated timeout as
+a signal to check with the human copilot whether to extend the wait
+(especially for a condition confirmed to sometimes legitimately take
+longer) rather than an automatic hard failure — but still surface it
+clearly rather than silently waiting past what was agreed.
 
 This is deliberately less aggressive than the old 1-second reload loop —
 real workflows take minutes, and cheap frequent polling was mostly wasted
