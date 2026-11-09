@@ -79,7 +79,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and release GIS items', if: $s
     deposit_multiple_items(description: "argo-b3 GIS deposit #{run_id}",
                            mount_path: Settings.argo_b3_gis_deposit_directory,
                            folders: items.keys.to_h do |key|
-                             [druids[key], { folder_name: key, file_count: source_file_counts.fetch(key) }]
+                             [druids[key], { folder: key, file_count: source_file_counts.fetch(key) }]
                            end,
                            deposit_type: 'new item')
 

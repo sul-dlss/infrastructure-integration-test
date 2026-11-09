@@ -96,7 +96,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and redeposit multiple items',
     deposit_multiple_items(description: "argo-b3 multi-item deposit #{run_id} #{version}",
                            mount_path: Settings.argo_b3_multi_item_deposit_directory,
                            folders: items.to_h do |key, item|
-                             [druids[key], { folder_name: "#{key}-#{version}", file_count: item[:files][version].size }]
+                             [druids[key], { folder: "#{key}-#{version}", file_count: item[:files][version].size }]
                            end,
                            deposit_type: version == 'v1' ? 'new item' : 'redeposit',
                            version_description:)
