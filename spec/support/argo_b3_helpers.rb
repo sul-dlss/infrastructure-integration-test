@@ -88,7 +88,10 @@ module ArgoB3Helpers
     click_button 'Check files'
     expect(page).to have_css('h2', text: 'Results of checking files', wait: Settings.timeouts.bulk_action)
     folders.each do |druid, folder|
-      expect(page).to have_css('tr', text: /#{bare_druid(druid)}\s+#{folder[:file_count]}\s+\S+\s+#{deposit_type}/)
+      expect(page).to have_css(
+        'tr',
+        text: /#{bare_druid(druid)}\s+#{Regexp.escape(folder[:folder])}\s+#{folder[:file_count]}\s+\S+\s+#{deposit_type}/
+      )
     end
     click_button 'Next'
   end
