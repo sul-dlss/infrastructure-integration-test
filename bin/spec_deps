@@ -10,6 +10,8 @@
 #   bin/spec_deps --check [PATH]             # exit non-zero if the doc is out of date
 #   bin/spec_deps prereqs SPEC...            # prerequisite specs, in run order (paths on stdout, reasons on stderr)
 #   bin/spec_deps run SPEC... [-- RSPEC_ARGS] # run the prerequisites and SPEC(s) in one bin/rspec call
+#   bin/spec_deps prereqs --failures         # like prereqs, for the examples that failed in the last run
+#   bin/spec_deps run --failures [-- ARGS]   # re-run the last run's failed examples, plus their prerequisites
 
 require 'prism'
 require 'yaml'
@@ -347,6 +349,7 @@ class Doc
 
       Run order across types is #{TYPE_ORDER.map { |type| "`#{type}`" }.join(' → ')} (`spec/spec_helper.rb`), then by file path.
       To see or run a spec's prerequisites: `bin/spec_deps prereqs SPEC` / `bin/spec_deps run SPEC`.
+      To re-run the last run's failures plus their prerequisites: `bin/spec_deps run --failures`.
 
       All paths below are relative to `spec/features/`. Keys containing `*` come from interpolated strings.
     MD
@@ -454,12 +457,41 @@ def normalize(graph, paths)
   end
 end
 
-def report_prereqs(graph, targets)
+# Failed example ids from the last run, per RSpec's example status file, grouped by spec path.
+def last_failures(graph)
+  helper = File.read(File.join(ROOT, 'spec/spec_helper.rb'))
+  status_file = helper[/example_status_persistence_file_path\s*=\s*['"]([^'"]+)['"]/, 1]
+  abort 'spec/spec_helper.rb does not set example_status_persistence_file_path' unless status_file
+  path = File.join(ROOT, status_file)
+  abort "#{status_file} not found; it is written when specs run" unless File.exist?(path)
+
+  failed = File.readlines(path).drop(2).filter_map do |line|
+    id, status = line.split('|').map(&:strip)
+    id if status == 'failed'
+  end
+  failed.group_by { |id| id.sub(/\[.*\z/, '').delete_prefix('./') }.select do |spec, _|
+    graph.spec(spec) || warn("warning: #{status_file} lists #{spec}, which is no longer a spec; skipping")
+  end
+end
+
+# bin/rspec arguments to re-run the last run's failures plus their prerequisites, in run order.
+# A failed spec that another failure depends on runs as a whole file, since passing its example
+# ids would make RSpec run only those examples from it.
+def failure_rspec_args(graph, failures)
+  chain = report_prereqs(graph, failures.keys, failed: failures)
+  whole = failures.keys.select { |spec| failures.keys.any? { |other| other != spec && graph.chain([other]).include?(spec) } }
+  entries = chain.map { |spec| [spec, spec] } +
+            failures.flat_map { |spec, ids| whole.include?(spec) ? [[spec, spec]] : ids.map { |id| [spec, id] } }
+  entries.sort_by { |spec, arg| [graph.sort_key(spec), arg] }.map(&:last)
+end
+
+def report_prereqs(graph, targets, failed: {})
   chain = graph.chain(targets)
   (chain + targets).each do |path|
     reasons = graph.direct_prereqs(path).map { |dep, why| "#{graph.spec(dep) && dep.delete_prefix('spec/features/')} (#{why})" }
     label = targets.include?(path) ? 'target' : 'prereq'
     warn "#{label}: #{path}#{" — needs #{reasons.join('; ')}" if reasons.any?}"
+    warn "  failed last run: #{failed[path].map { |id| id[/\[.*\z/] }.join(' ')}" if failed[path]
     warn "  gated: #{graph.spec(path).gates.join(', ')}" if graph.spec(path).gates.any?
     warn "  NOT REPLAYABLE: #{graph.not_replayable(path)}" if graph.not_replayable(path)
     graph.loads(path).select { |ref| graph.writers(ref.key, except: path).empty? }.each do |ref|
@@ -483,20 +515,36 @@ when '--check'
   abort graph.type_order_problem if graph.type_order_problem
   abort "#{path} is out of date; run bin/spec_deps --write" unless File.exist?(path) && File.read(path) == Doc.new(graph).to_s
   puts "#{path} is up to date"
-when 'prereqs'
-  abort 'usage: bin/spec_deps prereqs SPEC...' if ARGV.empty?
-  puts report_prereqs(graph, normalize(graph, ARGV))
-when 'run'
+when 'prereqs', 'run'
   specs, rspec_args = ARGV.include?('--') ? [ARGV[0...ARGV.index('--')], ARGV[(ARGV.index('--') + 1)..]] : [ARGV, []]
-  abort 'usage: bin/spec_deps run SPEC... [-- RSPEC_ARGS]' if specs.empty?
-  targets = normalize(graph, specs)
-  files = report_prereqs(graph, targets) + targets
+  if specs.empty? || (specs.include?('--failures') && specs.size > 1)
+    abort "usage: bin/spec_deps #{command} SPEC...|--failures [-- RSPEC_ARGS]"
+  end
+  # `prereqs SPEC` lists only the prerequisites; `prereqs --failures` lists everything that would run.
+  if specs == ['--failures']
+    failures = last_failures(graph)
+    if failures.empty?
+      warn 'no failures recorded for the last run; nothing to do'
+      exit
+    end
+    listing = args = failure_rspec_args(graph, failures)
+    files = args.map { |arg| arg.sub(/\[.*\z/, '').delete_prefix('./') }.uniq
+  else
+    targets = normalize(graph, specs)
+    listing = report_prereqs(graph, targets)
+    args = files = listing + targets
+  end
+  if command == 'prereqs'
+    puts listing
+    exit
+  end
+
   data_files = Dir.glob('tmp/*_data.yml', base: ROOT)
   if data_files.any? && files.any? { |path| graph.not_replayable(path) }
     warn "note: #{data_files.join(', ')} exist; a not-replayable spec may need fresh data (rm tmp/*_data.yml)"
   end
-  warn "running: bin/rspec #{(files + rspec_args).join(' ')}"
-  Dir.chdir(ROOT) { exec(File.join(ROOT, 'bin', 'rspec'), *files, *rspec_args) }
+  warn "running: bin/rspec #{(args + rspec_args).join(' ')}"
+  Dir.chdir(ROOT) { exec(File.join(ROOT, 'bin', 'rspec'), *args, *rspec_args) }
 else
   abort "unknown command '#{command}'; see the usage comment at the top of #{__FILE__}"
 end

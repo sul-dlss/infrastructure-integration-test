@@ -11,6 +11,7 @@ but the later spec times out or fails its assertions.
 
 Run order across types is `registration` → `accessioning` → `sdr` → `verify` → `preassembly` (`spec/spec_helper.rb`), then by file path.
 To see or run a spec's prerequisites: `bin/spec_deps prereqs SPEC` / `bin/spec_deps run SPEC`.
+To re-run the last run's failures plus their prerequisites: `bin/spec_deps run --failures`.
 
 All paths below are relative to `spec/features/`. Keys containing `*` come from interpolated strings.
 
