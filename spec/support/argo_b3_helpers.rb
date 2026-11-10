@@ -50,7 +50,7 @@ module ArgoB3Helpers
     end
   end
 
-  # @param folders [Hash<String, Hash>] keyed by druid, with the :folder_name on the mount and expected :file_count
+  # @param folders [Hash<String, Hash>] keyed by druid, with the :folder on the mount and expected :file_count
   # @param deposit_type [String] new item or redeposit
   # @param version_description [String] only for redeposits, since it is fixed for new items
   def deposit_multiple_items(description:, mount_path:, folders:, deposit_type:, version_description: nil)
@@ -69,8 +69,8 @@ module ArgoB3Helpers
     fill_in 'Describe this deposit', with: description
     Tempfile.create(['argo_b3_manifest', '.csv']) do |manifest|
       manifest.write(CSV.generate do |csv|
-        csv << %w[druid folder_name]
-        folders.each { |druid, folder| csv << [druid, folder[:folder_name]] }
+        csv << %w[druid folder]
+        folders.each { |druid, folder| csv << [druid, folder[:folder]] }
       end)
       manifest.close
       attach_file('Upload manifest file', manifest.path)
@@ -88,7 +88,10 @@ module ArgoB3Helpers
     click_button 'Check files'
     expect(page).to have_css('h2', text: 'Results of checking files', wait: Settings.timeouts.bulk_action)
     folders.each do |druid, folder|
-      expect(page).to have_css('tr', text: /#{bare_druid(druid)}\s+#{folder[:file_count]}\s+\S+\s+#{deposit_type}/)
+      expect(page).to have_css(
+        'tr',
+        text: /#{bare_druid(druid)}\s+#{Regexp.escape(folder[:folder])}\s+#{folder[:file_count]}\s+\S+\s+#{deposit_type}/
+      )
     end
     click_button 'Next'
   end
