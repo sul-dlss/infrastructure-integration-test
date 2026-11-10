@@ -1,0 +1,22 @@
+# PURPOSE: record the spec-ordering facts that bin/spec_deps can't derive from the code.
+#
+# bin/spec_deps works out data dependencies on its own, by matching save_test_data and load_test_data calls.
+# This file covers only what those calls can't show:
+#   - state dependencies: spec B needs spec A to have run, but A saves no data that B loads.
+#     A instead moves an object into the state B expects, e.g. accessioned, with particular files.
+#   - specs that can't be replayed against the same test data.
+# Keep this file accurate whenever you change what a spec expects of the objects it works on
+# (see CODING_STANDARDS.md), then run `bin/spec_deps --write`.
+# Paths are relative to the repo root. bin/spec_deps fails if a path here doesn't exist.
+
+# spec => earlier specs that put its object into the state it expects, without writing new test data.
+state_dependencies:
+  spec/features/preassembly/preassembly_reaccessioning_spec.rb:
+    - spec/features/accessioning/preassembly_accessioning_spec.rb
+  spec/features/verify/goobi_accessioning_review_spec.rb:
+    - spec/features/accessioning/goobi_accessioning_spec.rb
+
+# spec => why it can't be re-run against the same test data.
+not_replayable:
+  spec/features/preassembly/preassembly_reaccessioning_spec.rb: >-
+    raises if the object is already past v1; needs a freshly registered and accessioned object
