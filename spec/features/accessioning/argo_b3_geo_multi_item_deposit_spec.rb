@@ -140,7 +140,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and release GIS items', if: $s
         # The workflows turbo-frame is lazily loaded when the tab is shown.
         find_by_id('workflows-tab').click
         within('#workflows-pane') do
-          page.has_css?('.accordion-button', text: /#{workflow}\s+Complete/, wait: 5)
+          page.has_css?('.collapsible-section-toggle', text: /#{workflow}\s+Complete/, wait: 5)
         end
       end
     end

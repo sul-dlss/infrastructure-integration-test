@@ -53,7 +53,11 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
 
     ## Step 3: Structure files
     find_by_id('structural-tab').click
-    click_button 'Structure files'
+    within('#structural-pane') do
+      # The structure frame reloads after the upload; clicking before then is discarded.
+      expect(page).to have_text('There are 2 files that have not been added to the structure.')
+      click_button 'Structure files'
+    end
     expect(page).to have_css('h3', text: 'Structural metadata')
 
     ## Step 4: Deposit
@@ -131,7 +135,10 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     expect(page).to have_css('tbody th', text: added_filename)
 
     find_by_id('structural-tab').click
-    click_button 'Append files to structure'
+    within('#structural-pane') do
+      expect(page).to have_text('There is 1 file that has not been added to the structure.')
+      click_button 'Append files to structure'
+    end
     expect(page).to have_text('Files appended to structure')
 
     find_by_id('deposit-tab').click
