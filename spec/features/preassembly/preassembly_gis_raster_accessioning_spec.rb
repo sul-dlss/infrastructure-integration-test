@@ -64,7 +64,7 @@ RSpec.describe 'Create gis object via Pre-assembly', if: $sdr_env == 'stage', ty
       # note the profile=cloud-optimized in the COG MIME type
       # rubocop:disable Layout/LineLength
       expect(files).to include(%r{SC_Color_WGS_cog.tif image/tiff; application=geotiff; profile=cloud-optimized 4\d.\d MB Derivative})
-      expect(files).to include(%r{SC_Color_WGS.jp2 image/jp2 2.\d\d MB Thumbnail})
+      expect(files).to include(%r{SC_Color_WGS.jp2 image/jp2 1\d\d KB Thumbnail})
       # rubocop:enable Layout/LineLength
 
       # verify that the content type is "geo"
