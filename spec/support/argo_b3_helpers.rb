@@ -22,8 +22,9 @@ module ArgoB3Helpers
       # The technical metadata rows are hidden, so are not counted.
       expect(page).to have_css('tbody tr', count: files.size)
       files.each do |filename, file|
-        expect(page).to have_css('tbody tr',
-                                 text: /\A#{Regexp.escape(filename)}\s+#{file[:size]}\s+#{Regexp.escape(file[:mime_type])}/)
+        # Found by the row header, since a row's toggle button also names the file (in visually hidden text).
+        row = find(:xpath, ".//tbody/tr[th[normalize-space()='#{filename}']]")
+        expect(row).to have_text(/#{Regexp.escape(filename)}\s+#{file[:size]}\s+#{Regexp.escape(file[:mime_type])}/)
       end
     end
 
@@ -90,7 +91,7 @@ module ArgoB3Helpers
     folders.each do |druid, folder|
       expect(page).to have_css(
         'tr',
-        text: /#{bare_druid(druid)}\s+#{Regexp.escape(folder[:folder])}\s+#{folder[:file_count]}\s+\S+\s+#{deposit_type}/
+        text: /#{bare_druid(druid)}\s+#{Regexp.escape(folder[:folder])}\s+#{folder[:file_count]}\s+OK\s+.+\s+#{deposit_type}/
       )
     end
     click_button 'Next'

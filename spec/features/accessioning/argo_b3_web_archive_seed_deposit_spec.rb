@@ -117,6 +117,8 @@ RSpec.describe 'Use Argo-B3 to register a web archive seed object', type: :acces
     find_by_id('deposit-tab').click
     fill_in 'Version description', with: 'Replace web archive seed thumbnail'
     click_button 'Deposit', exact: true
+    # Reloading the edit page once the deposit has started redirects with an "Item is not editable." alert.
+    expect(page).to have_current_path(%r{/objects/#{seed_druid}\z})
 
     reload_page_until_timeout! { page.has_css?('#overview-table tr', text: /Status\s+v2 Accessioned/, wait: 1) }
 
