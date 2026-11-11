@@ -1,8 +1,21 @@
 # frozen_string_literal: true
 
 module PageHelpers
-  def reload_page_until_timeout!(text: '', num_seconds: Settings.timeouts.workflow)
+  def reload_page_until_timeout!(text: '', num_seconds: Settings.timeouts.workflow, refresh_url: nil) # rubocop:disable Metrics/MethodLength
     Timeout.timeout(num_seconds) do
+      loop do
+        break unless page.has_text?('Use your security key', wait: 1) || page.has_text?('Secured by Duo', wait: 1)
+
+        puts 'Hit 2FA page while refreshing and waiting for specific content, sleeping for a bit to allow authN'
+        sleep 10
+
+        next unless refresh_url.present? && page.has_text?('Login expired', wait: 1)
+
+        puts "Hit login expiry page while refreshing and waiting for specific content, have target URL, visiting #{refresh_url}"
+        visit refresh_url
+        sleep 5
+      end
+
       loop do
         found = block_given? ? yield : page.has_text?(text, wait: 1)
         if found

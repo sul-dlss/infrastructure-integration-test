@@ -86,7 +86,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     # Opens Argo detail page
     visit argo_work_url
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned', refresh_url: argo_work_url)
     expect(page).to have_text('Initial version (Public version 1)') # we have an initial public version 1 in Argo
     expect_text_on_purl_page(druid: work_druid, text: 'Version 1') # check the version display on PURL
 
