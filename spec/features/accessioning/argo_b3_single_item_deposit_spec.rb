@@ -58,7 +58,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
       expect(page).to have_text('There are 2 files that have not been added to the structure.')
       click_button 'Structure files'
     end
-    expect(page).to have_css('h3', text: 'Structural metadata')
+    expect(page).to have_css('h3', text: 'Resources (2)')
 
     ## Step 4: Deposit
     find_by_id('deposit-tab').click
