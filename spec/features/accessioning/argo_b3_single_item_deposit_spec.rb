@@ -58,7 +58,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
       expect(page).to have_text('There are 2 files that have not been added to the structure.')
       click_button 'Structure files'
     end
-    expect(page).to have_css('h3', text: 'Structural metadata')
+    expect(page).to have_css('h3', exact_text: 'Resources (2)')
 
     ## Step 4: Deposit
     find_by_id('deposit-tab').click
@@ -110,7 +110,8 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     visit "#{start_url}/objects/#{druid}"
     click_link 'Edit item'
     expect(page).to have_css('h1', text: 'Edit item')
-    click_button 'Description'
+    # Tabs with required fields name them in visually hidden text, so find by id.
+    find_by_id('description-tab').click
     click_link 'Download description spreadsheet'
     wait_for_download
     description_csv = CSV.read(download, headers: true)
@@ -162,7 +163,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     ## Step 11: Make the item dark and redeposit
     visit "#{start_url}/objects/#{druid}"
     click_link 'Edit item'
-    click_button 'APO, collection, rights'
+    find_by_id('rights-tab').click
     select 'Dark', from: 'View access'
     # A dark item cannot have published files, so the file-level rights are always overwritten.
     expect(page).to have_field('Overwrite file-level rights', checked: true, disabled: true)

@@ -75,7 +75,7 @@ module ArgoB3Helpers
       end)
       manifest.close
       attach_file('Upload manifest file', manifest.path)
-      choose 'Use files from mount'
+      choose 'Select files from mount'
       fill_in 'Mount path', with: mount_path
       click_button 'Discover files and check manifest'
       # The page refreshes itself until discovery is complete.
