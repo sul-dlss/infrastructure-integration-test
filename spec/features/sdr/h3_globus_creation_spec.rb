@@ -126,7 +126,7 @@ RSpec.describe 'Use H3 to create a collection and an item object belonging to it
 
     # Opens Argo detail page
     visit argo_work_url
-    reload_page_until_timeout!(text: 'v1 Accessioned')
+    reload_page_until_timeout!(text: 'v1 Accessioned', refresh_url: argo_work_url)
     expect(page).to have_text(filename) # file made it from globus!
 
     # check PURL
