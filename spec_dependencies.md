@@ -58,6 +58,7 @@ All paths below are relative to `spec/features/`. Keys containing `*` come from 
 | accessioning/argo_b3_geo_multi_item_deposit_spec.rb (`if: $sdr_env == 'stage'`) | — | — | — |
 | accessioning/argo_b3_multi_item_deposit_spec.rb | — | — | — |
 | accessioning/argo_b3_single_item_deposit_spec.rb | — | — | — |
+| accessioning/argo_b3_web_archive_seed_deposit_spec.rb | — | — | — |
 | accessioning/argo_spreadsheet_update_spec.rb | — | — | — |
 | accessioning/goobi_accessioning_spec.rb (`if: $sdr_env == 'stage'`) | `goobi_accessioning` | registration/01_apo_registration_spec.rb → registration/02_collection_registration_spec.rb → registration/03_register_objects_spec.rb | — |
 | accessioning/item_creation_no_files_or_collection_spec.rb | `item_creation_no_files_or_collection` | registration/01_apo_registration_spec.rb → registration/02_collection_registration_spec.rb → registration/03_register_objects_spec.rb | — |
