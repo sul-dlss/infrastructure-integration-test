@@ -59,6 +59,8 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
       click_button 'Structure files'
     end
     expect(page).to have_css('h3', exact_text: 'Resources (2)')
+    # The page updates again with this flash after the resources render; a tab click before then is discarded.
+    expect(page).to have_text('Structure built from files')
 
     ## Step 4: Deposit
     find_by_id('deposit-tab').click
