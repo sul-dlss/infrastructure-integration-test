@@ -72,14 +72,14 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
 
     ## Step 5: Verify technical metadata
     find_by_id('files-tab').click
-    # Deposited file rows toggle a row that lazily loads the technical metadata.
-    find('tr.toggle-row', text: 'example.tiff').click
+    # A deposited file's View button shows its technical metadata below it, lazily loaded.
+    click_button 'View technical metadata for example.tiff'
     # The techmd turbo-frame only fetches its content once it is scrolled into the
     # viewport, since it uses loading="lazy".
-    toggle_row_data = find('tr.toggle-row-data.show')
-    page.scroll_to(toggle_row_data)
+    technical_metadata = find('tbody td .collapse.show')
+    page.scroll_to(technical_metadata)
     # Scoped to the techmd frame since the file row also shows the MIME type.
-    within(toggle_row_data.find('turbo-frame')) do
+    within(technical_metadata.find('turbo-frame')) do
       expect(page).to have_css('dt', text: 'Mimetype')
       expect(page).to have_css('dd', text: 'image/tiff')
     end
