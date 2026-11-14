@@ -47,7 +47,8 @@ The `-O` option matters. It replaces the project `.rspec`, so the integration su
 never loads. Keep these tests out of `spec/`: its global ordering silently drops examples that have
 no `type:`, and loading it starts the browser setup.
 
-When you change `lib/spec_deps.rb`, add or update a test in the same change.
+When you change `lib/spec_deps.rb`, add or update a test in the same change. CI runs these tests,
+and `bin/spec_deps --check`, in the `tool-spec` job (`.circleci/config.yml`).
 
 ### Fixtures: small, made-up trees
 
