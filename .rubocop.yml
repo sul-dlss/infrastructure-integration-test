@@ -12,7 +12,9 @@ AllCops:
   DisplayCopNames: true
   Include:
     - './Rakefile'
+    - 'lib/**/*.rb'
     - 'spec/**/*.rb'
+    - 'tool_spec/**/*.rb'
   Exclude:
     - 'bin/**/*'
     - 'vendor/**/*'
@@ -115,10 +117,26 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Max: 20
 
+# lib/spec_deps.rb walks Ruby ASTs and resolves what it finds, which takes branchy case dispatch.
+# Excluded for now rather than splitting those methods further; open to team discussion.
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/spec_deps.rb'
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/spec_deps.rb'
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'lib/spec_deps.rb'
+
 RSpec/ExampleLength:
   Exclude:
     - 'spec/features/**/*.rb'
     - 'spec/support/shared_examples/**/*.rb'
+    # Each tool spec builds the small repo tree it analyzes inline, so the fixture sits next to its assertions.
+    - 'tool_spec/**/*.rb'
 
 RSpec/ExpectInHook:
   Exclude:
