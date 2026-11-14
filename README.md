@@ -60,6 +60,8 @@ The failures come from `spec/examples.txt`, the file RSpec saves each example's 
 
 The full dependency tables are in `spec_dependencies.md`, which is generated with `bin/spec_deps --write`. State dependencies and specs that can't be replayed are recorded by hand in `spec/spec_dependencies.yml`. See `CODING_STANDARDS.md` for when to update them.
 
+`bin/spec_deps` has its own unit tests, kept apart from the integration suite: `bin/rspec -O tool_spec/.rspec`. See `CODING_STANDARDS.md`.
+
 By default, all of the integration tests run in the SDR stage environment:
 
 `bin/rspec`

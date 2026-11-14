@@ -51,20 +51,23 @@ module SpecDeps
     def collect(node, scope, gates: [], conditions: [])
       case node
       when Prism::CallNode then collect_call(node, scope, gates, conditions)
-      when Prism::IfNode
-        collect(node.predicate, scope, gates:, conditions:)
-        collect(node.statements, scope, gates:, conditions: conditions + [condition_of(node.predicate)]) if node.statements
-        collect(node.subsequent, scope, gates:, conditions: conditions + [[:not, condition_of(node.predicate)]]) if node.subsequent
-      when Prism::UnlessNode
-        collect(node.predicate, scope, gates:, conditions:)
-        collect(node.statements, scope, gates:, conditions: conditions + [[:not, condition_of(node.predicate)]]) if node.statements
-        collect(node.else_clause, scope, gates:, conditions: conditions + [condition_of(node.predicate)]) if node.else_clause
+      when Prism::IfNode then collect_branches(node, [node.statements, node.subsequent], scope, gates, conditions)
+      when Prism::UnlessNode then collect_branches(node, [node.else_clause, node.statements], scope, gates, conditions)
       when nil then nil
       else node.compact_child_nodes.each { |child| collect(child, scope, gates:, conditions:) }
       end
     end
 
     private
+
+    # Collects an if/unless. `branches` is [runs when the predicate holds, runs when it doesn't].
+    def collect_branches(node, branches, scope, gates, conditions)
+      condition = condition_of(node.predicate)
+      truthy, falsy = branches
+      collect(node.predicate, scope, gates:, conditions:)
+      collect(truthy, scope, gates:, conditions: conditions + [condition])
+      collect(falsy, scope, gates:, conditions: conditions + [[:not, condition]])
+    end
 
     def collect_call(node, scope, gates, conditions)
       args = node.arguments&.arguments || []
@@ -256,7 +259,10 @@ module SpecDeps
     def resolve_refs(spec, raw_refs, lets, usage = nil)
       raw_refs.filter_map do |raw|
         key = resolve_key(raw.key, lets)
-        next @warnings << "#{spec.path}:#{usage&.line || raw.line}: could not resolve data key #{raw.key.last}" unless key
+        unless key
+          @warnings << "#{spec.path}:#{usage&.line || raw.line}: could not resolve data key #{raw.key.last}"
+          next
+        end
 
         condition = evaluate(raw.conditions, lets)
         next if condition == false
@@ -524,7 +530,9 @@ module SpecDeps
     def check(graph, doc)
       path = File.join(@root, doc || DEFAULT_DOC)
       raise Error, graph.type_order_problem if graph.type_order_problem
-      raise Error, "#{path} is out of date; run bin/spec_deps --write" unless File.exist?(path) && File.read(path) == Doc.new(graph).to_s
+
+      up_to_date = File.exist?(path) && File.read(path) == Doc.new(graph).to_s
+      raise Error, "#{path} is out of date; run bin/spec_deps --write" unless up_to_date
 
       @out.puts "#{path} is up to date"
     end

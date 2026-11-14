@@ -33,3 +33,44 @@ When a change might affect either one, do these in the same change:
      or through `let(:spec_name)`, so the script can resolve them.
 
 Don't edit `spec_dependencies.md` by hand. Your edits will be overwritten the next time the doc is generated.
+
+## Test the repo's own tooling in `tool_spec/`
+
+Code in `lib/`, such as `lib/spec_deps.rb` behind `bin/spec_deps`, has unit tests in `tool_spec/`.
+Run them with:
+
+```
+bin/rspec -O tool_spec/.rspec
+```
+
+The `-O` option matters. It replaces the project `.rspec`, so the integration suite's `spec/spec_helper.rb`
+never loads. Keep these tests out of `spec/`: its global ordering silently drops examples that have
+no `type:`, and loading it starts the browser setup.
+
+When you change `lib/spec_deps.rb`, add or update a test in the same change.
+
+### Fixtures: small, made-up trees
+
+Each test builds the small repo tree it analyzes inline, using `build_tree` / `graph_for` in
+`tool_spec/tool_spec_helper.rb`. These trees are made up and only a few files each, so a failing
+test points at the one rule that broke. Don't point tests at the real `spec/` directory or at a
+pinned commit from this repo's history. Those trees are large, they change for unrelated reasons,
+and when a test fails it's hard to tell which rule broke.
+
+**When `bin/spec_deps` mishandles a pattern found in a real spec, copy a trimmed excerpt of that
+spec into a new fixture.** Keep only the lines that matter: the `describe`, the `let`s, and the
+`save_test_data` / `load_test_data` calls. Then write the test, and fix the code until it passes. That way
+the fixtures pick up real-world patterns as they appear, without depending on the real suite.
+
+The real suite is still checked: `bin/spec_deps --check` runs the parser over the current specs.
+It fails if the parser breaks on them or if `spec_dependencies.md` is out of date.
+
+### The golden doc
+
+`tool_spec/spec_deps/doc_spec.rb` compares the rendered doc for a sample tree with
+`tool_spec/fixtures/sample_doc.md`. After an intended change to the doc's format, regenerate the golden copy
+and review its diff:
+
+```
+UPDATE_GOLDEN=1 bin/rspec -O tool_spec/.rspec tool_spec/spec_deps/doc_spec.rb
+```
