@@ -39,6 +39,29 @@ There are 5 types of tests, run in this order (the order is enforced by `config.
 
 Several specs depend on data saved by an earlier-type spec (e.g. a druid registered in a `registration` spec and used by an `accessioning` spec). This is persisted to `tmp/{today}_data.yml` via `spec/support/data_helpers.rb`, and loaded with `load_test_data`, which raises a clear error if the expected entry isn't there. Running the full suite (below) runs every type in the correct order automatically, so this is only a concern when filtering to a single type or running a spec individually — see the "Preassembly tests" section below for a concrete example.
 
+### Running a spec with its prerequisites
+
+`bin/spec_deps` lists the specs a given spec depends on, in run order. It counts both the specs that save the data it loads and the specs that put its object into the state it expects. It can also run that list for you:
+
+```
+bin/spec_deps prereqs spec/features/preassembly/preassembly_reaccessioning_spec.rb   # list prerequisites
+bin/spec_deps run spec/features/preassembly/preassembly_reaccessioning_spec.rb       # run them, then the spec
+bin/spec_deps run SPEC -- --dry-run                                                  # pass extra args to rspec
+```
+
+To retry the failures from the most recent run along with the specs they depend on, use `--failures` in place of `SPEC`. It's like `bin/rspec --only-failures`, but it also runs the prerequisites:
+
+```
+bin/spec_deps prereqs --failures   # list what would run
+bin/spec_deps run --failures       # run it
+```
+
+The failures come from `spec/examples.txt`, the file RSpec saves each example's status to (`example_status_persistence_file_path`). The failed examples re-run by example ID, and their prerequisites re-run as whole files, even if they passed last time.
+
+The full dependency tables are in `spec_dependencies.md`, which is generated with `bin/spec_deps --write`. State dependencies and specs that can't be replayed are recorded by hand in `spec/spec_dependencies.yml`. See `CODING_STANDARDS.md` for when to update them.
+
+`bin/spec_deps` has its own unit tests, kept apart from the integration suite: `bin/rspec -O tool_spec/.rspec`. See `CODING_STANDARDS.md`.
+
 By default, all of the integration tests run in the SDR stage environment:
 
 `bin/rspec`

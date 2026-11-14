@@ -1,0 +1,3 @@
+--default-path tool_spec
+--require ./tool_spec/tool_spec_helper
+--format documentation

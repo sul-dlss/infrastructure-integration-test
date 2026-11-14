@@ -1,8 +1,24 @@
 version: 2.1
 orbs:
   ruby-rails: sul-dlss/ruby-rails@5.0.0
+jobs:
+  # Unit tests for the repo's own tooling (lib/, tool_spec/), plus a check that the generated
+  # spec_dependencies.md matches the current specs. The integration suite in spec/ needs VPN
+  # access to SDR environments and does not run here.
+  tool-spec:
+    executor: ruby-rails/ruby
+    steps:
+      - checkout
+      - ruby-rails/gem-install-deps
+      - run:
+          name: Run tool specs
+          command: bin/rspec -O tool_spec/.rspec
+      - run:
+          name: Check spec_dependencies.md is up to date
+          command: bin/spec_deps --check
 workflows:
   build:
     jobs:
       - ruby-rails/lint:
           name: lint
+      - tool-spec

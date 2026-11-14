@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Mechanically derives test-data dependencies between specs, from save_test_data / load_test_data
+# calls (spec/support/data_helpers.rb), plus the hand-maintained facts in spec/spec_dependencies.yml.
+# The implementation is in lib/spec_deps.rb.
+#
+# Usage:
+#   bin/spec_deps                            # print the dependency doc (markdown) to stdout
+#   bin/spec_deps --write [PATH]             # write the doc (default: spec_dependencies.md)
+#   bin/spec_deps --check [PATH]             # exit non-zero if the doc is out of date
+#   bin/spec_deps prereqs SPEC...            # prerequisite specs, in run order (paths on stdout, reasons on stderr)
+#   bin/spec_deps run SPEC... [-- RSPEC_ARGS] # run the prerequisites and SPEC(s) in one bin/rspec call
+#   bin/spec_deps prereqs --failures         # like prereqs, for the examples that failed in the last run
+#   bin/spec_deps run --failures [-- ARGS]   # re-run the last run's failed examples, plus their prerequisites
+#
+# SPEC_DEPS_ROOT=DIR analyzes the repo tree at DIR instead of this one.
+
+require_relative '../lib/spec_deps'
+
+root = File.expand_path(ENV.fetch('SPEC_DEPS_ROOT', File.expand_path('..', __dir__)))
+exit SpecDeps::CLI.new(root:).call(ARGV)

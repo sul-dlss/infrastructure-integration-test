@@ -1,0 +1,598 @@
+# frozen_string_literal: true
+
+require 'prism'
+require 'yaml'
+
+# Mechanically derives test-data dependencies between specs, from save_test_data / load_test_data
+# calls (spec/support/data_helpers.rb), plus the hand-maintained facts in spec/spec_dependencies.yml.
+# The command-line interface is bin/spec_deps; see its usage comment.
+module SpecDeps
+  # Raised for problems the user has to fix; the CLI prints the message and exits non-zero.
+  class Error < StandardError; end
+
+  SIDECAR = 'spec/spec_dependencies.yml'
+  DEFAULT_DOC = 'spec_dependencies.md'
+  # Must match the global ordering in spec/spec_helper.rb (checked by Graph#type_order_problem).
+  TYPE_ORDER = %i[registration accessioning sdr verify preassembly].freeze
+
+  # A resolved load or save of one data key.
+  Ref = Struct.new(:key, :spec, :line, :gates, :condition, :via, keyword_init: true)
+
+  # Raw facts collected from one parsed scope (a spec file, a shared example, or an it_behaves_like block).
+  class Scope
+    attr_reader :lets, :loads, :saves, :usages
+
+    def initialize
+      @lets = {}
+      @loads = []
+      @saves = []
+      @usages = []
+    end
+  end
+
+  SpecFile = Struct.new(:path, :type, :gates, :scope, keyword_init: true)
+  Usage = Struct.new(:name, :line, :gates, :scope, keyword_init: true)
+  RawRef = Struct.new(:key, :line, :gates, :conditions, keyword_init: true)
+
+  # Walks a Prism AST, recording lets, data-helper calls, shared example definitions and uses.
+  class Collector
+    EXAMPLE_GROUP_METHODS = %i[describe context feature it scenario specify example].freeze
+    SHARED_DEFINITIONS = %i[shared_examples shared_examples_for shared_context].freeze
+    SHARED_USES = %i[it_behaves_like it_should_behave_like include_examples include_context].freeze
+
+    attr_reader :shared, :type, :file_gates
+
+    def initialize(shared)
+      @shared = shared
+      @type = nil
+      @file_gates = nil
+    end
+
+    def collect(node, scope, gates: [], conditions: [])
+      case node
+      when Prism::CallNode then collect_call(node, scope, gates, conditions)
+      when Prism::IfNode then collect_branches(node, [node.statements, node.subsequent], scope, gates, conditions)
+      when Prism::UnlessNode then collect_branches(node, [node.else_clause, node.statements], scope, gates, conditions)
+      when nil then nil
+      else node.compact_child_nodes.each { |child| collect(child, scope, gates:, conditions:) }
+      end
+    end
+
+    private
+
+    # Collects an if/unless. `branches` is [runs when the predicate holds, runs when it doesn't].
+    def collect_branches(node, branches, scope, gates, conditions)
+      condition = condition_of(node.predicate)
+      truthy, falsy = branches
+      collect(node.predicate, scope, gates:, conditions:)
+      collect(truthy, scope, gates:, conditions: conditions + [condition])
+      collect(falsy, scope, gates:, conditions: conditions + [[:not, condition]])
+    end
+
+    def collect_call(node, scope, gates, conditions)
+      args = node.arguments&.arguments || []
+      case node.name
+      when :let, :let!
+        scope.lets[args.first.unescaped.to_sym] = literal(single_statement(node.block)) if args.first.is_a?(Prism::SymbolNode)
+      when :load_test_data, :save_test_data
+        list = node.name == :load_test_data ? scope.loads : scope.saves
+        list << RawRef.new(key: key_value(keyword(args, :spec_name)), line: node.location.start_line, gates:, conditions:)
+        return
+      when *SHARED_DEFINITIONS
+        return define_shared(node, args) if args.first.is_a?(Prism::StringNode)
+      when *SHARED_USES
+        return use_shared(node, args, scope, gates) if args.first.is_a?(Prism::StringNode)
+      when *EXAMPLE_GROUP_METHODS
+        gates = gates_for(node, args, gates)
+      end
+      node.compact_child_nodes.each { |child| collect(child, scope, gates:, conditions:) }
+    end
+
+    def define_shared(node, args)
+      scope = Scope.new
+      collect(node.block, scope)
+      shared[args.first.unescaped] = scope
+    end
+
+    def use_shared(node, args, scope, gates)
+      usage_scope = Scope.new
+      collect(node.block, usage_scope, gates:)
+      scope.usages << Usage.new(name: args.first.unescaped, line: node.location.start_line, gates:, scope: usage_scope)
+    end
+
+    def gates_for(node, args, gates)
+      type_node = keyword(args, :type)
+      @type ||= type_node.unescaped.to_sym if type_node.is_a?(Prism::SymbolNode)
+      gate = keyword(args, :if)
+      gates += ["if: #{gate.slice}"] if gate
+      @file_gates ||= gates if %i[describe feature].include?(node.name)
+      gates
+    end
+
+    def keyword(args, name)
+      args.grep(Prism::KeywordHashNode).flat_map(&:elements).find do |assoc|
+        assoc.key.is_a?(Prism::SymbolNode) && assoc.key.unescaped == name.to_s
+      end&.value
+    end
+
+    def single_statement(block)
+      body = block&.body
+      body.is_a?(Prism::StatementsNode) && body.body.size == 1 ? body.body.first : nil
+    end
+
+    # A data key as written: a String (possibly a '*' pattern) or [:let, name] to resolve later.
+    def key_value(node)
+      case node
+      when Prism::ImplicitNode then key_value(node.value)
+      when Prism::CallNode, Prism::LocalVariableReadNode
+        bare_reference?(node) ? [:let, node.name] : [:unresolved, node.slice]
+      when nil then [:unresolved, '(no spec_name:)']
+      else literal(node).is_a?(String) ? literal(node) : [:unresolved, node.slice]
+      end
+    end
+
+    def literal(node)
+      case node
+      when Prism::StringNode then node.unescaped
+      when Prism::InterpolatedStringNode
+        node.parts.map { |part| part.is_a?(Prism::StringNode) ? part.unescaped : '*' }.join
+      when Prism::TrueNode then true
+      when Prism::FalseNode then false
+      else :unknown
+      end
+    end
+
+    def condition_of(predicate)
+      bare_reference?(predicate) ? [:let, predicate.name] : predicate.slice
+    end
+
+    def bare_reference?(node)
+      node.is_a?(Prism::LocalVariableReadNode) ||
+        (node.is_a?(Prism::CallNode) && node.receiver.nil? && node.arguments.nil? && node.block.nil?)
+    end
+  end
+
+  # Builds the dependency graph and answers questions about it.
+  class Graph
+    attr_reader :root, :specs, :warnings, :sidecar
+
+    def initialize(root)
+      @root = root
+      @warnings = []
+      @sidecar = load_sidecar
+      @shared = {}
+      shared_example_files.each { |path| Collector.new(@shared).collect(Prism.parse_file(abs(path)).value, Scope.new) }
+      @specs = spec_files.map { |path| parse_spec(path) }
+      @specs.sort_by! { |spec| sort_key(spec.path) }
+      @loads = {}
+      @saves = {}
+      @specs.each { |spec| resolve(spec) }
+      validate_sidecar
+      @warnings << type_order_problem if type_order_problem
+    end
+
+    def spec(path) = @specs.find { |spec| spec.path == path }
+    def loads(path) = @loads.fetch(path)
+    def saves(path) = @saves.fetch(path)
+    def state_dependencies(path) = Array(sidecar.dig('state_dependencies', path))
+    def not_replayable(path) = sidecar.dig('not_replayable', path)
+
+    # Direct prerequisites: [[prereq_path, reason], ...]
+    def direct_prereqs(path)
+      data = loads(path).flat_map do |ref|
+        writers(ref.key, except: path).map { |writer| [writer.spec, "data `#{ref.key}`"] }
+      end
+      state = state_dependencies(path).map { |dep| [dep, 'state'] }
+      (data + state).group_by(&:first).map { |dep, reasons| [dep, reasons.map(&:last).uniq.join(', ')] }
+    end
+
+    # Every spec that must run before `paths`, in run order.
+    def chain(paths)
+      seen = {}
+      visit = lambda do |path|
+        direct_prereqs(path).map(&:first).each do |dep|
+          next if seen[dep] || paths.include?(dep)
+
+          seen[dep] = true
+          visit.call(dep)
+        end
+      end
+      paths.each { |path| visit.call(path) }
+      seen.keys.sort_by { |path| sort_key(path) }
+    end
+
+    def writers(key, except: nil)
+      @saves.values.flatten.select { |ref| ref.spec != except && keys_match?(ref.key, key) }
+    end
+
+    def readers(key, except: nil)
+      @loads.values.flatten.select { |ref| ref.spec != except && keys_match?(ref.key, key) }
+    end
+
+    def all_saves = @saves.values.flatten
+    def all_loads = @loads.values.flatten
+
+    def type_order_problem
+      helper = File.read(abs('spec/spec_helper.rb'))
+      found = helper[/order\s*=\s*%i\[([^\]]*)\]/, 1]&.split&.map(&:to_sym)
+      return if found == TYPE_ORDER
+
+      "bin/spec_deps TYPE_ORDER #{TYPE_ORDER.inspect} does not match spec/spec_helper.rb #{found.inspect}"
+    end
+
+    def sort_key(path)
+      type = spec(path)&.type
+      [TYPE_ORDER.index(type) || TYPE_ORDER.size, path]
+    end
+
+    private
+
+    def abs(path) = File.join(@root, path)
+
+    def spec_files = Dir.glob('spec/features/**/*_spec.rb', base: @root).sort
+    def shared_example_files = Dir.glob('spec/support/shared_examples/**/*.rb', base: @root).sort
+
+    def parse_spec(path)
+      collector = Collector.new(@shared)
+      scope = Scope.new
+      collector.collect(Prism.parse_file(abs(path)).value, scope)
+      @warnings << "#{path}: no `type:` metadata, so the global ordering will not run it" unless collector.type
+      SpecFile.new(path:, type: collector.type, gates: collector.file_gates || [], scope:)
+    end
+
+    def resolve(spec)
+      file_lets = spec.scope.lets
+      @loads[spec.path] = resolve_refs(spec, spec.scope.loads, [file_lets])
+      @saves[spec.path] = resolve_refs(spec, spec.scope.saves, [file_lets])
+      spec.scope.usages.each do |usage|
+        shared = @shared[usage.name]
+        next @warnings << "#{spec.path}:#{usage.line}: unknown shared example '#{usage.name}'" unless shared
+
+        lets = [usage.scope.lets, shared.lets, file_lets]
+        @loads[spec.path] += resolve_refs(spec, usage.scope.loads + shared.loads, lets, usage)
+        @saves[spec.path] += resolve_refs(spec, usage.scope.saves + shared.saves, lets, usage)
+      end
+      @loads[spec.path].uniq! { |ref| [ref.key, ref.gates] }
+      @saves[spec.path].uniq! { |ref| [ref.key, ref.gates, ref.condition] }
+    end
+
+    def resolve_refs(spec, raw_refs, lets, usage = nil)
+      raw_refs.filter_map do |raw|
+        key = resolve_key(raw.key, lets)
+        unless key
+          @warnings << "#{spec.path}:#{usage&.line || raw.line}: could not resolve data key #{raw.key.last}"
+          next
+        end
+
+        condition = evaluate(raw.conditions, lets)
+        next if condition == false
+
+        Ref.new(key:, spec: spec.path, line: usage&.line || raw.line, gates: (usage&.gates || []) | raw.gates,
+                condition: condition == true ? nil : condition, via: usage&.name)
+      end
+    end
+
+    def resolve_key(key, lets)
+      return key if key.is_a?(String)
+      return unless key.first == :let
+
+      value = lets.map { |scope| scope[key.last] }.find { |found| !found.nil? }
+      value.is_a?(String) ? value : nil
+    end
+
+    # true, false, or a String describing a condition that can't be evaluated statically.
+    def evaluate(conditions, lets)
+      unknown = conditions.filter_map do |condition|
+        value = evaluate_one(condition, lets)
+        return false if value == false
+
+        value unless value == true
+      end
+      unknown.empty? || unknown.join(' and ')
+    end
+
+    def evaluate_one(condition, lets)
+      if condition.is_a?(Array) && condition.first == :not
+        value = evaluate_one(condition.last, lets)
+        return [true, false].include?(value) ? !value : "not (#{value})"
+      end
+      return condition unless condition.is_a?(Array) && condition.first == :let
+
+      value = lets.map { |scope| scope[condition.last] }.find { |found| !found.nil? }
+      [true, false].include?(value) ? value : condition.last.to_s
+    end
+
+    def keys_match?(left, right)
+      File.fnmatch?(left, right) || File.fnmatch?(right, left)
+    end
+
+    def load_sidecar
+      path = abs(SIDECAR)
+      File.exist?(path) ? (YAML.safe_load_file(path) || {}) : {}
+    end
+
+    def validate_sidecar
+      paths = Hash(sidecar['state_dependencies']).flat_map { |spec, deps| [spec, *Array(deps)] } +
+              Hash(sidecar['not_replayable']).keys
+      missing = paths.uniq.reject { |path| spec(path) }
+      raise Error, "#{SIDECAR} names specs that don't exist: #{missing.join(', ')}" if missing.any?
+    end
+  end
+
+  # Renders the dependency doc.
+  class Doc
+    def initialize(graph)
+      @graph = graph
+    end
+
+    def to_s
+      [intro, writers_table, dependency_tables, never_read, never_written, warnings, caveat].compact.join("\n")
+    end
+
+    private
+
+    attr_reader :graph
+
+    def intro
+      <<~MD
+        # Spec test-data dependencies
+
+        <!-- Generated by bin/spec_deps from the spec code and #{SIDECAR}. Do not edit by hand; run `bin/spec_deps --write`. -->
+
+        Specs share data through `tmp/{YYYY-MM-DD}_data.yml` (`spec/support/data_helpers.rb`).
+        A spec *depends on* another when it calls `load_test_data(spec_name: 'X')` and a different spec
+        writes key `X` with `save_test_data`. Some specs also have *state dependencies*, listed in
+        `#{SIDECAR}`: an earlier spec writes no new data, but moves an object into the state the later
+        spec expects (e.g. accessioned, with particular files). Skip it and `load_test_data` still works,
+        but the later spec times out or fails its assertions.
+
+        Run order across types is #{TYPE_ORDER.map { |type| "`#{type}`" }.join(' → ')} (`spec/spec_helper.rb`), then by file path.
+        To see or run a spec's prerequisites: `bin/spec_deps prereqs SPEC` / `bin/spec_deps run SPEC`.
+        To re-run the last run's failures plus their prerequisites: `bin/spec_deps run --failures`.
+
+        All paths below are relative to `spec/features/`. Keys containing `*` come from interpolated strings.
+      MD
+    end
+
+    def writers_table
+      keys = graph.all_saves.map(&:key).uniq.sort
+      rows = keys.map do |key|
+        writers = graph.all_saves.select { |ref| ref.key == key }.map { |ref| short(ref.spec) + qualifiers(ref) }.uniq
+        readers = graph.readers(key).map { |ref| short(ref.spec) }.uniq
+        "| `#{key}` | #{writers.join('<br>')} | #{readers.join('<br>').then { |text| text.empty? ? '—' : text }} |"
+      end
+      <<~MD
+        ## Who writes and reads each data key
+
+        | Data key | Written by | Read by |
+        | --- | --- | --- |
+        #{rows.join("\n")}
+      MD
+    end
+
+    def dependency_tables
+      sections = graph.specs.group_by(&:type).sort_by { |type, _| TYPE_ORDER.index(type) || TYPE_ORDER.size }
+      tables = sections.map do |type, specs|
+        rows = specs.map { |spec| dependency_row(spec) }
+        <<~MD
+          ### #{type || 'untyped'}
+
+          | Spec | Direct dependencies | Full prerequisite chain | Notes |
+          | --- | --- | --- | --- |
+          #{rows.join("\n")}
+        MD
+      end
+      <<~MD
+        ## Dependencies per spec
+
+        "Direct" = data keys the spec loads (including via shared examples) and state dependencies.
+        "Full prerequisite chain" = every spec that has to run before it, in run order.
+
+        #{tables.join("\n").chomp}
+      MD
+    end
+
+    def dependency_row(spec)
+      direct = graph.loads(spec.path).map { |ref| "`#{ref.key}`" }.uniq +
+               graph.state_dependencies(spec.path).map { |dep| "state: #{short(dep)}" }
+      chain = graph.chain([spec.path]).map { |path| short(path) }
+      notes = []
+      notes << "not replayable: #{graph.not_replayable(spec.path)}" if graph.not_replayable(spec.path)
+      graph.chain([spec.path]).select { |path| graph.not_replayable(path) }.each do |path|
+        notes << "prerequisite #{short(path)} is not replayable"
+      end
+      cells = [short(spec.path) + gate_text(spec.gates), list(direct), chain.empty? ? '—' : chain.join(' → '), list(notes)]
+      "| #{cells.map { |cell| escape(cell) }.join(' | ')} |"
+    end
+
+    def never_read
+      unread = graph.all_saves.select { |ref| graph.readers(ref.key, except: ref.spec).empty? }
+      return "## Keys written but never read\n\nNone.\n" if unread.empty?
+
+      items = unread.map { |ref| "- `#{ref.key}`, written by #{short(ref.spec)}#{qualifiers(ref)}\n" }.uniq.join
+      "## Keys written but never read\n\nNo spec other than the writer loads these.\n\n#{items}"
+    end
+
+    def never_written
+      unwritten = graph.all_loads.select { |ref| graph.writers(ref.key, except: ref.spec).empty? }
+      return if unwritten.empty?
+
+      items = unwritten.map { |ref| "- `#{ref.key}`, loaded by #{short(ref.spec)}\n" }.uniq.join
+      "## Keys loaded but never written\n\nThese specs will fail in `load_test_data` whatever runs first.\n\n#{items}"
+    end
+
+    def warnings
+      return if graph.warnings.empty?
+
+      "## Analysis warnings\n\n#{graph.warnings.map { |warning| "- #{warning}\n" }.join}"
+    end
+
+    def caveat
+      <<~MD
+        ## Caveat
+
+        `load_test_data` uses today's data file if there is one. Otherwise it falls back to the most recent
+        `tmp/*_data.yml`. A spec run on its own can therefore pick up stale druids from an earlier day,
+        and you won't get an error about it.
+      MD
+    end
+
+    def qualifiers(ref)
+      text = gate_text(ref.gates)
+      text += " (when `#{ref.condition}`)" if ref.condition
+      text
+    end
+
+    def gate_text(gates) = gates.empty? ? '' : " (#{gates.map { |gate| "`#{gate}`" }.join(', ')})"
+    def list(items) = items.empty? ? '—' : items.join('<br>')
+    def short(path) = path.delete_prefix('spec/features/')
+    def escape(cell) = cell.gsub('|', '\|')
+  end
+
+  # Failed example ids from the last run, read from RSpec's example status file.
+  module Failures
+    module_function
+
+    # { spec_path => [example_id, ...] } for the examples whose last status was "failed".
+    # Entries for files that are no longer specs are skipped, with a warning to `err`.
+    def last(graph, err:)
+      status_file = File.read(File.join(graph.root, 'spec/spec_helper.rb'))[
+        /example_status_persistence_file_path\s*=\s*['"]([^'"]+)['"]/, 1
+      ]
+      raise Error, 'spec/spec_helper.rb does not set example_status_persistence_file_path' unless status_file
+
+      path = File.join(graph.root, status_file)
+      raise Error, "#{status_file} not found; it is written when specs run" unless File.exist?(path)
+
+      by_spec = parse(File.read(path)).group_by { |id| spec_path(id) }
+      by_spec.select do |spec, _|
+        graph.spec(spec) || err.puts("warning: #{status_file} lists #{spec}, which is no longer a spec; skipping")
+      end
+    end
+
+    # Failed example ids from the text of an example status file.
+    def parse(text)
+      text.lines.drop(2).filter_map do |line|
+        id, status = line.split('|').map(&:strip)
+        id if status == 'failed'
+      end
+    end
+
+    def spec_path(arg) = arg.sub(/\[.*\z/, '').delete_prefix('./')
+
+    # bin/rspec arguments to re-run `failures` plus their prerequisites, in run order.
+    # A failed spec that another failure depends on runs as a whole file, since passing its example
+    # ids would make RSpec run only those examples from it.
+    def rspec_args(graph, failures)
+      chain = graph.chain(failures.keys)
+      whole = failures.keys.select { |spec| failures.keys.any? { |other| other != spec && graph.chain([other]).include?(spec) } }
+      entries = chain.map { |spec| [spec, spec] } +
+                failures.flat_map { |spec, ids| whole.include?(spec) ? [[spec, spec]] : ids.map { |id| [spec, id] } }
+      entries.sort_by { |spec, arg| [graph.sort_key(spec), arg] }.map(&:last)
+    end
+  end
+
+  # The bin/spec_deps command line. `runner` replaces the process with bin/rspec; tests pass a stand-in.
+  class CLI
+    EXEC = ->(command, dir) { Dir.chdir(dir) { exec(*command) } }
+
+    def initialize(root:, out: $stdout, err: $stderr, runner: EXEC)
+      @root = root
+      @out = out
+      @err = err
+      @runner = runner
+    end
+
+    # Returns the exit status.
+    def call(argv)
+      argv = argv.dup
+      command = argv.shift
+      graph = Graph.new(@root)
+      dispatch(graph, command, argv) || 0
+    rescue Error => e
+      @err.puts e.message
+      1
+    end
+
+    private
+
+    def dispatch(graph, command, argv)
+      case command
+      when nil then @out.puts Doc.new(graph)
+      when '--write' then File.write(File.join(@root, argv.first || DEFAULT_DOC), Doc.new(graph).to_s)
+      when '--check' then check(graph, argv.first)
+      when 'prereqs', 'run' then prereqs_or_run(graph, command, argv)
+      else raise Error, "unknown command '#{command}'; see the usage comment at the top of bin/spec_deps"
+      end
+      nil
+    end
+
+    def check(graph, doc)
+      path = File.join(@root, doc || DEFAULT_DOC)
+      raise Error, graph.type_order_problem if graph.type_order_problem
+
+      up_to_date = File.exist?(path) && File.read(path) == Doc.new(graph).to_s
+      raise Error, "#{path} is out of date; run bin/spec_deps --write" unless up_to_date
+
+      @out.puts "#{path} is up to date"
+    end
+
+    def prereqs_or_run(graph, command, argv)
+      specs, rspec_args = argv.include?('--') ? [argv[0...argv.index('--')], argv[(argv.index('--') + 1)..]] : [argv, []]
+      if specs.empty? || (specs.include?('--failures') && specs.size > 1)
+        raise Error, "usage: bin/spec_deps #{command} SPEC...|--failures [-- RSPEC_ARGS]"
+      end
+
+      # `prereqs SPEC` lists only the prerequisites; `prereqs --failures` lists everything that would run.
+      if specs == ['--failures']
+        failures = Failures.last(graph, err: @err)
+        return @err.puts('no failures recorded for the last run; nothing to do') if failures.empty?
+
+        report(graph, failures.keys, failed: failures)
+        listing = args = Failures.rspec_args(graph, failures)
+        files = args.map { |arg| Failures.spec_path(arg) }.uniq
+      else
+        targets = normalize(graph, specs)
+        listing = report(graph, targets)
+        args = files = listing + targets
+      end
+      return @out.puts(listing) if command == 'prereqs'
+
+      run(graph, args + rspec_args, files)
+    end
+
+    def run(graph, command_args, files)
+      data_files = Dir.glob('tmp/*_data.yml', base: @root)
+      if data_files.any? && files.any? { |path| graph.not_replayable(path) }
+        @err.puts "note: #{data_files.join(', ')} exist; a not-replayable spec may need fresh data (rm tmp/*_data.yml)"
+      end
+      @err.puts "running: bin/rspec #{command_args.join(' ')}"
+      @runner.call([File.join(@root, 'bin', 'rspec'), *command_args], @root)
+    end
+
+    def normalize(graph, paths)
+      paths.map do |path|
+        candidates = [File.expand_path(path), File.expand_path(path, @root)].map { |full| full.delete_prefix("#{@root}/") }
+        candidates.find { |relative| graph.spec(relative) } || raise(Error, "not a spec file under spec/features: #{path}")
+      end
+    end
+
+    # Explains, on stderr, why each spec in the chain for `targets` is needed. Returns the chain.
+    def report(graph, targets, failed: {})
+      chain = graph.chain(targets)
+      (chain + targets).each do |path|
+        reasons = graph.direct_prereqs(path).map { |dep, why| "#{dep.delete_prefix('spec/features/')} (#{why})" }
+        label = targets.include?(path) ? 'target' : 'prereq'
+        @err.puts "#{label}: #{path}#{" — needs #{reasons.join('; ')}" if reasons.any?}"
+        @err.puts "  failed last run: #{failed[path].map { |id| id[/\[.*\z/] }.join(' ')}" if failed[path]
+        @err.puts "  gated: #{graph.spec(path).gates.join(', ')}" if graph.spec(path).gates.any?
+        @err.puts "  NOT REPLAYABLE: #{graph.not_replayable(path)}" if graph.not_replayable(path)
+        graph.loads(path).select { |ref| graph.writers(ref.key, except: path).empty? }.each do |ref|
+          @err.puts "  MISSING: no spec writes `#{ref.key}`, so load_test_data will fail"
+        end
+      end
+      graph.warnings.each { |warning| @err.puts "warning: #{warning}" }
+      chain
+    end
+  end
+end
