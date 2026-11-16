@@ -9,8 +9,10 @@ module ArgoB3Helpers
     expect(page).to have_css('h2', text: 'Deposited')
     find_by_id('files-tab').click
     within('#files-pane') do
-      filenames.each { |filename| expect(page).to have_css('tbody th', exact_text: filename) }
-      absent_filenames.each { |filename| expect(page).to have_no_css('tbody th', exact_text: filename) }
+      # Folders render collapsed, and nested files are labelled by basename under their folder row.
+      all(:button, 'Expand all', wait: 2).each(&:click)
+      filenames.each { |filename| expect(page).to have_css('tbody th', exact_text: File.basename(filename)) }
+      absent_filenames.each { |filename| expect(page).to have_no_css('tbody th', exact_text: File.basename(filename)) }
     end
   end
 
@@ -24,7 +26,9 @@ module ArgoB3Helpers
       files.each do |filename, file|
         # Found by the row header, since a row's toggle button also names the file (in visually hidden text).
         row = find(:xpath, ".//tbody/tr[th[normalize-space()='#{filename}']]")
-        expect(row).to have_text(/#{Regexp.escape(filename)}\s+#{file[:size]}\s+#{Regexp.escape(file[:mime_type])}/)
+        # Checked separately so the assertion doesn't depend on column order.
+        expect(row).to have_text(file[:size])
+        expect(row).to have_text(file[:mime_type])
       end
     end
 
