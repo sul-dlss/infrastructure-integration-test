@@ -22,7 +22,7 @@ Capybara.register_driver :my_firefox_driver do |app|
     profile['browser.download.dir'] = DownloadHelpers::PATH.to_s
     # profile["browser.helperApps.neverAsk.openFile"] = "application/x-yaml"
     profile['browser.download.folderList'] = 2
-    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml;text/csv'
+    profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/x-yaml;text/csv;application/zip'
     # these two have been proven to be needed to prevent cardinalkey from
     # constantly prompting to confirm certificate
     # https://uit.stanford.edu/service/cardinalkey/known-issues

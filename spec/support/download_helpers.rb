@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'zip'
+
 module DownloadHelpers
   TIMEOUT = 10
   PATH    = Pathname.new(File.expand_path('../../downloads', __dir__))
@@ -19,6 +21,12 @@ module DownloadHelpers
     File.read(download)
   end
 
+  # @return [Hash<String, String>] the content of each file in the downloaded zip, keyed by its path
+  def downloaded_zip_contents
+    wait_for_download
+    Zip::File.open(download) { |zip| zip.reject(&:directory?).to_h { |entry| [entry.name, entry.get_input_stream.read] } }
+  end
+
   def wait_for_download
     return if downloaded?
 
@@ -35,7 +43,8 @@ module DownloadHelpers
   end
 
   def downloading?
-    downloads.grep(/\.crdownload$/).any?
+    # Chrome and Firefox respectively.
+    downloads.grep(/\.(crdownload|part)$/).any?
   end
 
   def clear_downloads
