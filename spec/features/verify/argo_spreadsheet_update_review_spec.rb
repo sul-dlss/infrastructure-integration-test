@@ -2,10 +2,10 @@
 
 # Integration: Argo, Modsulator, DSA
 RSpec.describe 'Verify objects updated using a spreadsheet', type: :verify do
-  let(:first_druid) { test_data[:druids].first }
-  let(:second_druid) { test_data[:druids].last }
-  let(:first_title) { test_data[:titles].first }
-  let(:second_title) { test_data[:titles].last }
+  let(:first_druid) { test_data.fetch(:druids).first }
+  let(:second_druid) { test_data.fetch(:druids).last }
+  let(:first_title) { test_data.fetch(:titles).first }
+  let(:second_title) { test_data.fetch(:titles).last }
   let(:start_url) { "#{Settings.argo_url}/view/#{Settings.default_apo}" }
   let(:test_data) { load_test_data(spec_name: 'argo_spreadsheet_update') }
 
