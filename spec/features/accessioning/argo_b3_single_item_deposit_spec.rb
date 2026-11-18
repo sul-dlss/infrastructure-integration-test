@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Integration: Argo-B3, DSA, Purl, Stacks
+# Integration: Argo-B3, DSA, Purl, Stacks, Preservation
 RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single item', type: :accessioning do
   let(:start_url) { Settings.argo_b3_url }
   let(:title) { "argo-b3 single item deposit #{random_phrase}" }
@@ -9,6 +9,9 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
   let(:deleted_filenames) { ['stanford-logo.tiff', 'stanford-logo.jp2'] }
   let(:added_filename) { 'vision_for_stanford.jpg' }
   let(:v2_filenames) { ['example.tiff', added_filename] }
+  # Accessioning's JP2 derivatives of the v2 images, which are shelved but not preserved.
+  let(:derivative_filenames) { ['example.jp2', 'vision_for_stanford.jp2'] }
+  let(:version_description) { "argo-b3 single item redeposit #{random_phrase}" }
   let(:description_csv_path) { 'tmp/argo_b3_single_item_description.csv' }
 
   before do
@@ -48,24 +51,19 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     druid = page.current_url[/druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}/]
     puts " *** argo-b3 single item deposit druid: #{druid} ***"
 
+    expect_manage_files_step('Item details')
+    click_button 'Next'
+    expect_manage_files_step('Add and edit files')
     attach_file(nil, filenames.map { |filename| "spec/fixtures/#{filename}" }, class: 'dz-hidden-input', make_visible: true)
     filenames.each { |filename| expect(page).to have_css('tbody th', text: filename) }
 
     ## Step 3: Structure files
-    find_by_id('structural-tab').click
-    within('#structural-pane') do
-      # The structure frame reloads after the upload; clicking before then is discarded.
-      expect(page).to have_text('There are 2 files that have not been added to the structure.')
-      click_button 'Structure files'
-    end
+    structure_files_from_files_step
+    expect(page).to have_text('Files were structured with the Image (resource per image) model.')
     expect(page).to have_css('h3', exact_text: 'Resources (2)')
-    # The page updates again with this flash after the resources render; a tab click before then is discarded.
-    expect(page).to have_text('Structure built from files')
 
     ## Step 4: Deposit
-    find_by_id('deposit-tab').click
-    # The Deposit tab is also a button, so match exactly; this also waits for the button to be enabled.
-    click_button 'Deposit', exact: true
+    deposit_from_manage_files
     expect(page).to have_css('h1', text: title)
     # The show page refreshes itself as the deposit progresses.
     expect(page).to have_css('h2', text: 'Deposited', wait: Settings.timeouts.workflow)
@@ -124,11 +122,14 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
 
     # Saving opens a new version, with the files still to be changed before depositing.
     find_by_id('deposit-tab').click
-    fill_in 'Version description', with: "argo-b3 single item redeposit #{random_phrase}"
+    fill_in 'Version description', with: version_description
     click_button 'Save draft and edit files'
 
     ## Step 9: Delete a file, add a file, and redeposit
     expect(page).to have_css('h1', text: 'Manage files')
+    expect_manage_files_step('Item details')
+    click_button 'Next'
+    expect_manage_files_step('Add and edit files')
     # Accessioning added a JP2 derivative to the resource, so only deleting the JP2 too empties (and deletes) it.
     click_button "Delete #{deleted_filenames.first}"
     expect(page).to have_no_css('tbody th', exact_text: deleted_filenames.first)
@@ -137,15 +138,11 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     attach_file(nil, "spec/fixtures/#{added_filename}", class: 'dz-hidden-input', make_visible: true)
     expect(page).to have_css('tbody th', text: added_filename)
 
-    find_by_id('structural-tab').click
-    within('#structural-pane') do
-      expect(page).to have_text('There is 1 file that has not been added to the structure.')
-      click_button 'Append files to structure'
-    end
-    expect(page).to have_text('Files appended to structure')
+    # Leaving the files step appends the added file to the structure.
+    structure_files_from_files_step
+    expect(page).to have_css('h3', exact_text: 'Resources (2)')
 
-    find_by_id('deposit-tab').click
-    click_button 'Deposit', exact: true
+    deposit_from_manage_files(version_description:)
     expect(page).to have_css('h1', text: new_title)
     expect(page).to have_css('h2', text: 'Deposited', wait: Settings.timeouts.workflow)
 
@@ -154,7 +151,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
 
     published_filenames = published_cocina_filenames(druid:, version: 2)
     # Only the JP2 derivatives of images are published.
-    expect(published_filenames).to contain_exactly('example.jp2', 'vision_for_stanford.jp2')
+    expect(published_filenames).to match_array(derivative_filenames)
     # One canvas per resource.
     iiif_manifest = JSON.parse(Faraday.get("#{Settings.purl_url}/#{bare_druid(druid)}/iiif/manifest").body)
     expect(iiif_manifest.dig('sequences', 0, 'canvases').size).to eq(2)
@@ -162,7 +159,15 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     expect_text_on_purl_page(druid:, text: new_title)
     expect(page).to have_no_text(title)
 
-    ## Step 11: Make the item dark and redeposit
+    ## Step 11: Download all files, from Preservation and Stacks
+    zipped_files = download_all_files(druid:)
+    expect(zipped_files.keys).to contain_exactly(*v2_filenames, *derivative_filenames)
+    # Preserved only, so from Preservation.
+    v2_filenames.each { |filename| expect(zipped_files[filename]).to eq(File.binread("spec/fixtures/#{filename}")) }
+    # Shelved only, so from Stacks.
+    expect(zipped_files.values_at(*derivative_filenames)).to all(be_present)
+
+    ## Step 12: Make the item dark and redeposit
     visit "#{start_url}/objects/#{druid}"
     click_link 'Edit item'
     find_by_id('rights-tab').click
@@ -176,7 +181,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     expect(page).to have_css('h1', text: new_title)
     expect(page).to have_css('h2', text: 'Deposited', wait: Settings.timeouts.workflow)
 
-    ## Step 12: Verify removed from PURL
+    ## Step 13: Verify removed from PURL
     expect_removed_from_purl(druid:)
   end
 end

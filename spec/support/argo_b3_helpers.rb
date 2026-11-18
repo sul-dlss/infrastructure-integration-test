@@ -68,6 +68,25 @@ module ArgoB3Helpers
     start_deposit(druids: folders.keys, version_description:)
   end
 
+  # Starts a Download files bulk action from the Files tab and downloads its zip.
+  # @return [Hash<String, String>] the content of each zipped file, keyed by its filepath
+  def download_all_files(druid:)
+    clear_downloads
+    visit "#{Settings.argo_b3_url}/objects/#{druid}"
+    find_by_id('files-tab').click
+    within('#files-pane') { click_button 'Start download files bulk action' }
+    expect(page).to have_text('Download files bulk action created')
+    # Visited directly, since the toast linking to bulk actions fades out.
+    visit "#{Settings.argo_b3_url}/bulk_actions"
+    # Anchored since the row's download links also name the bulk action (in visually hidden text).
+    find(:link, text: /\ABulk action \d+: Files for #{druid}\z/).click
+    # The page refreshes itself until complete; the counts are total / succeeded / failed.
+    within('#bulk-action-status') { expect(page).to have_text('1 / 1 / 0', wait: Settings.timeouts.bulk_action) }
+    # Visible text only, so the link's visually hidden " for Bulk action ..." isn't matched.
+    find(:link, text: /\AFiles\b/).click
+    downloaded_zip_contents
+  end
+
   private
 
   def discover_files(description:, mount_path:, folders:)

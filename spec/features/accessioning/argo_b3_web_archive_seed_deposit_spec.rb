@@ -96,7 +96,9 @@ RSpec.describe 'Use Argo-B3 to register a web archive seed object', type: :acces
     click_link_or_button 'Manage files'
     expect(page).to have_css('h1', text: 'Manage files')
 
-    # Add files tab (the default tab)
+    expect_manage_files_step('Item details')
+    click_button 'Next'
+    expect_manage_files_step('Add and edit files')
     attach_file(nil, 'spec/fixtures/new-thumbnail.jp2', class: 'dz-hidden-input', make_visible: true)
     expect(page).to have_css('tbody th', text: 'new-thumbnail.jp2')
 
@@ -104,19 +106,11 @@ RSpec.describe 'Use Argo-B3 to register a web archive seed object', type: :acces
     accept_confirm(/will also delete resource/) { click_button 'Delete thumbnail.jp2' }
     expect(page).to have_no_css('tbody th', exact_text: 'thumbnail.jp2')
 
-    # Structure tab
-    find_by_id('structural-tab').click
-    within('#structural-pane') do
-      # The structure frame can briefly render twice while it reloads, so wait for a single stable button.
-      expect(page).to have_button('Structure files', count: 1)
-      click_button 'Structure files'
-    end
-    expect(page).to have_text('Structure built from files')
+    # Leaving the files step appends the new file to the structure.
+    structure_files_from_files_step
+    expect(page).to have_css('h3', exact_text: 'Resources (1)')
 
-    # Deposit the new version
-    find_by_id('deposit-tab').click
-    fill_in 'Version description', with: 'Replace web archive seed thumbnail'
-    click_button 'Deposit', exact: true
+    deposit_from_manage_files(version_description: 'Replace web archive seed thumbnail')
     # Reloading the edit page once the deposit has started redirects with an "Item is not editable." alert.
     expect(page).to have_current_path(%r{/objects/#{seed_druid}\z})
 

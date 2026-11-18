@@ -320,6 +320,7 @@ DEPENDENCIES
   rubocop-rspec
   rubocop-rspec_rails
   rubyXL
+  rubyzip
   sdr-client
   selenium-webdriver
   websocket
