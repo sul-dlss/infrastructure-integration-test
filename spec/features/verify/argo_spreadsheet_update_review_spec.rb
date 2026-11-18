@@ -19,6 +19,12 @@ RSpec.describe 'Verify objects updated using a spreadsheet', type: :verify do
     visit "#{Settings.argo_url}/view/#{first_druid}"
     expect(page).to have_text(first_title)
 
+    # Workaround: in Firefox, navigating away from this Argo object page doesn't take effect
+    # (visit leaves the browser on the first druid, even when visiting Settings.argo_url).
+    # Reloading first makes the next visit work. Cause unknown; see the PR description.
+    # This workaround is unnecessary but harmless in Chrome.
+    page.refresh
+
     puts "Checking that #{second_druid} has title '#{second_title}'..."
     visit "#{Settings.argo_url}/view/#{second_druid}"
     expect(page).to have_text(second_title)
