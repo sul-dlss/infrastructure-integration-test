@@ -29,7 +29,7 @@ RSpec.describe 'Use Argo-B3 to register a web archive seed object', type: :acces
     click_button 'Next'
 
     # APO, collection, rights tab
-    select 'Web Archive Seed Object APO', from: 'APO'
+    select_searchable_option('Web Archive Seed Object APO', from: 'APO')
     collection_input = find_field(placeholder: 'Start typing the collection name or druid...')
     collection_input.fill_in(with: collection_name)
     find('.ts-dropdown .option', text: collection_name).click
