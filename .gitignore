@@ -11,3 +11,6 @@ downloads
 
 # configs to hold sensitive values
 config/**/*.local.yml
+
+# run-sample-accession-tests run logs (ephemeral scratch state for a single dry-run/session)
+.agents/skills/run-sample-accession-tests/runs/
