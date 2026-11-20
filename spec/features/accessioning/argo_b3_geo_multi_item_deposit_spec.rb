@@ -103,7 +103,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and release GIS items', if: $s
 
   def fill_in_registration_settings
     select 'geo', from: 'Content type'
-    select 'APO for GIS', from: 'APO'
+    select_searchable_option('APO for GIS', from: 'APO')
 
     collection_input = find_field(placeholder: 'Start typing the collection name or druid...')
     collection_input.fill_in(with: collection_name)

@@ -40,7 +40,7 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     click_button 'Next'
 
     # APO, collection, rights tab
-    find(:select, 'APO').find("option[value='#{Settings.default_apo}']").select_option
+    select_searchable_option_by_value(Settings.default_apo, from: 'APO')
 
     # Register tab
     find_by_id('deposit-tab').click
