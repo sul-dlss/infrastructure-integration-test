@@ -94,13 +94,23 @@ druid to associate with which staged content.
 1. Click the first link in the results table (leads to the job's detail
    page).
 2. **Verify: the page shows the project name from step 3.**
-3. **Wait (up to `{{timeouts.workflow}}` seconds, default 300) for: a
-   "Download" link to appear** — this is the background Preassembly job
-   finishing. Use the poll convention in `SKILL.md`. Unlike the
+3. **Wait (up to `{{timeouts.workflow}}` seconds, default 300) for: the
+   "State" table cell to read "Job completed"** (equivalently, the
+   per-druid Progress Log row's status column reading "Accessioning
+   success" or an error string) — this is the background Preassembly job
+   finishing. Use the poll convention in `SKILL.md`, **and note that this
+   page does not update in place**: each poll iteration needs a fresh
+   `browser_navigate` to the same `job_runs/<N>` URL, not just re-checking
+   the already-loaded DOM. **Do not wait for a "Download" link to
+   appear** — confirmed via a live run that the "Job output log /
+   Download" row is present on this page from the moment the job is
+   created, whether the job is "Running" or "Job completed"; it is not a
+   completion signal at all, so a check for its presence passes
+   immediately and never actually waits for the job. Unlike the
    Argo-workflow polls in earlier scenarios, there's no `.alert-danger`
    equivalent visible on this page to bail out on early — if the job
-   fails, the page simply never shows a Download link, so rely on the
-   overall timeout.
+   fails, the State cell should show an error string instead of "Job
+   completed"; rely on the overall timeout if it doesn't.
 4. Click **Download**.
 5. **Verify: the downloaded file, parsed as YAML, has `status: success`.**
    If the download doesn't parse as YAML, or `status` is anything else,
@@ -115,12 +125,26 @@ druid to associate with which staged content.
 After this scenario (whether it passed or failed), clean up the staged
 manifest so it doesn't interfere with reruns:
 
-1. **Propose and run** (per `SKILL.md` conventions):
+1. **First check what's actually there** — `{{preassembly_bundle_directory}}`
+   has been observed (live run) to be a **shared, persistent staging
+   area** reused across many unrelated runs (old druid-named directories,
+   a reusable `content/` directory holding the real pre-staged files,
+   `README.md`, a `structure-*.csv`), not a fresh per-run directory. Run
+   `ssh {{preassembly_username}}@{{preassembly_host}} ls -la
+   {{preassembly_bundle_directory}}` first and confirm a `<bare druid>`
+   directory actually exists before trying to remove it — for this row
+   (content mapped to the shared `content/` folder via `manifest.csv`),
+   it never does, and the step below would be a no-op.
+2. Only if a `<bare druid>` directory is actually present, **propose and
+   run** (per `SKILL.md` conventions):
    ```
    ssh {{preassembly_username}}@{{preassembly_host}} rm -rf {{preassembly_bundle_directory}}/<bare druid>
    ```
-2. This is best-effort — a failure here shouldn't be treated as a
-   scenario failure, just noted in the run log.
+3. This is best-effort — a failure here shouldn't be treated as a
+   scenario failure, just noted in the run log. Note that `manifest.csv`
+   itself is **not** cleaned up by this step — it's shared, mutable state
+   that the next run of this scenario (or `preassembly-reaccessioning.md`)
+   will overwrite with its own content anyway.
 
 ## Done
 
@@ -131,3 +155,13 @@ this scenario to have completed successfully first (specifically, that
 the object has reached `vN Accessioned` status in Argo before it starts —
 which it checks itself via its own poll step, not something this scenario
 needs to verify beyond the YAML `status: success` check above).
+
+## Verified in a live dry run (2026-09-24)
+
+Run live end-to-end against stage (see
+`.agents/skills/run-sample-accession-tests/runs/20260924T193206Z.md`),
+confirming everything above except the two corrections already folded
+in (the completion signal being "State" rather than a Download link,
+and the Cleanup section's shared/pre-staged bundle-directory caveat).
+The job (Preassembly #5206) completed in well under a minute for this
+single-image row.
