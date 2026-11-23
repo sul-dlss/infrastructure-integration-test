@@ -41,8 +41,10 @@ RSpec.describe 'Use Argo-B3 to register, deposit, and redeposit multiple items',
     fill_in 'Describe this bulk action', with: "argo-b3 multi-item deposit #{run_id}"
     click_button 'Submit'
 
-    # Anchored since the row's download links also name the bulk action (in visually hidden text).
-    find(:link, text: /\ABulk action \d+: argo-b3 multi-item deposit #{run_id}\z/).click
+    # The row's Action column links to the bulk action; its Description column identifies this run.
+    within('#bulk-actions-history-table tr', text: "argo-b3 multi-item deposit #{run_id}") do
+      click_link 'Register items'
+    end
     registered = registered_druids(source_ids: items.keys.map { |key| source_id(key) })
     items.each_key do |key|
       druids[key] = registered.fetch(source_id(key))
