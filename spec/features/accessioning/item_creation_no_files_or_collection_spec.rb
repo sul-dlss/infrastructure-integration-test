@@ -51,9 +51,12 @@ RSpec.describe 'Use Argo to create an item object without any files and no colle
     within '.modal-dialog' do
       select 'integration-testing', from: 'collection'
       click_link_or_button 'Add Collection'
+      # Wait for the add to be saved before closing the modal, which otherwise races the request.
+      expect(page).to have_text('Collection added successfully')
       click_link_or_button 'Cancel'
     end
-    expect(page).to have_text('integration-testing')
+    # Closing the modal doesn't refresh the show page, so reload until the collection is shown.
+    reload_page_until_timeout!(text: 'integration-testing')
 
     # close version
     click_link_or_button 'Close Version'
