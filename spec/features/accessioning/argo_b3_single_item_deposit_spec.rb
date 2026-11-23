@@ -47,7 +47,8 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     click_button 'Register and add files'
 
     ## Step 2: Upload files
-    expect(page).to have_css('h1', text: 'Manage files')
+    # Managing files is named "Add files and deposit" until the first version is deposited.
+    expect(page).to have_css('h1', text: 'Add files and deposit')
     druid = page.current_url[/druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}/]
     puts " *** argo-b3 single item deposit druid: #{druid} ***"
 
@@ -126,7 +127,8 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     click_button 'Save draft and edit files'
 
     ## Step 9: Delete a file, add a file, and redeposit
-    expect(page).to have_css('h1', text: 'Manage files')
+    # Once the first version is deposited, managing files is named "Edit files and structure".
+    expect(page).to have_css('h1', text: 'Edit files and structure')
     expect_manage_files_step('Item details')
     click_button 'Next'
     expect_manage_files_step('Add and edit files')

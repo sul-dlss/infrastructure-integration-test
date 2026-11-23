@@ -51,7 +51,12 @@ RSpec.describe 'Use Argo-B3 to register a web archive seed object', type: :acces
     expect(page).to have_css('#overview-table tr', text: /Content type\s+Webarchive Seed/)
 
     # Depositing a draft with no files kicks off wasSeedPreassemblyWF.
+    # The status box's Deposit button opens a dropdown with the (prefilled, required) version description.
     click_button 'Deposit'
+    within('.deposit-dropdown-menu') do
+      expect(page).to have_field('Version description', with: /\S/)
+      click_button 'Deposit'
+    end
     expect(page).to have_text('Deposit started.')
 
     reload_page_until_timeout! do
@@ -93,11 +98,14 @@ RSpec.describe 'Use Argo-B3 to register a web archive seed object', type: :acces
     expect(access['url'].first['value']).to eq archived_url
 
     ## Replace the auto-generated thumbnail with a different file
-    click_link_or_button 'Manage files'
-    expect(page).to have_css('h1', text: 'Manage files')
+    # Once the first version is deposited, managing files is named "Edit files and structure".
+    click_link_or_button 'Edit files and structure'
+    expect(page).to have_css('h1', text: 'Edit files and structure')
 
-    expect_manage_files_step('Item details')
-    click_button 'Next'
+    # The status box button opens on Structure files when there are files.
+    expect_manage_files_step('Structure files')
+    expect(page).to have_css('h3', text: /\AResources/)
+    click_button 'Previous'
     expect_manage_files_step('Add and edit files')
     attach_file(nil, 'spec/fixtures/new-thumbnail.jp2', class: 'dz-hidden-input', make_visible: true)
     expect(page).to have_css('tbody th', text: 'new-thumbnail.jp2')
