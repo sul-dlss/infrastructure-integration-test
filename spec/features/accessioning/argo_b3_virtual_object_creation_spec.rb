@@ -2,21 +2,17 @@
 
 # Integration: Argo-B3, DSA, Purl
 # The constituents' files are in folders on a mount that argo-b3 can read (Settings.argo_b3_virtual_object_directory).
-# A multi-item deposit cannot share a folder between druids, so each constituent has its own folder, which limits
-# the number of constituents (Settings.number_of_constituents) to the number of folders.
+# A multi-item deposit cannot share a folder between druids, so each of the two constituents has its own folder.
 RSpec.describe 'Use Argo-B3 to create a virtual object with constituent objects', type: :accessioning do
   let(:start_url) { Settings.argo_b3_url }
   let(:run_id) { SecureRandom.uuid }
   let(:registration_csv_path) { 'tmp/argo_b3_virtual_object_registration.csv' }
   let(:virtual_object_csv_path) { 'tmp/argo_b3_virtual_object.csv' }
   # Each folder has one image file.
-  let(:mount_folders) { %w[image-1 image-2 image-3 image-4] }
   let(:file_count) { 1 }
   # Titles keyed by folder.
   let(:constituents) do
-    mount_folders.first(Settings.number_of_constituents).index_with do
-      "argo-b3 virtual object constituent #{random_phrase}"
-    end
+    %w[image-1 image-2].index_with { "argo-b3 virtual object constituent #{random_phrase}" }
   end
   # Populated by registration, keyed like constituents.
   let(:druids) { {} }
@@ -24,11 +20,6 @@ RSpec.describe 'Use Argo-B3 to create a virtual object with constituent objects'
   let(:bulk_action_description) { "argo-b3 virtual object #{run_id}" }
 
   before do
-    if Settings.number_of_constituents > mount_folders.size
-      raise "number_of_constituents must be <= #{mount_folders.size}, the number of folders in " \
-            "#{Settings.argo_b3_virtual_object_directory}"
-    end
-
     authenticate!(start_url:, expected_text: 'Argo dashboard')
   end
 
