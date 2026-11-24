@@ -113,6 +113,12 @@ and
 SETTINGS__NUMBER_OF_CONSTITUENTS=11 bin/rspec spec/features/accessioning/virtual_object_creation_spec.rb
 ```
 
+The Argo-B3 virtual object test (`spec/features/accessioning/argo_b3_virtual_object_creation_spec.rb`) gives each constituent its own folder in `Settings.argo_b3_virtual_object_directory`. Its number of constituents is therefore limited to the number of folders there (currently 4):
+
+```
+SETTINGS__NUMBER_OF_CONSTITUENTS=4 bin/rspec spec/features/accessioning/argo_b3_virtual_object_creation_spec.rb
+```
+
 
 ## Add New Tests
 
