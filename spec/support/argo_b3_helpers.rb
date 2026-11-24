@@ -3,7 +3,7 @@
 require 'tempfile'
 
 # Helpers for registering, depositing, and checking objects in Argo-B3
-module ArgoB3Helpers
+module ArgoB3Helpers # rubocop:disable Metrics/ModuleLength
   def expect_files_on_object_page(druid:, filenames:, absent_filenames: [])
     visit "#{Settings.argo_b3_url}/objects/#{druid}"
     expect(page).to have_css('h2', text: 'Deposited')
@@ -66,6 +66,16 @@ module ArgoB3Helpers
     discover_files(description:, mount_path:, folders:)
     check_files(folders:, deposit_type:)
     start_deposit(druids: folders.keys, version_description:)
+  end
+
+  # Deposits a registered item without adding files, e.g., so that its version is closed.
+  def deposit_without_files(druid:)
+    visit "#{Settings.argo_b3_url}/objects/#{druid}"
+    click_link 'Edit item'
+    find_by_id('deposit-tab').click
+    click_button 'Deposit', type: 'submit'
+    # The show page refreshes itself as the deposit progresses.
+    expect(page).to have_css('h2', text: 'Deposited', wait: Settings.timeouts.workflow)
   end
 
   # Starts a Download files bulk action from the Files tab and downloads its zip.
