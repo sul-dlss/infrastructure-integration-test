@@ -87,8 +87,8 @@ RSpec.describe 'Use Argo-B3 to register, deposit, redeposit, and darken a single
     fill_in 'Search for', with: title
     click_button 'Search'
     # Wait for the item to be indexed.
-    reload_page_until_timeout! { page.has_css?('caption a', text: title, wait: 1) }
-    find('caption a', text: title).click
+    reload_page_until_timeout! { page.has_css?('h3 a', text: title, wait: 1) }
+    find('h3 a', text: title).click
     expect(page).to have_css('h1', text: title)
 
     ## Step 7: Verify published to PURL with an accessible IIIF image
